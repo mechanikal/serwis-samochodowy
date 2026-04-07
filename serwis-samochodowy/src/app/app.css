@@ -1,0 +1,55 @@
+body {
+  font-family: 'Khand', sans-serif;
+}
+
+.login-hero {
+  height: 100vh;
+  width: 100vw;
+  background-color: #FEFEFE;
+  overflow: hidden;
+
+}
+
+.hero-logo {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30vw;
+  height: auto;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-tread {
+  position: absolute;
+  bottom: 0%;
+  right: 0%;
+  height: 100vh;
+  width: auto;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.login-header {
+  display: flex;
+  font-size: clamp(20px, 3vw, 36px);
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 2vw;
+}
+
+.contact {
+  display: flex;
+  align-items: center;
+  text-align: right;
+  z-index: 5;
+}
+
+.contact-phone {
+  transform: rotate(-30deg);
+  transform-origin: center;
+  width: 1.5em;
+  height: 1.5em;
+}
