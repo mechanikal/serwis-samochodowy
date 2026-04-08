@@ -22,10 +22,10 @@ body {
 
 .hero-logo {
   position: absolute;
-  top: 40%;
+  bottom: 30%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  height: 50vh;
+  transform: translate(-50%,0%);
+  height: 50vmin;
   width: auto;
   max-width: 40%;
   z-index: 4;
@@ -50,7 +50,7 @@ body {
   left: 0%;
   height: auto;
   max-width: 40vw;
-  max-height: 70%;
+  max-height: 40%;
   z-index: 2;
   pointer-events: none;
 }
@@ -58,24 +58,25 @@ body {
 .hero-name {
   position: absolute;
   top: 10%;
-  left: 4.5vmin;
+  left: 50%;
   font-family: "Gentium Book Plus", serif;
   font-weight: 400;
-  font-size: 4.5vmax;
+  font-size: 5.5vmax;
   font-style: normal;
   color: #000000;
   z-index: 5;
   pointer-events: none;
-  padding: 0 2vw;
 
+  gap: vmin;
   display: flex;
   flex-direction: column;
   align-items: left;
+  left: 4.5vmin;
 }
 
 .hero-button {
   position: absolute;
-  bottom: 10%;
+  bottom: 6%;
   left: 50%;
   font-size: 6.5vmin;
   transform: translate(-50%, -50%);
@@ -116,11 +117,20 @@ body {
   height: 1.2em;
 }
 
-
-@media (max-aspect-ratio: 1/1.5) {
-  .hero-logo {
-    top: 50%;
+@media (min-aspect-ratio: 1.6/1) {
+  .hero-name {
+    font-size: 10vmin;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    left: 4.5vmin;
+    gap: 1vmin;
   }
+}
+@media (max-aspect-ratio: 5/7.5) {
+  .hero-button {
+  bottom: 10%;
+}
   .hero-name {
     top: 10%;
     left: 50%;
