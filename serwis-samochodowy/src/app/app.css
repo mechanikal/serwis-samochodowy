@@ -58,7 +58,7 @@ body {
 .hero-name {
   position: absolute;
   top: 10%;
-  left: 3%;
+  left: 4.5vmin;
   font-family: "Gentium Book Plus", serif;
   font-weight: 400;
   font-size: 4.5vmax;
@@ -66,15 +66,36 @@ body {
   color: #000000;
   z-index: 5;
   pointer-events: none;
+  padding: 0 2vw;
 
   display: flex;
   flex-direction: column;
   align-items: left;
 }
 
+.hero-button {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  font-size: 6.5vmin;
+  transform: translate(-50%, -50%);
+  width: 40vmin;
+  height: 12vmin;
+  background-color: #FEFEFE;
+  border: 0.6vmin solid #000000;
+  border-radius: 75px;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.hero-button:hover {
+  color: #363636;
+  border: 0.6vmin solid #363636;
+}
+
 .login-header {
   display: flex;
-  font-size: clamp(10px, 3vw, 36px);
+  font-size: 5vmin;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
@@ -96,13 +117,17 @@ body {
 }
 
 
-@media (max-aspect-ratio: 1/1) {
+@media (max-aspect-ratio: 1/1.5) {
+  .hero-logo {
+    top: 50%;
+  }
   .hero-name {
+    top: 10%;
     left: 50%;
     transform: translate(-50%, 0%);
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    font-size: 10vmin;
   }
 }
