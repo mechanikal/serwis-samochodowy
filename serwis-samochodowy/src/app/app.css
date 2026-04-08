@@ -4,10 +4,20 @@ body {
 
 .login-hero {
   height: 100vh;
+  width: 100%;
+  background-color: #FEFEFE;
+}
+
+.login-hero_ex {
+  height: 100vh;
   width: 100vw;
   background-color: #FEFEFE;
   overflow: hidden;
 
+  background-image: url('/tread_login.svg');
+  background-position: right bottom;
+  background-size: auto 100%;
+  background-repeat: no-repeat;
 }
 
 .hero-logo {
@@ -15,25 +25,56 @@ body {
   top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 30vw;
-  height: auto;
-  z-index: 1;
+  height: 50vh;
+  width: auto;
+  max-width: 40%;
+  z-index: 4;
   pointer-events: none;
+  fill: #000000;
 }
 
 .hero-tread {
   position: absolute;
   bottom: 0%;
   right: 0%;
-  height: 100vh;
-  width: auto;
+  height: auto;
+  max-width: 60vw;
+  max-height: 120%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.hero-car {
+  position: absolute;
+  bottom: 0%;
+  left: 0%;
+  height: auto;
+  max-width: 40vw;
+  max-height: 70%;
   z-index: 2;
   pointer-events: none;
 }
 
+.hero-name {
+  position: absolute;
+  top: 10%;
+  left: 3%;
+  font-family: "Gentium Book Plus", serif;
+  font-weight: 400;
+  font-size: 4.5vmax;
+  font-style: normal;
+  color: #000000;
+  z-index: 5;
+  pointer-events: none;
+
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+}
+
 .login-header {
   display: flex;
-  font-size: clamp(20px, 3vw, 36px);
+  font-size: clamp(10px, 3vw, 36px);
   align-items: center;
   justify-content: space-between;
   gap: 10px;
@@ -50,6 +91,18 @@ body {
 .contact-phone {
   transform: rotate(-30deg);
   transform-origin: center;
-  width: 1.5em;
-  height: 1.5em;
+  width: 1.2em;
+  height: 1.2em;
+}
+
+
+@media (max-aspect-ratio: 1/1) {
+  .hero-name {
+    left: 50%;
+    transform: translate(-50%, 0%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
 }
