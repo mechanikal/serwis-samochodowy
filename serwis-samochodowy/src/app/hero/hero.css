@@ -1,0 +1,153 @@
+body {
+  font-family: 'Khand', sans-serif;
+}
+
+.login-hero {
+  height: 100vh;
+  width: 100%;
+  background-color: #FEFEFE;
+}
+
+.login-hero_ex {
+  height: 100vh;
+  width: 100vw;
+  background-color: #FEFEFE;
+  overflow: hidden;
+
+  background-image: url('/tread_login.svg');
+  background-position: right bottom;
+  background-size: auto 100%;
+  background-repeat: no-repeat;
+}
+
+.hero-logo {
+  position: absolute;
+  bottom: 30%;
+  left: 50%;
+  transform: translate(-50%,0%);
+  height: 50vmin;
+  width: auto;
+  max-width: 40%;
+  z-index: 4;
+  pointer-events: none;
+  fill: #000000;
+}
+
+.hero-tread {
+  position: absolute;
+  bottom: 0%;
+  right: 0%;
+  height: auto;
+  max-width: 60vw;
+  max-height: 120%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.hero-car {
+  position: absolute;
+  bottom: 0%;
+  left: 0%;
+  height: auto;
+  max-width: 40vw;
+  max-height: 40%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-name {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  font-family: "Gentium Book Plus", serif;
+  font-weight: 400;
+  font-size: 5.5vmax;
+  font-style: normal;
+  color: #000000;
+  z-index: 5;
+  pointer-events: none;
+
+  gap: vmin;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  left: 4.5vmin;
+}
+
+.hero-button {
+  position: absolute;
+  bottom: 6%;
+  left: 50%;
+  font-size: 6.5vmin;
+  transform: translate(-50%, -50%);
+  width: 5em;
+  height: 1.5em;
+  background-color: #FEFEFE;
+  border: 0.6vmin solid #000000;
+  border-radius: 75px;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.hero-button:hover {
+  color: #363636;
+  border: 0.6vmin solid #363636;
+}
+
+.login-header {
+  display: flex;
+  font-size: 5vmin;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 2vw;
+}
+
+.contact {
+  display: flex;
+  align-items: center;
+  text-align: right;
+  z-index: 5;
+}
+
+.contact-phone {
+  transform: rotate(-30deg);
+  transform-origin: center;
+  width: 1.2em;
+  height: 1.2em;
+}
+.hero-divider {
+  position: absolute;
+  bottom: 0%;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  width: 100%;
+  height: auto;
+  z-index: 4;
+}
+
+@media (min-aspect-ratio: 1.6/1) {
+  .hero-name {
+    font-size: 10vmin;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    left: 4.5vmin;
+    gap: 1vmin;
+  }
+}
+
+@media (max-aspect-ratio: 5/7.5) {
+  .hero-button {
+  bottom: 10%;
+  }
+  .hero-name {
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 10vmin;
+  }
+}
