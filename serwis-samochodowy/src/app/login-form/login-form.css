@@ -1,0 +1,75 @@
+:host {
+  position: relative;
+  display: block;
+}
+
+.login-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 0.7em 0;
+  background-color: #D9D9D9;
+  box-shadow: -0.3em 0.4em 0.2em rgba(0,0,0,0.25);
+  color: #000000;
+  border-radius: 1em;  
+}
+
+.user-symbol {
+  width: 20%;
+  height: auto;
+}
+
+.fields-title {
+  font-size: 0.6em;
+  padding-top: 0.5em;
+}
+
+.user-symbol {
+  width: 25%;
+  margin: 0.5em;
+}
+
+.submit-button {
+  background-color: #000000;
+  color: #FFFFFF;
+  height: 1.5em;
+  width: 4.5em;
+  border-radius: 1em;
+  font-size: 0.8em;
+  margin-top: 1em;
+}
+
+.input-field {
+  background-color: #FFFFFF;
+  width: 90%;
+  font-size: 0.6em;
+  padding: 0.4em;
+}
+.login-form {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.selected-mode {
+  background-color: #000000;
+  color: #D9D9D9;
+  padding: 0.2em 0.4em 0.1em 0.4em;
+}
+
+.secondary-mode {
+  background-color: #EDEDED;
+  color: #363636;
+  padding: 0.2em 0.4em 0.1em 0.4em;
+}
+
+.input-field:focus {
+  outline-color: #363636;
+}
+
+.mode-selector {
+  margin-bottom: 0.5em; 
+}
