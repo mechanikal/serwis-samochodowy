@@ -10,6 +10,8 @@ import { Component } from '@angular/core';
 
 export class Hero {
   scrollToLogin() {
-  document.getElementById('login')?.scrollIntoView({behavior: 'smooth'});
-  }
+  document.getElementById('login')?.scrollIntoView({
+    behavior: 'smooth'
+  });
+}
 }
