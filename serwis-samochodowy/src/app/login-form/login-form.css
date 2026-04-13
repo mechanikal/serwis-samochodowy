@@ -16,18 +16,14 @@
 }
 
 .user-symbol {
-  width: 20%;
+  width: 2.5em;
   height: auto;
+  margin: 0.5em;
 }
 
 .fields-title {
-  font-size: 0.6em;
+  font-size: min(0.6em, 3vh);
   padding-top: 0.5em;
-}
-
-.user-symbol {
-  width: 25%;
-  margin: 0.5em;
 }
 
 .submit-button {
@@ -43,8 +39,9 @@
 .input-field {
   background-color: #FFFFFF;
   width: 90%;
-  font-size: 0.6em;
-  padding: 0.4em;
+  font-size: min(0.6em, 3vh);
+  padding: 0.3em;
+  text-align: center;
 }
 .login-form {
   width: 100%;
@@ -72,4 +69,16 @@
 
 .mode-selector {
   margin-bottom: 0.5em; 
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.fields {
+  width: 95%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }

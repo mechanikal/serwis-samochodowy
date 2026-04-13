@@ -41,5 +41,5 @@ export class LoginForm {
 
   setMode(mode: 'login' | 'register') {
   this.mode = mode;
-}
+  }
 }
