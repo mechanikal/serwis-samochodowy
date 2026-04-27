@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'login-form',
@@ -8,7 +9,9 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './login-form.html',
   styleUrl: './login-form.css'
 })
+
 export class LoginForm {
+  constructor(private http: HttpClient) {}
   //login
   loginValue: string = '';
   passwordValue: string = '';
@@ -26,10 +29,27 @@ export class LoginForm {
     //todo: login logic
     return
   }
-  registerSubmit(){ 
-    //todo: register logic
-    return
-  }
+
+ registerSubmit() {
+  const user = {
+    username: this.nameValue + this.surnameValue,
+    email: this.emailValue,
+    password: this.passwordValue,
+    first_name: this.nameValue,
+    last_name: this.surnameValue,
+    phone: this.phoneValue
+  };
+
+  this.http.post('http://localhost:3000/api/register', user)
+    .subscribe({
+      next: (res) => {
+        console.log('Rejestracja OK:', res);
+      },
+      error: (err) => {
+        console.error('Błąd rejestracji:', err);
+      }
+    });
+}
   onSubmit(){
     if (this.mode == 'login'){
       this.loginSubmit()
