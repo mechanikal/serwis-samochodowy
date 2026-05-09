@@ -1,0 +1,22 @@
+
+<div class="wrapper">
+    <div class="mechanic-panel">
+    <div class="mechanic-panel__header">
+        
+        @for (option of options; track option){
+            <button
+                type="button"
+                class="mechanic-panel__tab"
+                [class.active]="selectedMode === option"
+                (click)="selectMode(option)">
+                {{ option }}
+            </button>
+        }
+    </div>
+    <div class="mechanic-panel__content-wrapper">
+    <div class="mechanic-panel__content">
+        <div class="mechanic-panel__placeholder"></div>
+    </div>
+    </div>
+</div>
+
