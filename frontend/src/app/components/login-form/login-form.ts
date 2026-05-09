@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'login-form',
@@ -11,7 +12,7 @@ import { HttpClient } from '@angular/common/http';
 })
 
 export class LoginForm {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
   //login
   loginValue: string = '';
   passwordValue: string = '';
@@ -51,6 +52,9 @@ export class LoginForm {
     });
 }
   onSubmit(){
+    //temporary logic to skip login and registration
+    this.goToMechanic();
+    return
     if (this.mode == 'login'){
       this.loginSubmit()
     }
@@ -61,5 +65,8 @@ export class LoginForm {
 
   setMode(mode: 'login' | 'register') {
   this.mode = mode;
+  }
+  goToMechanic(){
+    this.router.navigate(['/mechanic-site']);
   }
 }
