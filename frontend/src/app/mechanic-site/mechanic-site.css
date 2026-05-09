@@ -16,7 +16,8 @@
   flex-direction: column;
   position: absolute;
   width: 100%;
-  padding-top: 10%;
+  padding-top: 5%;
   padding-bottom: 35%;
   overflow: hidden;
+  min-height: 100vh;
 }
