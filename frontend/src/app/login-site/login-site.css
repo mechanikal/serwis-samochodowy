@@ -39,6 +39,7 @@ body {
 .login-section {
   display: flex;
   position: absolute;
+  padding-top: 10%;
   width: 100%;
   padding-bottom: 35%;
   overflow: hidden;
