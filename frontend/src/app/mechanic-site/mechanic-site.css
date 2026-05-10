@@ -9,15 +9,15 @@
 }
 .header {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 .panel-section {
   display: flex;
   flex-direction: column;
   position: absolute;
   width: 100%;
-  padding-top: 5%;
-  padding-bottom: 35%;
+  padding-bottom: max(35vh, 35%);
+  padding-top: 15vh;
   overflow: hidden;
   min-height: 100vh;
 }
