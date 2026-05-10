@@ -1,21 +1,41 @@
 <div class = 'site-header'>
 <div class = 'user-section'>
     <div class = 'left-section'>
+    @if (isNotificationsOpen){
+        <div class="notifications-dropdown">
+            <div class="notifications-container">
+                <div class="notification-header">
+                    <div class="notification-header-wrapper">
+                        powiadomienia
+                        <button (click)="openNotifications()" aria-label="Zamknij powiadomienia">
+                            <img src="/close_button.svg" alt="close" class="close-button">
+                        </button>
+                    </div>
+                </div>
+                <div class="notifications-list">
+                    <notifications class="notifications"></notifications>
+                </div>
+            </div>
+        </div>
+    }
     <img src="/user-icon.svg" alt="user" class="user-icon">
     <p>WŁAŚCICIEL FIRMY</p>
-    <img src="/bell-icon.svg" alt="bell" class="bell-icon">
+    <button (click)="openNotifications()" aria-label="Powiadomienia">
+        <img src="/bell-icon.svg" alt="bell" class="bell-icon">
+    </button>
     </div>
     <div class = 'right-section'>
-    <p>wyloguj</p>
+    <button (click)="logout()">
+        wyloguj
+    </button>
     </div>
 </div>
+<div class="divider-gray"></div>
 <div class = 'logo-section'>
     <img src="/car.png" alt="car" class="car">
     <div class="name">
         <p>SERWIS SAMOCHODOWY <b>PLUS</b></p>
-        <!-- <img src="/logo_login.svg" alt="logo" class="logo"> -->
     </div>
-    <!-- <img src = "/tread_login_cut.svg" alt="tread" class="tread"> -->
 </div>
 <div class="divider"></div>
 </div>
