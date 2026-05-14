@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { Notifications } from '../notifications/notifications';
 
 @Component({
@@ -10,12 +11,13 @@ import { Notifications } from '../notifications/notifications';
 export class SiteHeader {
   isNotificationsOpen = false;
 
+  constructor(private router: Router) {}
+
   openNotifications() {
     this.isNotificationsOpen = !this.isNotificationsOpen;
   }
-  logout() {
-    // todo: logout user
-    console.log('Wylogowywanie użytkownika...');
-  }
 
+  logout(): void {
+    this.router.navigate(['login-site']);
+  }
 }
