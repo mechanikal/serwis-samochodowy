@@ -1,1 +1,17 @@
-<p>notifications works!</p>
+<div class="notifications-list">
+  @for (notification of notifications; track notification.id) {
+  <div class="notification-card">
+    <div class="notification-header">
+      <span class="notification-title">{{ notification.title }}</span>
+      <span class="notification-time">{{ notification.time }}</span>
+    </div>
+    <div class="notification-body">
+      <p>{{ notification.body }}</p>
+    </div>
+    <div class="notification-actions">
+      <button class="btn-primary" (click)="viewNotification(notification)">Otwórz</button>
+      <button class="btn-secondary" (click)="deleteNotification(notification.id)">Odrzuć</button>
+    </div>
+  </div>
+  }
+</div>
