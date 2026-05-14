@@ -8,11 +8,13 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './login-form.html',
-  styleUrl: './login-form.css'
+  styleUrl: './login-form.css',
 })
-
 export class LoginForm {
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+  ) {}
   //login
   loginValue: string = '';
   passwordValue: string = '';
@@ -23,26 +25,28 @@ export class LoginForm {
   phoneValue: string = '';
   emailValue: string = '';
 
-
   mode: string = 'login';
+
+  scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   loginSubmit() {
     //todo: login logic
-    return
+    return;
   }
 
- registerSubmit() {
-  const user = {
-    username: this.nameValue + this.surnameValue,
-    email: this.emailValue,
-    password: this.passwordValue,
-    first_name: this.nameValue,
-    last_name: this.surnameValue,
-    phone: this.phoneValue
-  };
+  registerSubmit() {
+    const user = {
+      username: this.nameValue + this.surnameValue,
+      email: this.emailValue,
+      password: this.passwordValue,
+      first_name: this.nameValue,
+      last_name: this.surnameValue,
+      phone: this.phoneValue,
+    };
 
-  this.http.post('http://localhost:3000/api/register', user)
-    .subscribe({
+    this.http.post('http://localhost:3000/api/register', user).subscribe({
       next: (res) => {
         console.log('Rejestracja OK:', res);
       },
@@ -50,23 +54,22 @@ export class LoginForm {
         console.error('Błąd rejestracji:', err);
       }
     });
-}
-  onSubmit(){
+  }
+  onSubmit() {
     //temporary logic to skip login and registration
     this.goToMechanic();
-    return
-    if (this.mode == 'login'){
-      this.loginSubmit()
-    }
-    else{
-      this.registerSubmit()
+    return;
+    if (this.mode == 'login') {
+      this.loginSubmit();
+    } else {
+      this.registerSubmit();
     }
   }
 
   setMode(mode: 'login' | 'register') {
-  this.mode = mode;
+    this.mode = mode;
   }
-  goToMechanic(){
+  goToMechanic() {
     this.router.navigate(['/mechanic-site']);
   }
 }

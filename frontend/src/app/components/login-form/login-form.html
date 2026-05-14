@@ -1,111 +1,64 @@
 <div class="login-section">
+  <img src="/user-symbol.svg" alt="symbol" class="user-symbol" />
 
-    <img src="/user-symbol.svg" alt="symbol" class="user-symbol">
+  @if (mode === 'register'){
+  <div class="mode-selector">
+    <button class="secondary-mode" (click)="setMode('login')">LOGOWANIE</button>
+    <button class="selected-mode" (click)="setMode('register')">REJESTRACJA</button>
+  </div>
+  } @else {
+  <div class="mode-selector">
+    <button class="selected-mode" (click)="setMode('login')">LOGOWANIE</button>
+    <button class="secondary-mode" (click)="setMode('register')">REJESTRACJA</button>
+  </div>
+  }
 
-
-    @if (mode === 'register'){
-        <div class="mode-selector">
-        <button class="secondary-mode" (click)="setMode('login')">
-            LOGOWANIE
-        </button>
-        <button class="selected-mode" (click)="setMode('register')">
-            REJESTRACJA
-        </button>
-        </div>
+  <form (ngSubmit)="onSubmit()" class="login-form">
+    <div class="field">
+      <div class="fields-title">login</div>
+      <input class="input-field" type="text" [(ngModel)]="loginValue" name="loginValue" />
+    </div>
+    @if (mode === 'login'){
+    <div class="field">
+      <div class="fields-title">hasło</div>
+      <input class="input-field" type="text" [(ngModel)]="passwordValue" name="passwordValue" />
+    </div>
+    } @if (mode === 'register'){
+    <div class="fields">
+      <div class="field">
+        <div class="fields-title">hasło</div>
+        <input class="input-field" type="text" [(ngModel)]="passwordValue" name="passwordValue" />
+      </div>
+      <div class="field">
+        <div class="fields-title">powtórz hasło</div>
+        <input
+          class="input-field"
+          type="text"
+          [(ngModel)]="repeatPasswordValue"
+          name="repeatPasswordValue"
+        />
+      </div>
+      <div class="field">
+        <div class="fields-title">imię</div>
+        <input class="input-field" type="text" [(ngModel)]="nameValue" name="nameValue" />
+      </div>
+      <div class="field">
+        <div class="fields-title">nazwisko</div>
+        <input class="input-field" type="text" [(ngModel)]="surnameValue" name="surnameValue" />
+      </div>
+      <div class="field">
+        <div class="fields-title">nr telefonu</div>
+        <input class="input-field" type="text" [(ngModel)]="phoneValue" name="phoneValue" />
+      </div>
+      <div class="field">
+        <div class="fields-title">adres e-mail</div>
+        <input class="input-field" type="text" [(ngModel)]="emailValue" name="emailValue" />
+      </div>
+    </div>
+    } @if (mode ==='login'){
+    <button type="submit" class="submit-button" (click)="scrollToTop()">zaloguj</button>
     } @else {
-        <div class="mode-selector">
-        <button class="selected-mode" (click)="setMode('login')">
-            LOGOWANIE
-        </button>
-        <button class="secondary-mode" (click)="setMode('register')">
-            REJESTRACJA
-        </button>
-        </div>
+    <button type="submit" class="submit-button">rejestruj</button>
     }
-
-    <form (ngSubmit)="onSubmit()" class="login-form">
-            <div class = "field">
-                <div class="fields-title">login</div>
-                <input 
-                    class = "input-field"
-                    type="text" 
-                    [(ngModel)]="loginValue" 
-                    name="loginValue"
-                >
-            </div>
-            @if (mode === 'login'){
-                <div class = "field">
-                    <div class="fields-title">hasło</div>
-                    <input 
-                        class = "input-field"
-                        type="text" 
-                        [(ngModel)]="passwordValue" 
-                        name="passwordValue"
-                    >
-                </div>
-            }
-            @if (mode === 'register'){
-            <div class = "fields">
-                <div class = "field">
-                    <div class="fields-title">hasło</div>
-                    <input 
-                        class = "input-field"
-                        type="text" 
-                        [(ngModel)]="passwordValue" 
-                        name="passwordValue"
-                    >
-                </div>
-                <div class = "field">
-                    <div class="fields-title">powtórz hasło</div>
-                    <input 
-                        class = "input-field"
-                        type="text" 
-                        [(ngModel)]="repeatPasswordValue" 
-                        name="repeatPasswordValue"
-                    >
-                </div>
-                <div class = "field">
-                <div class="fields-title">imię</div>
-                <input 
-                    class = "input-field"
-                    type="text" 
-                    [(ngModel)]="nameValue" 
-                    name="nameValue"
-                >
-                </div>
-                <div class = "field">
-                <div class="fields-title">nazwisko</div>
-                <input 
-                    class = "input-field"
-                    type="text" 
-                    [(ngModel)]="surnameValue" 
-                    name="surnameValue"
-                >
-                </div>
-                <div class = "field">
-                <div class="fields-title">nr telefonu</div>
-                <input 
-                    class = "input-field"
-                    type="text" 
-                    [(ngModel)]="phoneValue" 
-                    name="phoneValue"
-                >
-                </div>
-                <div class = "field">
-                <div class="fields-title">adres e-mail</div>
-                <input 
-                    class = "input-field"
-                    type="text" 
-                    [(ngModel)]="emailValue" 
-                    name="emailValue"
-                >
-                </div>
-            </div>
-        }
-        @if (mode ==='login'){
-            <button type="submit" class="submit-button">zaloguj</button>
-        } @else {
-            <button type="submit" class="submit-button">rejestruj</button>
-        }
-    </form>
+  </form>
 </div>
