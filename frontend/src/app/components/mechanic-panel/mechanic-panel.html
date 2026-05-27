@@ -16,14 +16,12 @@
     </div>
     <div class="mechanic-panel__content-wrapper">
     <div class="mechanic-panel__content">
-        @if (selectedMode === 'kalendarz') {
+        @if (selectedMode === 'kalendarz wizyt') {
             <app-calendar></app-calendar>
         } @else if (selectedMode === 'klienci') {
             <app-clients></app-clients>
         } @else if (selectedMode === 'naprawy') {
             <app-repairs></app-repairs>
-        } @else if (selectedMode === 'wizyty') {
-            <app-visits></app-visits>
         } @else if (selectedMode === 'raport statystyczny') {
             <app-statistical-report></app-statistical-report>
         } @else if (selectedMode === 'moje wizyty') {
