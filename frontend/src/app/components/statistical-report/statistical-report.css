@@ -1,0 +1,67 @@
+.report {
+  width: 100%;
+  font-family: 'Khand', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+}
+
+/* ── Section ── */
+.report__section {
+  display: flex;
+  flex-direction: column;
+}
+
+.report__section-title {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: #222;
+  margin: 0 0 0.2em 0;
+  padding: 0;
+}
+
+/* ── Rows container ── */
+.report__rows {
+  border: 1.5px solid #aaa;
+  border-radius: 0.2em;
+  background-color: #ececec;
+  overflow: hidden;
+}
+
+/* ── Data row ── */
+.report__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3em 0.5em;
+  border-bottom: 1.5px solid #999;
+  font-size: 0.7em;
+  color: #222;
+  font-weight: 500;
+}
+
+.report__row:last-child {
+  border-bottom: none;
+}
+
+.report__row-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.report__row-count {
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 1em;
+}
+
+/* ── Responsive: portrait ── */
+@media (orientation: portrait) {
+  .report__section-title {
+    font-size: 0.8em;
+  }
+  .report__row {
+    font-size: 0.65em;
+  }
+}
