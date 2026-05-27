@@ -1,1 +1,15 @@
-<p>statistical-report works!</p>
+<div class="report">
+  @for (section of sections; track section.title) {
+    <div class="report__section">
+      <h3 class="report__section-title">{{ section.title }}</h3>
+      <div class="report__rows">
+        @for (item of section.items; track $index) {
+          <div class="report__row">
+            <span class="report__row-name">{{ item.name }}</span>
+            <span class="report__row-count">{{ item.count }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
