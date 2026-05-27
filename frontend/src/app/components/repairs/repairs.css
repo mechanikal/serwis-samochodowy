@@ -1,0 +1,127 @@
+.repairs {
+  width: 100%;
+  font-family: 'Khand', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+/* ── Search bar ── */
+.repairs__search {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.repairs__search-input {
+  width: 100%;
+  padding: 0.3em 2em 0.3em 0.5em;
+  font-family: 'Khand', sans-serif;
+  font-size: 0.75em;
+  border: 1.5px solid #999;
+  border-radius: 0.2em;
+  background-color: #f0f0f0;
+  color: #333;
+  outline: none;
+}
+.repairs__search-input::placeholder {
+  color: #888;
+  font-style: italic;
+}
+.repairs__search-input:focus {
+  border-color: #666;
+}
+
+.repairs__search-icon {
+  position: absolute;
+  right: 0.4em;
+  font-size: 0.75em;
+  color: #666;
+  pointer-events: none;
+}
+
+/* ── Section (accordion) ── */
+.repairs__section {
+  border: 1.5px solid #aaa;
+  border-radius: 0.2em;
+  background-color: #ececec;
+  overflow: hidden;
+}
+
+.repairs__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25em 0.4em;
+  cursor: pointer;
+  user-select: none;
+}
+.repairs__section-header:hover {
+  background-color: #e0e0e0;
+}
+
+.repairs__section-name {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: #222;
+}
+
+.repairs__toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.3em;
+  height: 1.3em;
+  background-color: #444;
+  border: none;
+  border-radius: 0.15em;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.15s;
+}
+.repairs__toggle-btn:hover {
+  background-color: #333;
+}
+
+.repairs__toggle-arrow {
+  color: #fff;
+  font-size: 0.55em;
+  line-height: 1;
+}
+
+/* ── Section content ── */
+.repairs__section-content {
+  padding: 0 0.5em 0.3em;
+}
+
+/* ── Data rows ── */
+.repairs__row {
+  display: flex;
+  gap: 1em;
+  padding: 0.3em 0.3em;
+  border-bottom: 1.5px solid #999;
+  font-size: 0.7em;
+  color: #222;
+  font-weight: 500;
+}
+.repairs__row:last-child {
+  border-bottom: 1.5px solid #999;
+}
+
+.repairs__row span {
+  white-space: nowrap;
+}
+
+/* ── Responsive: portrait ── */
+@media (orientation: portrait) {
+  .repairs__search-input {
+    font-size: 0.7em;
+  }
+  .repairs__section-name {
+    font-size: 0.85em;
+  }
+  .repairs__row {
+    font-size: 0.65em;
+    gap: 0.6em;
+  }
+}

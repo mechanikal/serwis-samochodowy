@@ -1,1 +1,37 @@
-<p>repairs works!</p>
+<div class="repairs">
+  <!-- Search bar -->
+  <div class="repairs__search">
+    <input
+      type="text"
+      class="repairs__search-input"
+      placeholder="filtr (wyszukiwanie)"
+      [(ngModel)]="filterText"
+    />
+    <span class="repairs__search-icon">🔍</span>
+  </div>
+
+  <!-- Accordion sections -->
+  @for (section of sections; track section.name) {
+    <div class="repairs__section">
+      <div class="repairs__section-header" (click)="toggleSection(section)">
+        <span class="repairs__section-name">{{ section.name }}</span>
+        <button type="button" class="repairs__toggle-btn">
+          <span class="repairs__toggle-arrow">{{ section.expanded ? '▲' : '▼' }}</span>
+        </button>
+      </div>
+
+      @if (section.expanded) {
+        <div class="repairs__section-content">
+          @for (item of filteredItems(section.items); track $index) {
+            <div class="repairs__row">
+              <span>{{ item.date }}</span>
+              <span>{{ item.time }}</span>
+              <span>{{ item.service }}</span>
+              <span>{{ item.client }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
