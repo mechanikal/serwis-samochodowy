@@ -1,0 +1,160 @@
+.clients {
+  width: 100%;
+  font-family: 'Khand', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+}
+
+/* ── Search bar ── */
+.clients__search {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-bottom: 0.2em;
+}
+
+.clients__search-input {
+  width: 100%;
+  padding: 0.3em 2em 0.3em 0.5em;
+  font-family: 'Khand', sans-serif;
+  font-size: 0.75em;
+  border: 1.5px solid #999;
+  border-radius: 0.2em;
+  background-color: #f0f0f0;
+  color: #333;
+  outline: none;
+}
+.clients__search-input::placeholder {
+  color: #888;
+  font-style: italic;
+}
+.clients__search-input:focus {
+  border-color: #666;
+}
+
+.clients__search-icon {
+  position: absolute;
+  right: 0.4em;
+  font-size: 0.75em;
+  color: #666;
+  pointer-events: none;
+}
+
+/* ── Client card ── */
+.clients__card {
+  border: 1.5px solid #aaa;
+  border-radius: 0.2em;
+  background-color: #ececec;
+  overflow: hidden;
+}
+
+.clients__card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.2em 0.4em;
+  cursor: pointer;
+  user-select: none;
+}
+.clients__card-header:hover {
+  background-color: #e0e0e0;
+}
+
+.clients__card-name {
+  font-size: 0.75em;
+  font-weight: 500;
+  color: #222;
+  font-style: italic;
+}
+
+.clients__toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.3em;
+  height: 1.3em;
+  background-color: #444;
+  border: none;
+  border-radius: 0.15em;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.15s;
+}
+.clients__toggle-btn:hover {
+  background-color: #333;
+}
+
+.clients__toggle-arrow {
+  color: #fff;
+  font-size: 0.55em;
+  line-height: 1;
+}
+
+/* ── Expanded content ── */
+.clients__card-content {
+  padding: 0 0.5em 0.3em;
+}
+
+/* ── Sub-headers (pojazdy, wizyty) ── */
+.clients__sub-header {
+  text-align: center;
+  font-size: 0.6em;
+  font-weight: 400;
+  font-style: italic;
+  color: #555;
+  padding: 0.2em 0 0.1em;
+}
+
+/* ── Vehicle row ── */
+.clients__vehicle-row {
+  display: flex;
+  gap: 1em;
+  padding: 0.25em 0.3em;
+  border-bottom: 1.5px solid #999;
+  font-size: 0.7em;
+  font-weight: 500;
+  color: #222;
+}
+
+/* ── Visit row ── */
+.clients__visit-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25em 0.3em;
+  border-bottom: 1.5px solid #999;
+  font-size: 0.7em;
+  font-weight: 500;
+  color: #222;
+}
+
+.clients__visit-service {
+  flex: 2;
+}
+
+.clients__visit-status {
+  flex: 1;
+  text-align: center;
+}
+
+.clients__visit-date {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+/* ── Responsive: portrait ── */
+@media (orientation: portrait) {
+  .clients__search-input {
+    font-size: 0.7em;
+  }
+  .clients__card-name {
+    font-size: 0.7em;
+  }
+  .clients__vehicle-row,
+  .clients__visit-row {
+    font-size: 0.65em;
+  }
+  .clients__sub-header {
+    font-size: 0.55em;
+  }
+}
