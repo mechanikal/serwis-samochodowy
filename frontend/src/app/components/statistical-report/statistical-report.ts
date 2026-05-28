@@ -33,11 +33,11 @@ export class StatisticalReport implements OnInit {
         this.sections = [
           {
             title: 'statystyki występowania usterek',
-            items: data.usterki
+            items: data.faults
           },
           {
             title: 'statystyki wykonanych usług',
-            items: data.uslugi
+            items: data.services
           }
         ];
       },

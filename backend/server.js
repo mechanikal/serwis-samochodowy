@@ -6,11 +6,11 @@ require('dotenv').config();
 const db = require('./db');
 const connectMongo = require('./mongo');
 
-const Klient = require('./models/klient');
-const Pojazd = require('./models/pojazd');
-const Wizyta = require('./models/wizyta');
-const Usterka = require('./models/usterka');
-const Usluga = require('./models/usluga');
+const Klient = require('./models/client');
+const Pojazd = require('./models/vehicle');
+const Wizyta = require('./models/visit');
+const Usterka = require('./models/fault');
+const Usluga = require('./models/service');
 
 // Połączenie z MongoDB
 connectMongo();
@@ -80,13 +80,13 @@ app.get('/api/clients', async (req, res) => {
         
         return {
           _id: client._id,
-          firstName: client.imie,
-          lastName: client.nazwisko,
-          vehicles: vehicles.map(v => ({ brand: v.marka, registration: v.rejestracja })),
+          firstName: client.name,
+          lastName: client.lastName,
+          vehicles: vehicles.map(v => ({ brand: v.brand, registration: v.registration })),
           visits: visits.map(v => ({ 
             serviceName: 'Naprawa', // Brak szczegółów o usłudze w samej encji Wizyta, damy default lub trzeba by łączyć z Usluga
             status: v.status, 
-            date: new Date(v.data).toLocaleDateString()
+            date: new Date(v.date).toLocaleDateString()
           }))
         };
       })
@@ -105,10 +105,10 @@ app.get('/api/visits', async (req, res) => {
     const visits = await Wizyta.find().populate('klientId');
     const visitsData = visits.map(v => ({
       _id: v._id,
-      date: new Date(v.data).toISOString().split('T')[0], // format yyyy-mm-dd
-      time: v.godzina,
+      date: new Date(v.date).toISOString().split('T')[0], // format yyyy-mm-dd
+      time: v.time,
       serviceName: 'Naprawa',
-      clientName: v.klientId ? `${v.klientId.imie} ${v.klientId.nazwisko}` : 'Nieznany',
+      clientName: v.clientId ? `${v.clientId.name} ${v.clientId.lastName}` : 'Nieznany',
       status: v.status
     }));
     res.json(visitsData);
@@ -122,13 +122,11 @@ app.get('/api/visits', async (req, res) => {
 app.get('/api/stats', async (req, res) => {
   try {
     const usterki = await Usterka.find();
-    // Tutaj mockujemy "ilość", ewentualnie agregujemy jeśli w bazie są usterki powtarzające się
-    
-    // Albo pobierz po prostu 3 najczęstsze usterki (mock)
-    const usterkiStats = usterki.map(u => ({ name: u.nazwa || 'Usterka', count: Math.floor(Math.random() * 20).toString() }));
+
+    const usterkiStats = usterki.map(u => ({ name: u.name || 'Usterka', count: Math.floor(Math.random() * 20).toString() }));
     
     const uslugi = await Usluga.find();
-    const uslugiStats = uslugi.map(u => ({ name: u.nazwa || 'Usługa', count: Math.floor(Math.random() * 30).toString() }));
+    const uslugiStats = uslugi.map(u => ({ name: u.name || 'Usługa', count: Math.floor(Math.random() * 30).toString() }));
 
     if(usterkiStats.length === 0) {
       usterkiStats.push({ name: 'Brak danych usterek', count: '0' });
@@ -138,8 +136,8 @@ app.get('/api/stats', async (req, res) => {
     }
 
     res.json({
-      usterki: usterkiStats,
-      uslugi: uslugiStats
+      faults: usterkiStats,
+      services: uslugiStats
     });
   } catch (err) {
     console.error(err);
