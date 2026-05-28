@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 interface StatItem {
   name: string;
@@ -13,27 +14,34 @@ interface StatSection {
 
 @Component({
   selector: 'app-statistical-report',
-  imports: [CommonModule],
+  imports: [CommonModule, HttpClientModule],
   templateUrl: './statistical-report.html',
   styleUrl: './statistical-report.css',
 })
-export class StatisticalReport {
-  sections: StatSection[] = [
-    {
-      title: 'statystyki występowania usterek',
-      items: [
-        { name: 'NAZWA USTERKI', count: 'ILOŚĆ' },
-        { name: 'NAZWA USTERKI', count: 'ILOŚĆ' },
-        { name: 'NAZWA USTERKI', count: 'ILOŚĆ' },
-      ],
-    },
-    {
-      title: 'statystyki wykonanych usług',
-      items: [
-        { name: 'NAZWA USŁUGI', count: 'ILOŚĆ' },
-        { name: 'NAZWA USŁUGI', count: 'ILOŚĆ' },
-        { name: 'NAZWA USŁUGI', count: 'ILOŚĆ' },
-      ],
-    },
-  ];
+export class StatisticalReport implements OnInit {
+  sections: StatSection[] = [];
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit() {
+    this.fetchStats();
+  }
+
+  fetchStats() {
+    this.http.get<any>('http://localhost:3000/api/stats').subscribe({
+      next: (data) => {
+        this.sections = [
+          {
+            title: 'statystyki występowania usterek',
+            items: data.usterki
+          },
+          {
+            title: 'statystyki wykonanych usług',
+            items: data.uslugi
+          }
+        ];
+      },
+      error: (err) => console.error('Błąd pobierania statystyk', err)
+    });
+  }
 }

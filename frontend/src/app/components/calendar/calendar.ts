@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 interface Appointment {
   time: string;
   serviceName: string;
   clientName: string;
+  dateStr?: string; // dodane do łatwiejszego filtrowania
 }
 
 interface DaySchedule {
@@ -15,17 +17,39 @@ interface DaySchedule {
 
 @Component({
   selector: 'app-calendar',
-  imports: [CommonModule],
+  imports: [CommonModule, HttpClientModule],
   templateUrl: './calendar.html',
   styleUrl: './calendar.css',
 })
-export class Calendar {
+export class Calendar implements OnInit {
   currentWeekStart: Date = this.getMonday(new Date());
   polishMonths: string[] = [
     'styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec',
     'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień'
   ];
   polishDays: string[] = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb'];
+  
+  allAppointments: Appointment[] = [];
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit() {
+    this.fetchAppointments();
+  }
+
+  fetchAppointments() {
+    this.http.get<any[]>('http://localhost:3000/api/visits').subscribe({
+      next: (data) => {
+        this.allAppointments = data.map(v => ({
+          time: v.time,
+          serviceName: v.serviceName,
+          clientName: v.clientName,
+          dateStr: v.date
+        }));
+      },
+      error: (err) => console.error('Błąd pobierania wizyt w kalendarzu', err)
+    });
+  }
 
   get monthYear(): string {
     const middleOfWeek = new Date(this.currentWeekStart);
@@ -40,10 +64,12 @@ export class Calendar {
     for (let i = 0; i < 6; i++) {
       const date = new Date(this.currentWeekStart);
       date.setDate(date.getDate() + i);
+      const dateStr = date.toISOString().split('T')[0];
+      
       days.push({
         dayAbbr: this.polishDays[i],
         dayNumber: date.getDate(),
-        appointments: this.getMockAppointments(),
+        appointments: this.allAppointments.filter(a => a.dateStr === dateStr),
       });
     }
     return days;
@@ -73,15 +99,5 @@ export class Calendar {
     d.setDate(diff);
     d.setHours(0, 0, 0, 0);
     return d;
-  }
-
-  private getMockAppointments(): Appointment[] {
-    return [
-      { time: 'GODZINA', serviceName: 'NAZWA USŁUGI', clientName: 'DANE KLIENTA' },
-      { time: 'GODZINA', serviceName: 'NAZWA USŁUGI', clientName: 'DANE KLIENTA' },
-      { time: 'GODZINA', serviceName: 'NAZWA USŁUGI', clientName: 'DANE KLIENTA' },
-      { time: 'GODZINA', serviceName: 'NAZWA USŁUGI', clientName: 'DANE KLIENTA' },
-      { time: 'GODZINA', serviceName: 'NAZWA USŁUGI', clientName: 'DANE KLIENTA' },
-    ];
   }
 }

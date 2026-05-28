@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 interface Visit {
   serviceName: string;
@@ -23,70 +24,36 @@ interface Client {
 
 @Component({
   selector: 'app-clients',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './clients.html',
   styleUrl: './clients.css',
 })
-export class Clients {
+export class Clients implements OnInit {
   filterText = '';
+  clients: Client[] = [];
 
-  clients: Client[] = [
-    {
-      firstName: 'Imię',
-      lastName: 'Nazwisko',
-      expanded: true,
-      vehicles: [{ brand: 'MARKA', registration: 'REJESTRACJA' }],
-      visits: [
-        { serviceName: 'NAZWA USŁUGI', status: 'STATUS', date: 'DATA' },
-        { serviceName: 'NAZWA USŁUGI', status: 'STATUS', date: 'DATA' },
-        { serviceName: 'NAZWA USŁUGI', status: 'STATUS', date: 'DATA' },
-      ],
-    },
-    {
-      firstName: 'Imię',
-      lastName: 'Nazwisko',
-      expanded: false,
-      vehicles: [{ brand: 'MARKA', registration: 'REJESTRACJA' }],
-      visits: [
-        { serviceName: 'NAZWA USŁUGI', status: 'STATUS', date: 'DATA' },
-        { serviceName: 'NAZWA USŁUGI', status: 'STATUS', date: 'DATA' },
-        { serviceName: 'NAZWA USŁUGI', status: 'STATUS', date: 'DATA' },
-      ],
-    },
-    {
-      firstName: 'Imię',
-      lastName: 'Nazwisko',
-      expanded: false,
-      vehicles: [{ brand: 'MARKA', registration: 'REJESTRACJA' }],
-      visits: [
-        { serviceName: 'NAZWA USŁUGI', status: 'STATUS', date: 'DATA' },
-        { serviceName: 'NAZWA USŁUGI', status: 'STATUS', date: 'DATA' },
-        { serviceName: 'NAZWA USŁUGI', status: 'STATUS', date: 'DATA' },
-      ],
-    },
-    {
-      firstName: 'Imię',
-      lastName: 'Nazwisko',
-      expanded: false,
-      vehicles: [{ brand: 'MARKA', registration: 'REJESTRACJA' }],
-      visits: [
-        { serviceName: 'NAZWA USŁUGI', status: 'STATUS', date: 'DATA' },
-        { serviceName: 'NAZWA USŁUGI', status: 'STATUS', date: 'DATA' },
-        { serviceName: 'NAZWA USŁUGI', status: 'STATUS', date: 'DATA' },
-      ],
-    },
-    {
-      firstName: 'Imię',
-      lastName: 'Nazwisko',
-      expanded: true,
-      vehicles: [{ brand: 'MARKA', registration: 'REJESTRACJA' }],
-      visits: [
-        { serviceName: 'NAZWA USŁUGI', status: 'STATUS', date: 'DATA' },
-        { serviceName: 'NAZWA USŁUGI', status: 'STATUS', date: 'DATA' },
-        { serviceName: 'NAZWA USŁUGI', status: 'STATUS', date: 'DATA' },
-      ],
-    },
-  ];
+  constructor(private http: HttpClient) {}
+
+  ngOnInit() {
+    this.fetchClients();
+  }
+
+  fetchClients() {
+    this.http.get<any[]>('http://localhost:3000/api/clients').subscribe({
+      next: (data) => {
+        this.clients = data.map(c => ({
+          firstName: c.firstName,
+          lastName: c.lastName,
+          expanded: false,
+          vehicles: c.vehicles,
+          visits: c.visits
+        }));
+      },
+      error: (err) => {
+        console.error('Błąd podczas pobierania klientów:', err);
+      }
+    });
+  }
 
   toggleClient(client: Client): void {
     client.expanded = !client.expanded;
