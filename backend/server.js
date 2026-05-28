@@ -6,11 +6,11 @@ require('dotenv').config();
 const db = require('./db');
 const connectMongo = require('./mongo');
 
-const Klient = require('./models/Klient');
-const Pojazd = require('./models/Pojazd');
-const Wizyta = require('./models/Wizyta');
-const Usterka = require('./models/Usterka');
-const Usluga = require('./models/Usluga');
+const Klient = require('./models/klient');
+const Pojazd = require('./models/pojazd');
+const Wizyta = require('./models/wizyta');
+const Usterka = require('./models/usterka');
+const Usluga = require('./models/usluga');
 
 // Połączenie z MongoDB
 connectMongo();

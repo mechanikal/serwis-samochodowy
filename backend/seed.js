@@ -4,15 +4,15 @@ const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 const connectMongo = require('./mongo');
-const Klient = require('./models/Klient');
-const Mechanik = require('./models/Mechanik');
-const Pojazd = require('./models/Pojazd');
-const Usterka = require('./models/Usterka');
-const Usluga = require('./models/Usluga');
-const Czesc = require('./models/Czesc');
-const Wizyta = require('./models/Wizyta');
-const Diagnoza = require('./models/Diagnoza');
-const Powiadomienie = require('./models/Powiadomienie');
+const Klient = require('./models/klient');
+const Mechanik = require('./models/mechanik');
+const Pojazd = require('./models/pojazd');
+const Usterka = require('./models/usterka');
+const Usluga = require('./models/usluga');
+const Czesc = require('./models/czesc');
+const Wizyta = require('./models/wizyta');
+const Diagnoza = require('./models/diagnoza');
+const Powiadomienie = require('./models/powiadomienie');
 
 async function seed() {
   let mysqlConn;
