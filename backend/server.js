@@ -20,12 +20,26 @@ const PORT = process.env.PORT;
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+    res.send("API works");
+});
+
 app.post("/api/register", async (req, res) => {
     const { username, email, password, first_name, last_name, phone } = req.body;
 
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const nameEmailCheck = `
+            SELECT COUNT(*) FROM users
+                WHERE email = ? OR username = ?
+        `;
 
+        const [result] = await db.query(nameEmailCheck, [email, username]);
+
+        if (result.count > 0) {
+            return res.status(409).json({ message: "Email lub nazwa użytkownika już istnieje" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
         const sql = `
             INSERT INTO users
                 (username, email, password_hash, first_name, last_name, phone, role)
@@ -45,10 +59,6 @@ app.post("/api/register", async (req, res) => {
     } catch (err) {
         res.status(500).send(err);
     }
-});
-
-app.get("/", (req, res) => {
-    res.send("API works");
 });
 
 app.get("/api/clients", async (req, res) => {
