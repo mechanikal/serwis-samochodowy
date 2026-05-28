@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 interface RepairItem {
   date: string;
@@ -17,39 +18,57 @@ interface RepairSection {
 
 @Component({
   selector: 'app-repairs',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './repairs.html',
   styleUrl: './repairs.css',
 })
-export class Repairs {
+export class Repairs implements OnInit {
   filterText = '';
+  sections: RepairSection[] = [];
 
-  sections: RepairSection[] = [
-    {
-      name: 'aktualne',
-      expanded: true,
-      items: [
-        { date: 'DATA', time: 'GODZINA', service: 'USŁUGA', client: 'KLIENT' },
-        { date: 'DATA', time: 'GODZINA', service: 'USŁUGA', client: 'KLIENT' },
-      ],
-    },
-    {
-      name: 'nadchodzące',
-      expanded: true,
-      items: [
-        { date: 'DATA', time: 'GODZINA', service: 'USŁUGA', client: 'KLIENT' },
-        { date: 'DATA', time: 'GODZINA', service: 'USŁUGA', client: 'KLIENT' },
-      ],
-    },
-    {
-      name: 'zakończone',
-      expanded: false,
-      items: [
-        { date: 'DATA', time: 'GODZINA', service: 'USŁUGA', client: 'KLIENT' },
-        { date: 'DATA', time: 'GODZINA', service: 'USŁUGA', client: 'KLIENT' },
-      ],
-    },
-  ];
+  constructor(private http: HttpClient) {}
+
+  ngOnInit() {
+    this.fetchVisits();
+  }
+
+  fetchVisits() {
+    this.http.get<any[]>('http://localhost:3000/api/visits').subscribe({
+      next: (data) => {
+        const aktualne: RepairItem[] = [];
+        const nadchodzace: RepairItem[] = [];
+        const zakoczone: RepairItem[] = [];
+
+        const today = new Date().toISOString().split('T')[0];
+
+        data.forEach(v => {
+          const item: RepairItem = {
+            date: v.date,
+            time: v.time,
+            service: v.serviceName,
+            client: v.clientName
+          };
+
+          if (v.status.toLowerCase() === 'zakończone' || v.status.toLowerCase() === 'zakończona') {
+            zakoczone.push(item);
+          } else if (v.date > today) {
+            nadchodzace.push(item);
+          } else {
+            aktualne.push(item);
+          }
+        });
+
+        this.sections = [
+          { name: 'aktualne', expanded: true, items: aktualne },
+          { name: 'nadchodzące', expanded: true, items: nadchodzace },
+          { name: 'zakończone', expanded: false, items: zakoczone },
+        ];
+      },
+      error: (err) => {
+        console.error('Błąd pobierania wizyt', err);
+      }
+    });
+  }
 
   toggleSection(section: RepairSection): void {
     section.expanded = !section.expanded;
