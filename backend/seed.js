@@ -4,115 +4,106 @@ const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 const connectMongo = require('./mongo');
-const Klient = require('./models/Klient');
-const Mechanik = require('./models/Mechanik');
-const Pojazd = require('./models/Pojazd');
-const Usterka = require('./models/Usterka');
-const Usluga = require('./models/Usluga');
-const Czesc = require('./models/Czesc');
-const Wizyta = require('./models/Wizyta');
-const Diagnoza = require('./models/Diagnoza');
-const Powiadomienie = require('./models/Powiadomienie');
+const Client = require('./models/client');
+const Mechanic = require('./models/mechanic');
+const Vehicle = require('./models/vehicle');
+const Fault = require('./models/fault');
+const Service = require('./models/service');
+const Part = require('./models/part');
+const Visit = require('./models/visit');
+const Diagnosis = require('./models/diagnosis');
+const Notification = require('./models/notification');
+
+async function clearDatabase() {
+    await Promise.all([
+        Client.deleteMany({}),
+        Mechanic.deleteMany({}),
+        Vehicle.deleteMany({}),
+        Fault.deleteMany({}),
+        Service.deleteMany({}),
+        Part.deleteMany({}),
+        Visit.deleteMany({}),
+        Diagnosis.deleteMany({}),
+        Notification.deleteMany({})
+    ]);
+}
 
 async function seed() {
-  let mysqlConn;
-  try {
-    // 1. Połączenie z MongoDB
-    await connectMongo();
-    console.log('Połączono z MongoDB do seedowania');
+    let mysqlConn;
+    try {
+        await connectMongo();
+        console.log('Połączono z MongoDB do seedowania');
 
-    // 2. Połączenie z MySQL
-    mysqlConn = await mysql.createConnection({
-      host: process.env.DB_HOST || 'localhost',
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'users_db',
-      port: process.env.DB_PORT || 3306
-    });
-    console.log('Połączono z MySQL do seedowania');
+        mysqlConn = await mysql.createConnection({
+            host: process.env.DB_HOST || 'localhost',
+            user: process.env.DB_USER || 'root',
+            password: process.env.DB_PASSWORD || '',
+            database: process.env.DB_NAME || 'users_db',
+            port: process.env.DB_PORT || 3306
+        });
+        console.log('Połączono z MySQL do seedowania');
 
-    // Czyszczenie MongoDB (opcjonalnie, ale dobre dla testów)
-    await Promise.all([
-      Klient.deleteMany({}),
-      Mechanik.deleteMany({}),
-      Pojazd.deleteMany({}),
-      Usterka.deleteMany({}),
-      Usluga.deleteMany({}),
-      Czesc.deleteMany({}),
-      Wizyta.deleteMany({}),
-      Diagnoza.deleteMany({}),
-      Powiadomienie.deleteMany({})
-    ]);
+        await clearDatabase();
 
-    // 3. Tworzenie użytkowników w MySQL
-    const hashedPassword = await bcrypt.hash('password123', 10);
-    
-    // Mechanik
-    const [mechRes] = await mysqlConn.execute(
-      'INSERT INTO users (username, email, password_hash, first_name, last_name, phone, role) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      ['mechanik1', 'jan@serwis.pl', hashedPassword, 'Jan', 'Kowalski', '123456789', 'mechanic']
-    );
-    const mechId = mechRes.insertId;
+        // Mock user creation
+        const hashedPassword = await bcrypt.hash('password123', 10);
 
-    // Klient 1
-    const [klient1Res] = await mysqlConn.execute(
-      'INSERT INTO users (username, email, password_hash, first_name, last_name, phone, role) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      ['klient1', 'adam@gmail.com', hashedPassword, 'Adam', 'Nowak', '987654321', 'user']
-    );
-    const klient1UserId = klient1Res.insertId;
+        const [mechRes] = await mysqlConn.execute(
+            'INSERT INTO users (username, email, password_hash, first_name, last_name, phone, role) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            ['mechanik1', 'jan@serwis.pl', hashedPassword, 'Jan', 'Kowalski', '123456789', 'mechanic']
+        );
+        const mechId = mechRes.insertId;
 
-    // 4. Tworzenie rekordów w MongoDB
-    
-    // Modele Mechanik i Klient (powiązane z ID z MySQL)
-    const mongoMech = await Mechanik.create({ userId: mechId, imie: 'Jan', nazwisko: 'Kowalski' });
-    const mongoKlient1 = await Klient.create({ userId: klient1UserId, imie: 'Adam', nazwisko: 'Nowak' });
+        const [mockClient] = await mysqlConn.execute(
+            'INSERT INTO users (username, email, password_hash, first_name, last_name, phone, role) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            ['klient1', 'adam@gmail.com', hashedPassword, 'Adam', 'Nowak', '987654321', 'user']
+        );
+        const mockClientId = mockClient.insertId;
 
-    // Pojazd
-    const auto1 = await Pojazd.create({
-      klientId: mongoKlient1._id,
-      marka: 'Audi A4',
-      rok: 2015,
-      rejestracja: 'WA12345',
-      VIN: 'WAUX1234567890'
-    });
+        const mongoMech = await Mechanic.create({ userId: mechId, name: 'Jan', lastName: 'Kowalski' });
+        const mongoClient = await Client.create({ userId: mockClientId, name: 'Adam', lastName: 'Nowak' });
 
-    // Usterki, Usługi, Części
-    const usterka1 = await Usterka.create({ nazwa: 'Stukanie w zawieszeniu', opis: 'Słychać stukanie przy przejeżdżaniu przez progi' });
-    const usluga1 = await Usluga.create({ nazwa: 'Wymiana wahacza', koszt: 150 });
-    const czesc1 = await Czesc.create({ nazwa: 'Wahacz przedni prawy', koszt: 300 });
+        const auto1 = await Vehicle.create({
+            clientId: mongoClient._id,
+            brand: 'Audi A4',
+            year: 2015,
+            registration: 'WA12345',
+            VIN: 'WAUX1234567890'
+        });
 
-    // Wizyta
-    const wizyta1 = await Wizyta.create({
-      pojazdId: auto1._id,
-      klientId: mongoKlient1._id,
-      status: 'w trakcie',
-      data: new Date(),
-      godzina: '10:00'
-    });
+        const fault = await Fault.create({ name: 'Stukanie w zawieszeniu', description: 'Słychać stukanie przy przejeżdżaniu przez progi' });
+        const service = await Service.create({ name: 'Wymiana wahacza', price: 150 });
+        const part = await Part.create({ name: 'Wahacz przedni prawy', price: 300 });
 
-    // Diagnoza
-    await Diagnoza.create({
-      wizytaId: wizyta1._id,
-      mechanikId: mongoMech._id,
-      opisDiagnozy: 'Uszkodzony sworzeń wahacza dolnego.',
-      usterki: [usterka1._id],
-      potrzebneUslugi: [usluga1._id],
-      potrzebneCzesci: [czesc1._id]
-    });
+        const visit = await Visit.create({
+            vehicleId: auto1._id,
+            clientId: mongoClient._id,
+            status: 'w trakcie',
+            date: new Date(),
+            time: '10:00'
+        });
 
-    // Powiadomienie
-    await Powiadomienie.create({
-      wizytaId: wizyta1._id,
-      nowyStatusWizyty: 'w trakcie'
-    });
+        await Diagnosis.create({
+            visitId: visit._id,
+            mechanicId: mongoMech._id,
+            diagnosisDescription: 'Uszkodzony sworzeń wahacza dolnego.',
+            faults: [fault._id],
+            requiredServices: [service._id],
+            requiredParts: [part._id]
+        });
 
-    console.log('Seedowanie zakończone sukcesem!');
-  } catch (err) {
-    console.error('Błąd podczas seedowania:', err);
-  } finally {
-    if (mysqlConn) await mysqlConn.end();
-    mongoose.connection.close();
-  }
+        await Notification.create({
+            visitId: visit._id,
+            newVisitStatus: 'w trakcie'
+        });
+
+        console.log('Seedowanie zakończone sukcesem!');
+    } catch (err) {
+        console.error('Błąd podczas seedowania:', err);
+    } finally {
+        if (mysqlConn) mysqlConn.end();
+        await mongoose.connection.close();
+    }
 }
 
 seed();
