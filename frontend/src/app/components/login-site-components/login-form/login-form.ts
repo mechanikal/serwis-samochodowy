@@ -32,8 +32,33 @@ export class LoginForm {
   }
 
   loginSubmit() {
-    this.goToMechanic();
-    return;
+    this.http.post('http://localhost:3000/api/login', {
+      identifier: this.loginValue,
+      password: this.passwordValue,
+    }).subscribe({
+      next: (res: any) => {
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('user', JSON.stringify(res.user));
+
+        switch (res.user?.role) {
+          case 'user':
+            console.log('Zalogowano jako użytkownik:', res);
+            this.goToUser();
+            break;
+          case 'mechanic':
+            console.log('Zalogowano jako mechanik:', res);
+            this.goToMechanic();
+            break;
+          case 'admin':
+            console.log('Zalogowano jako administrator:', res);
+            this.goToAdmin();
+            break;
+        }
+      },
+      error: (err) => {
+        console.error('BĹ‚Ä…d logowania:', err);
+      }
+    });
   }
 
   registerSubmit() {
@@ -68,5 +93,11 @@ export class LoginForm {
   }
   goToMechanic() {
     this.router.navigate(['/panel-site']);
+  }
+  goToUser() {
+    this.router.navigate(['/panel-site']);
+  }
+  goToAdmin() {
+    this.goToMechanic();
   }
 }

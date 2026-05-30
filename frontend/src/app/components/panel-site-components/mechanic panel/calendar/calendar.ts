@@ -38,7 +38,12 @@ export class Calendar implements OnInit {
   }
 
   fetchAppointments() {
-    this.http.get<any[]>('http://localhost:3000/api/visits').subscribe({
+    const token = localStorage.getItem('token');
+    this.http.get<any[]>('http://localhost:3000/api/visits', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }).subscribe({
       next: (data) => {
         this.allAppointments = data.map(v => ({
           time: v.time,

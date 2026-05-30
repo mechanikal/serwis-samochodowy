@@ -28,7 +28,12 @@ export class StatisticalReport implements OnInit {
   }
 
   fetchStats() {
-    this.http.get<any>('http://localhost:3000/api/stats').subscribe({
+    const token = localStorage.getItem('token');
+    this.http.get<any>('http://localhost:3000/api/stats', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }).subscribe({
       next: (data) => {
         this.sections = [
           {
