@@ -1,1 +1,34 @@
-<p>calendar works!</p>
+<div class="calendar">
+  <div class="calendar__nav">
+    <button class="calendar__arrow" type="button" (click)="previousWeek()">◀</button>
+    <span class="calendar__month">{{ monthYear }}</span>
+    <button class="calendar__arrow" type="button" (click)="nextWeek()">▶</button>
+  </div>
+
+  @for (day of weekDays; track day.dayNumber) {
+    <div class="calendar__day-row">
+      <div class="calendar__day-label">
+        <span class="calendar__day-abbr">{{ day.dayAbbr }}</span>
+        <span class="calendar__day-number">{{ day.dayNumber }}</span>
+      </div>
+      <div class="calendar__timeline">
+        <div class="calendar__time-header">
+          <span class="calendar__time-start">8:00</span>
+          <span class="calendar__time-end">20:00</span>
+        </div>
+        <div class="calendar__appointments">
+          @for (apt of day.appointments; track $index) {
+            <button
+              class="calendar__appointment"
+              type="button"
+              (click)="onAppointmentClick(day, apt)">
+              <span class="calendar__apt-time">{{ apt.time }}</span>
+              <span class="calendar__apt-service">{{ apt.serviceName }}</span>
+              <span class="calendar__apt-client">{{ apt.clientName }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Calendar } from '../calendar/calendar';
 import { Clients } from '../clients/clients';
 import { Repairs } from '../repairs/repairs';
-import { Visits } from '../visits/visits';
 import { StatisticalReport } from '../statistical-report/statistical-report';
 import { ClientCars } from "../client-cars/client-cars";
 import { ClientVisits } from "../../client-visits/client-visits";
@@ -11,13 +10,13 @@ import { ScheduleVisit } from "../../schedule-visit/schedule-visit";
 
 @Component({
   selector: 'mechanic-panel',
-  imports: [CommonModule, Calendar, Clients, Repairs, Visits, StatisticalReport, ClientCars, ClientVisits, ScheduleVisit],
-  templateUrl: './mechanic-panel.html',
-  styleUrl: './mechanic-panel.css',
+  imports: [CommonModule, Calendar, Clients, Repairs, StatisticalReport, ClientCars, ClientVisits, ScheduleVisit],
+  templateUrl: './panel.html',
+  styleUrl: './panel.css',
 })
 export class MechanicPanel {
   selectedMode = 'klienci';
-  mechanicOptions = ['klienci', 'kalendarz', 'wizyty', 'naprawy', 'raport statystyczny'];
+  mechanicOptions = ['klienci', 'kalendarz wizyt', 'naprawy', 'raport statystyczny'];
   clientOptions = ['moje wizyty', 'umów wizytę', 'moje pojazdy'];
   userModes = ['mechanic','client'];
   selectedUserMode = 'mechanic';
@@ -35,9 +34,9 @@ export class MechanicPanel {
   }
   selectMode(option: string) {
     this.selectedMode = option;
-    if (this.selectedUserMode === 'mechanic') {
-      this.goToClient();
-    }
+    //if (this.selectedUserMode === 'mechanic') {
+    //  this.goToClient();
+    //}
   }
   userMode(option: string) {
     this.selectedUserMode = option;

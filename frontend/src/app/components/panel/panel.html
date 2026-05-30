@@ -1,7 +1,5 @@
 
 <div class="wrapper">
-    <div class="border-alike">
-    <div class="mechanic-panel">
     <div class="mechanic-panel__header">
         
         @for (option of options; track option){
@@ -14,16 +12,17 @@
             </button>
         }
     </div>
+    <div class="mechanic-panel">
+        
+    <div class="border-alike"></div>
     <div class="mechanic-panel__content-wrapper">
     <div class="mechanic-panel__content">
-        @if (selectedMode === 'kalendarz') {
+        @if (selectedMode === 'kalendarz wizyt') {
             <app-calendar></app-calendar>
         } @else if (selectedMode === 'klienci') {
             <app-clients></app-clients>
         } @else if (selectedMode === 'naprawy') {
             <app-repairs></app-repairs>
-        } @else if (selectedMode === 'wizyty') {
-            <app-visits></app-visits>
         } @else if (selectedMode === 'raport statystyczny') {
             <app-statistical-report></app-statistical-report>
         } @else if (selectedMode === 'moje wizyty') {
@@ -33,7 +32,6 @@
         } @else if (selectedMode === 'moje pojazdy') {
             <client-cars></client-cars>
         }
-    </div>
     </div>
     </div>
 </div>

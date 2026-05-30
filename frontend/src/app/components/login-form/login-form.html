@@ -1,4 +1,4 @@
-<div class="login-section">
+<div class="login-section" [class.register-mode]="mode === 'register'">
   <img src="/user-symbol.svg" alt="symbol" class="user-symbol" />
 
   @if (mode === 'register'){
@@ -21,19 +21,19 @@
     @if (mode === 'login'){
     <div class="field">
       <div class="fields-title">hasło</div>
-      <input class="input-field" type="text" [(ngModel)]="passwordValue" name="passwordValue" />
+      <input class="input-field" type="password" [(ngModel)]="passwordValue" name="passwordValue" />
     </div>
     } @if (mode === 'register'){
     <div class="fields">
       <div class="field">
         <div class="fields-title">hasło</div>
-        <input class="input-field" type="text" [(ngModel)]="passwordValue" name="passwordValue" />
+        <input class="input-field" type="password" [(ngModel)]="passwordValue" name="passwordValue" />
       </div>
       <div class="field">
         <div class="fields-title">powtórz hasło</div>
         <input
           class="input-field"
-          type="text"
+          type="password"
           [(ngModel)]="repeatPasswordValue"
           name="repeatPasswordValue"
         />

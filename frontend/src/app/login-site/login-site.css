@@ -1,5 +1,6 @@
-body {
-  font-family: 'Khand', sans-serif;
+:host {
+  display: block;
+  min-height: 100vh;
 }
 
 .login-form {
