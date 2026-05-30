@@ -1,152 +1,249 @@
-const express = require('express');
-const cors = require('cors');
-const bcrypt = require('bcrypt');
-require('dotenv').config();
+const express = require("express");
+const cors = require("cors");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = process.env.JWT_SECRET;
+require("dotenv").config();
 
-const db = require('./db');
-const connectMongo = require('./mongo');
+const db = require("./db");
+const connectMongo = require("./mongo");
 
-const Klient = require('./models/Klient');
-const Pojazd = require('./models/Pojazd');
-const Wizyta = require('./models/Wizyta');
-const Usterka = require('./models/Usterka');
-const Usluga = require('./models/Usluga');
+const Client = require("./models/client");
+const Vehicle = require("./models/vehicle");
+const Visit = require("./models/visit");
+const Fault = require("./models/fault");
+const Service = require("./models/service");
 
-// Połączenie z MongoDB
 connectMongo();
 
 const app = express();
 const PORT = process.env.PORT;
 
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader?.startsWith("Bearer ")
+    ? authHeader.split(" ")[1]
+    : null;
+
+  if (!token) return res.status(401).json({ message: "Brak autoryzacji" });
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err)
+      return res
+        .status(403)
+        .json({ message: "Nieprawidłowy lub wygasły token" });
+    req.user = user;
+    next();
+  });
+};
+
+const requireRole =
+  (...roles) =>
+  (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res
+        .status(403)
+        .json({ message: "Brak uprawnień do tej operacji" });
+    }
+    next();
+  };
+
 app.use(cors());
 app.use(express.json());
 
-app.post('/api/register', async (req, res) => {
-  const {
-    username,
-    email,
-    password,
-    first_name,
-    last_name,
-    phone
-  } = req.body;
+app.get("/", (req, res) => {
+  res.send("API works");
+});
+
+app.post("/api/login", async (req, res) => {
+  const { identifier, password } = req.body;
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     const sql = `
-      INSERT INTO users 
-      (username, email, password_hash, first_name, last_name, phone, role)
-      VALUES (?, ?, ?, ?, ?, ?, 'user')
-    `;
+            SELECT id, username, email, password_hash, role, first_name, last_name
+            FROM users
+            WHERE email = ? OR username = ?
+            LIMIT 1
+        `;
+    const [rows] = db.query(sql, [identifier, identifier]);
+    const user = rows[0];
 
-    db.query(sql, [
-      username,
-      email,
-      hashedPassword,
-      first_name,
-      last_name,
-      phone
-    ], (err, result) => {
-      if (err) {
-        return res.status(500).send(err);
-      }
+    if (!user) {
+      return res.status(401).json({ message: "Nieprawidłowe dane logowania" });
+    }
 
-      res.send({
-        message: 'Użytkownik utworzony',
-        id: result.insertId
-      });
+    const validPassword = await bcrypt.compare(password, user.password_hash);
+    if (!validPassword) {
+      return res.status(401).json({ message: "Nieprawidłowe dane logowania" });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+      JWT_SECRET,
+      { expiresIn: "24h" },
+    );
+
+    res.json({
+      message: "Zalogowano pomyślnie",
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        firstName: user.first_name,
+        lastName: user.last_name,
+      },
     });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
+app.post("/api/register", async (req, res) => {
+  const { username, email, password, first_name, last_name, phone } = req.body;
+
+  try {
+    const nameEmailCheck = `
+            SELECT COUNT(*) FROM users
+                WHERE email = ? OR username = ?
+        `;
+
+    const [result] = db.query(nameEmailCheck, [email, username]);
+
+    if (result.count > 0) {
+      return res
+        .status(409)
+        .json({ message: "Email lub nazwa użytkownika już istnieje" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const sql = `
+            INSERT INTO users
+                (username, email, password_hash, first_name, last_name, phone, role)
+            VALUES (?, ?, ?, ?, ?, ?, 'user')
+        `;
+
+    db.query(
+      sql,
+      [username, email, hashedPassword, first_name, last_name, phone],
+      (err, result) => {
+        if (err) {
+          return res.status(500).send(err);
+        }
+
+        res.send({
+          message: "Użytkownik utworzony",
+          id: result.insertId,
+        });
+      },
+    );
   } catch (err) {
     res.status(500).send(err);
   }
 });
 
-app.get('/', (req, res) => {
-  res.send('API działa');
-});
+app.get(
+  "/api/clients",
+  authenticateToken,
+  requireRole("mechanic"),
+  async (req, res) => {
+    try {
+      const clients = await Client.find();
 
-// Pobieranie klientów wraz z pojazdami i wizytami (agregacja)
-app.get('/api/clients', async (req, res) => {
-  try {
-    const clients = await Klient.find();
-    
-    // Dla każdego klienta pobierzemy jego samochody i wizyty
-    const clientsData = await Promise.all(
-      clients.map(async (client) => {
-        const vehicles = await Pojazd.find({ klientId: client._id });
-        const visits = await Wizyta.find({ klientId: client._id });
-        
-        return {
-          _id: client._id,
-          firstName: client.imie,
-          lastName: client.nazwisko,
-          vehicles: vehicles.map(v => ({ brand: v.marka, registration: v.rejestracja })),
-          visits: visits.map(v => ({ 
-            serviceName: 'Naprawa', // Brak szczegółów o usłudze w samej encji Wizyta, damy default lub trzeba by łączyć z Usluga
-            status: v.status, 
-            date: new Date(v.data).toLocaleDateString()
-          }))
-        };
-      })
-    );
-    
-    res.json(clientsData);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Błąd serwera');
-  }
-});
+      const clientsData = await Promise.all(
+        clients.map(async (client) => {
+          const vehicles = await Vehicle.find({ clientId: client._id });
+          const visits = await Visit.find({ clientId: client._id });
 
-// Pobieranie wszystkich wizyt (napraw) do kalendarza/repairs
-app.get('/api/visits', async (req, res) => {
+          return {
+            _id: client._id,
+            firstName: client.name,
+            lastName: client.lastName,
+            vehicles: vehicles.map((v) => ({
+              brand: v.brand,
+              registration: v.registration,
+            })),
+            visits: visits.map((v) => ({
+              serviceName: "Naprawa",
+              status: v.status,
+              date: new Date(v.date).toLocaleDateString(),
+            })),
+          };
+        }),
+      );
+
+      res.json(clientsData);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server error");
+    }
+  },
+);
+
+app.get("/api/visits", authenticateToken, async (req, res) => {
   try {
-    const visits = await Wizyta.find().populate('klientId');
-    const visitsData = visits.map(v => ({
+    const visits = await Visit.find().populate("clientId");
+    const visitsData = visits.map((v) => ({
       _id: v._id,
-      date: new Date(v.data).toISOString().split('T')[0], // format yyyy-mm-dd
-      time: v.godzina,
-      serviceName: 'Naprawa',
-      clientName: v.klientId ? `${v.klientId.imie} ${v.klientId.nazwisko}` : 'Nieznany',
-      status: v.status
+      date: new Date(v.date).toISOString().split("T")[0], // yyyy-mm-dd
+      time: v.time,
+      serviceName: "Naprawa",
+      clientName: v.clientId
+        ? `${v.clientId.name} ${v.clientId.lastName}`
+        : "Nieznany",
+      status: v.status,
     }));
     res.json(visitsData);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Błąd serwera');
+    res.status(500).send("Server error");
   }
 });
 
-// Pobieranie statystyk
-app.get('/api/stats', async (req, res) => {
-  try {
-    const usterki = await Usterka.find();
-    // Tutaj mockujemy "ilość", ewentualnie agregujemy jeśli w bazie są usterki powtarzające się
-    
-    // Albo pobierz po prostu 3 najczęstsze usterki (mock)
-    const usterkiStats = usterki.map(u => ({ name: u.nazwa || 'Usterka', count: Math.floor(Math.random() * 20).toString() }));
-    
-    const uslugi = await Usluga.find();
-    const uslugiStats = uslugi.map(u => ({ name: u.nazwa || 'Usługa', count: Math.floor(Math.random() * 30).toString() }));
+app.get(
+  "/api/stats",
+  authenticateToken,
+  requireRole("admin"),
+  async (req, res) => {
+    try {
+      const faults = await Fault.find();
 
-    if(usterkiStats.length === 0) {
-      usterkiStats.push({ name: 'Brak danych usterek', count: '0' });
-    }
-    if(uslugiStats.length === 0) {
-      uslugiStats.push({ name: 'Brak danych usług', count: '0' });
-    }
+      const faultStats = faults.map((u) => ({
+        name: u.name || "Fault",
+        count: Math.floor(Math.random() * 20).toString(),
+      }));
 
-    res.json({
-      usterki: usterkiStats,
-      uslugi: uslugiStats
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Błąd serwera');
-  }
-});
+      const services = await Service.find();
+      const serviceStats = services.map((u) => ({
+        name: u.name || "Usługa",
+        count: Math.floor(Math.random() * 30).toString(),
+      }));
+
+      if (faultStats.length === 0) {
+        faultStats.push({ name: "Brak danych usterek", count: "0" });
+      }
+      if (serviceStats.length === 0) {
+        serviceStats.push({ name: "Brak danych usług", count: "0" });
+      }
+
+      res.json({
+        faults: faultStats,
+        services: serviceStats,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Błąd serwera");
+    }
+  },
+);
 
 app.listen(PORT, () => {
-  console.log('Server running on port',PORT);
+  console.log("Server running on port", PORT);
 });
