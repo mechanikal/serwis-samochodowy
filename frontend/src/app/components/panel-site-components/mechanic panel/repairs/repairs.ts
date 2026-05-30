@@ -33,7 +33,12 @@ export class Repairs implements OnInit {
   }
 
   fetchVisits() {
-    this.http.get<any[]>('http://localhost:3000/api/visits').subscribe({
+    const token = localStorage.getItem('token');
+    this.http.get<any[]>('http://localhost:3000/api/visits', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }).subscribe({
       next: (data) => {
         const aktualne: RepairItem[] = [];
         const nadchodzace: RepairItem[] = [];

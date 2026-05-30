@@ -39,7 +39,12 @@ export class Clients implements OnInit {
   }
 
   fetchClients() {
-    this.http.get<any[]>('http://localhost:3000/api/clients').subscribe({
+    const token = localStorage.getItem('token');
+    this.http.get<any[]>('http://localhost:3000/api/clients', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }).subscribe({
       next: (data) => {
         this.clients = data.map(c => ({
           firstName: c.firstName,

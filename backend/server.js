@@ -2,8 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.JWT_SECRET;
 require("dotenv").config();
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const db = require("./db");
 const connectMongo = require("./mongo");
@@ -65,7 +65,7 @@ app.post("/api/login", async (req, res) => {
             WHERE email = ? OR username = ?
             LIMIT 1
         `;
-    const [rows] = db.query(sql, [identifier, identifier]);
+    const [rows] = await db.promise().query(sql, [identifier, identifier]);
     const user = rows[0];
 
     if (!user) {
@@ -210,7 +210,7 @@ app.get("/api/visits", authenticateToken, async (req, res) => {
 app.get(
   "/api/stats",
   authenticateToken,
-  requireRole("admin"),
+  requireRole("admin","mechanic"),
   async (req, res) => {
     try {
       const faults = await Fault.find();
