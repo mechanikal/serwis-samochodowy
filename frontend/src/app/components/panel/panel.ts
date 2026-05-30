@@ -11,8 +11,8 @@ import { ScheduleVisit } from "../../schedule-visit/schedule-visit";
 @Component({
   selector: 'mechanic-panel',
   imports: [CommonModule, Calendar, Clients, Repairs, StatisticalReport, ClientCars, ClientVisits, ScheduleVisit],
-  templateUrl: './mechanic-panel.html',
-  styleUrl: './mechanic-panel.css',
+  templateUrl: './panel.html',
+  styleUrl: './panel.css',
 })
 export class MechanicPanel {
   selectedMode = 'klienci';

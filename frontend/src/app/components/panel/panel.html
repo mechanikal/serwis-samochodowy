@@ -1,7 +1,5 @@
 
 <div class="wrapper">
-    <div class="border-alike">
-    <div class="mechanic-panel">
     <div class="mechanic-panel__header">
         
         @for (option of options; track option){
@@ -14,6 +12,9 @@
             </button>
         }
     </div>
+    <div class="mechanic-panel">
+        
+    <div class="border-alike"></div>
     <div class="mechanic-panel__content-wrapper">
     <div class="mechanic-panel__content">
         @if (selectedMode === 'kalendarz wizyt') {
@@ -31,7 +32,6 @@
         } @else if (selectedMode === 'moje pojazdy') {
             <client-cars></client-cars>
         }
-    </div>
     </div>
     </div>
 </div>

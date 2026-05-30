@@ -26,11 +26,19 @@ export class Notifications {
       title: 'Nowa opinia',
       time: '15 min temu',
       body: 'Klient Marek Nowak wystawił ocenę 5 gwiazdek dla serwisu Serwis Samochodowy Plus.',
-    },
+    }
   ];
 
   deleteNotification(id: number): void {
     this.notifications = this.notifications.filter((n) => n.id !== id);
+    if (this.notifications.length === 0) {
+      this.notifications.push({
+        id: 0,
+        title: 'Brak nowych powiadomień',
+        time: '',
+        body: 'Gdy otrzymasz nowe powiadomienia, pojawią się one tutaj.',
+      });
+    }
   }
 
   viewNotification(notification: NotificationItem): void {

@@ -20,9 +20,10 @@
   font-family: 'Khand', sans-serif;
   font-size: 0.75em;
   border: 1.5px solid #999;
-  border-radius: 0.2em;
+  border-radius: 2px;
   background-color: #f0f0f0;
-  color: #333;
+  box-shadow: inset -0.1em 0.2em 3px rgba(0,0,0,0.1);
+  color: #211F1C;
   outline: none;
 }
 .clients__search-input::placeholder {
@@ -35,9 +36,11 @@
 
 .clients__search-icon {
   position: absolute;
+  height: 80%;
   right: 0.4em;
   font-size: 0.75em;
   color: #666;
+  padding-right: 0.3em;
   pointer-events: none;
 }
 
