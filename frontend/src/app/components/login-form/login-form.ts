@@ -32,7 +32,7 @@ export class LoginForm {
   }
 
   loginSubmit() {
-    //todo: login logic
+    this.goToMechanic();
     return;
   }
 
@@ -56,9 +56,6 @@ export class LoginForm {
     });
   }
   onSubmit() {
-    //temporary logic to skip login and registration
-    this.goToMechanic();
-    return;
     if (this.mode == 'login') {
       this.loginSubmit();
     } else {
@@ -70,6 +67,6 @@ export class LoginForm {
     this.mode = mode;
   }
   goToMechanic() {
-    this.router.navigate(['/mechanic-site']);
+    this.router.navigate(['/panel-site']);
   }
 }

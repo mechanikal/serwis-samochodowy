@@ -1,1 +1,49 @@
-<p>clients works!</p>
+<div class="clients">
+  <!-- Search bar -->
+  <div class="clients__search">
+    <input
+      type="text"
+      class="clients__search-input"
+      placeholder="filtr (wyszukiwanie)"
+      [(ngModel)]="filterText"
+    />
+    <img src="/magnifying-glass.png" alt="search" class="clients__search-icon" />
+  </div>
+
+  <!-- Client list -->
+  @for (client of filteredClients; track $index) {
+    <div class="clients__card">
+      <!-- Client header row -->
+      <div class="clients__card-header" (click)="toggleClient(client)">
+        <span class="clients__card-name">{{ client.firstName }} {{ client.lastName }}</span>
+        <button type="button" class="clients__toggle-btn">
+          <span class="clients__toggle-arrow">{{ client.expanded ? '▲' : '▼' }}</span>
+        </button>
+      </div>
+
+      <!-- Expanded content -->
+      @if (client.expanded) {
+        <div class="clients__card-content">
+          <!-- Pojazdy section -->
+          <div class="clients__sub-header">pojazdy</div>
+          @for (vehicle of client.vehicles; track $index) {
+            <div class="clients__vehicle-row">
+              <span>{{ vehicle.brand }}</span>
+              <span>{{ vehicle.registration }}</span>
+            </div>
+          }
+
+          <!-- Wizyty section -->
+          <div class="clients__sub-header">wizyty</div>
+          @for (visit of client.visits; track $index) {
+            <div class="clients__visit-row">
+              <span class="clients__visit-service">{{ visit.serviceName }}</span>
+              <span class="clients__visit-status">{{ visit.status }}</span>
+              <span class="clients__visit-date">{{ visit.date }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
