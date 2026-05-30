@@ -1,4 +1,4 @@
-<div class="login-section">
+<div class="login-section" [class.register-mode]="mode === 'register'">
   <img src="/user-symbol.svg" alt="symbol" class="user-symbol" />
 
   @if (mode === 'register'){

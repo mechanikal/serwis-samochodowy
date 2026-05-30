@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { SiteHeader } from '../components/site-header/site-header';
-import { MechanicPanel } from "../components/mechanic-panel/mechanic-panel";
+import { MechanicPanel } from "../components/panel/panel";
 import { WaveBackground } from '../components/wave-background/wave-background';
 
 @Component({
-  selector: 'app-mechanic-site',
+  selector: 'app-panel-site',
   imports: [SiteHeader, MechanicPanel, WaveBackground],
-  templateUrl: './mechanic-site.html',
-  styleUrl: './mechanic-site.css',
+  templateUrl: './panel-site.html',
+  styleUrl: './panel-site.css',
 })
 export class MechanicSite {}

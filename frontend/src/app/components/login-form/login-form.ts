@@ -67,6 +67,6 @@ export class LoginForm {
     this.mode = mode;
   }
   goToMechanic() {
-    this.router.navigate(['/mechanic-site']);
+    this.router.navigate(['/panel-site']);
   }
 }

@@ -5,6 +5,7 @@
 }
 
 .wave-black {
+  transition: bottom 5s ease;
   position: absolute;
   bottom: 10%;
   width: 100%;
@@ -13,6 +14,7 @@
 }
 
 .wave-dark-gray {
+  transition: bottom 5s ease;
   position: absolute;
   bottom: 40%;
   width: 100%;
@@ -21,6 +23,7 @@
 }
 
 .wave-light-gray {
+  transition: bottom 5s ease;
   position: absolute;
   bottom: 70%;
   width: 100%;

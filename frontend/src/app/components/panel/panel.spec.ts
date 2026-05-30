@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MechanicPanel } from './mechanic-panel';
+import { MechanicPanel } from './panel';
 
 describe('MechanicPanel', () => {
   let component: MechanicPanel;

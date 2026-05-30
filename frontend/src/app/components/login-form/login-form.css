@@ -4,14 +4,23 @@
 }
 
 .login-section {
+  transition: height 0.15s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 0 0 0.7em 0;
   background-color: #D9D9D9;
+  opacity: 0.90;
   box-shadow: -0.3em 0.4em 0.2em rgba(0,0,0,0.25);
-  color: #000000;
+  color: #211F1C;
+  height: 14em;
+  
+  border-radius: 1em;
+}
+
+.login-section.register-mode {
+  height: 18em;
   
   border-radius: 1em;
 }
@@ -28,7 +37,8 @@
 }
 
 .submit-button {
-  background-color: #000000;
+  transition: background-color 0.15s ease;
+  background-color: #211F1C;
   color: #FFFFFF;
   height: 1.5em;
   width: 4.5em;
@@ -39,7 +49,7 @@
 }
 
 .submit-button:hover {
-  background-color: #141414;
+  background-color: #000000;
 }
 
 .input-field {
@@ -58,12 +68,14 @@
 }
 
 .selected-mode {
-  background-color: #000000;
+  transition: background-color 0.15s, color 0.15s;
+  background-color: #211F1C;
   color: #D9D9D9;
   padding: 0.2em 0.4em 0.1em 0.4em;
 }
 
 .secondary-mode {
+  transition: background-color 0.15s, color 0.15s;
   background-color: #f6f6f6;
   color: #363636;
   padding: 0.2em 0.4em 0.1em 0.4em;
