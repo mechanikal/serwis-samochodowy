@@ -10,8 +10,16 @@ import { Notifications } from '../notifications/notifications';
 })
 export class SiteHeader {
   isNotificationsOpen = false;
-
+  userData = { firstName: 'User', lastName: 'Unknown' };
   constructor(private router: Router) {}
+  ngOnInit() {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    console.log('User data from localStorage:', user);
+    if (user) {
+      this.userData.firstName = user.firstName || 'User';
+      this.userData.lastName = user.lastName || 'Unknown';
+    }
+  }
 
   openNotifications() {
     this.isNotificationsOpen = !this.isNotificationsOpen;

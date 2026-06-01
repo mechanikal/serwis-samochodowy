@@ -19,7 +19,7 @@
       </div>
       }
       <img src="/user-icon.svg" alt="user" class="user-icon" />
-      <p>WŁAŚCICIEL FIRMY</p>
+      <p>{{ userData.firstName }} {{ userData.lastName }}</p>
       <button class="bell-icon-button" (click)="openNotifications()" aria-label="Powiadomienia">
         <img src="/bell-icon.svg" alt="bell" class="bell-icon" />
       </button>
