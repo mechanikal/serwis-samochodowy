@@ -65,7 +65,8 @@ async function seed() {
 
         const auto1 = await Vehicle.create({
             clientId: mongoClient._id,
-            brand: 'Audi A4',
+            brand: 'Audi',
+            model: 'A4',
             year: 2015,
             registration: 'WA12345',
             VIN: 'WAUX1234567890'

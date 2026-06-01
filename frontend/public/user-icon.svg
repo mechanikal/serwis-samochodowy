@@ -1,3 +1,7 @@
-<svg width="69" height="69" viewBox="0 0 69 69" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M34.5 0C53.5538 0 69 15.4462 69 34.5C69 53.5538 53.5538 69 34.5 69C15.4462 69 0 53.5538 0 34.5C0 15.4462 15.4462 0 34.5 0ZM34.5 30C26.9813 30 20.7998 33.9467 20.0723 39H20V55H49V39H48.9277C48.2002 33.9467 42.0187 30 34.5 30ZM34 11C29.5817 11 26 14.5817 26 19C26 23.4183 29.5817 27 34 27C38.4183 27 42 23.4183 42 19C42 14.5817 38.4183 11 34 11Z" fill="white"/>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="16" cy="16" r="12.5" fill="white" stroke="white" stroke-width="7"/>
+<ellipse cx="16" cy="19" rx="7" ry="5" fill="black"/>
+<circle cx="16" cy="9" r="4" fill="black"/>
+<path d="M23 26H9V19H23V26Z" fill="black"/>
+<path d="M16 24C19.866 24 23 24.8954 23 26C23 27.1046 19.866 28 16 28C12.134 28 9 27.1046 9 26C9 24.8954 12.134 24 16 24Z" fill="black"/>
 </svg>

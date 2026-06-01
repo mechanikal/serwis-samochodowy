@@ -244,6 +244,25 @@ app.get(
   },
 );
 
+app.get(
+  "/api/client-cars",
+  authenticateToken,
+  requireRole("user"),
+  async (req, res) => {
+    try {
+      const client = await Client.findOne({ userId: req.user.id });
+      if (!client) {
+        return res.status(404).json({ message: "Nie znaleziono klienta" });
+      }
+      const cars = await Vehicle.find({ clientId: client._id });
+      res.json(cars);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server error");
+    }
+  }
+);
+
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
