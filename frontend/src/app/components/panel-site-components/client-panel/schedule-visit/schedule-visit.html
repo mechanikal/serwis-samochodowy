@@ -1,0 +1,67 @@
+<div class ="tab-title">Umów wizytę</div>
+<div class = "tab-description">Wybierz dostępny termin dostarczenia pojazdu i umów wizytę</div>
+
+<div class="calendar">
+  <div class="calendar__nav">
+    <button class="calendar__arrow" type="button" (click)="previousWeek()">◀</button>
+    <span class="calendar__month">{{ monthYear }}</span>
+    <button class="calendar__arrow" type="button" (click)="nextWeek()">▶</button>
+  </div>
+
+  @for (day of weekDays; track day.dayNumber) {
+    <div class="calendar__day-row">
+      <div class="calendar__day-label">
+        <span class="calendar__day-abbr">{{ day.dayAbbr }}</span>
+        <span class="calendar__day-number">{{ day.dayNumber }}</span>
+      </div>
+      <div class="calendar__timeline">
+        <div class="calendar__time-header">
+          <span class="calendar__time-start">8:00</span>
+          <span class="calendar__time-end">20:00</span>
+        </div>
+        <div class="calendar__appointments">
+          @for (slot of getDaySlots($index); track $index) {
+            <button
+              class="calendar__appointment"
+              [class.taken] = "!slot.free"
+              [class.selected] = "slot === selectedTimeSlot"
+              type="button"
+              (click)="onAppointmentClick(day, slot)">
+              <span class="calendar__apt-time">{{ slot.startHour }}</span>
+              <span class="calendar__apt-service">{{ slot.endHour }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+  @if (selectedTimeSlot != null){
+
+    <div class = "schedule-visit-form">
+    <div class = "tab-description">szczegóły wizyty</div>
+        <div class = "form-top">
+            <div class = "schedule-visit-form-row">
+                pojazd:
+                <select [(ngModel)]= "selectedClientCarId" name="brand" class = "car-selector">
+                <option [ngValue]="null" disabled>
+                    -- Wybierz pojazd --
+                </option>
+                @for (car of clientCars; track car.id) {
+                    <option [value]="car.id">
+                    {{ car.brand }}
+                    </option>
+                }
+                </select>
+            </div>
+            
+            <div class = "schedule-visit-form-row">
+                wybrany termin:
+                <div class="slot-info"> {{selectedTimeSlot.dateStr}} {{selectedTimeSlot.startHour}}</div>
+            </div>
+    </div>
+    cel wizyty:
+    <textarea class = "schedule-visit-input-box" placeholder="Wpisz cel wizyty lub opisz problem np.: przegląd okresowy, stukanie w podwoziu podczas jazdy, klimatyzacja nie chłodzi powietrza. Możesz wpisać wiele problemów i usług"></textarea>
+        <button class="schedule-button">umów wizytę</button>
+    </div>
+  }
+</div>
