@@ -5,8 +5,8 @@ import { Clients } from '../mechanic panel/clients/clients';
 import { Repairs } from '../mechanic panel/repairs/repairs';
 import { StatisticalReport } from '../mechanic panel/statistical-report/statistical-report';
 import { ClientCars } from "../client-panel/client-cars/client-cars";
-import { ClientVisits } from "../../../client-visits/client-visits";
-import { ScheduleVisit } from "../../../schedule-visit/schedule-visit";
+import { ClientVisits } from "../client-panel/client-visits/client-visits";
+import { ScheduleVisit } from "../client-panel/schedule-visit/schedule-visit";
 
 @Component({
   selector: 'mechanic-panel',
