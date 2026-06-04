@@ -1,42 +1,44 @@
 <div class ="tab-title">Moje pojazdy</div>
 <div class = "tab-description">Tutaj możesz przeglądać swoje pojazdy, dodawać nowe oraz edytować istniejące.</div>
-<div class="list-wrapper">
+<div class = "lists-section">
     @for (car of client_cars; track $index) {
-        <div class = "list-header">
-            <div class = "list-header-title">{{ car.brand }} {{ car.model }} {{ car.registration }}</div>
-            <div class = "car-header-buttons">
-                <button class = "list-button" (click)="openEditVehiclePopup(car)"><img src="pencil.png" class = "list-button-img" alt="Edytuj"></button>
-                <button class = "list-button" (click)="openDeleteConfirmationPopup(car)"><img src="bin.png" class = "list-button-img" alt="Usuń"></button>
-                <button class = "list-button" (click)="toggleCar(car)"><img src="arrow.png" class = "list-expand-img" [class.expanded]="car.expanded" alt="Rozwiń"></button>
+        <div class = "list-wrapper">
+            <div class = "list-header">
+                <div class = "list-header-title">{{ car.brand }} {{ car.model }} {{ car.registration }}</div>
+                <div class = "car-header-buttons">
+                    <button class = "list-button" (click)="openEditVehiclePopup(car)"><img src="pencil.png" class = "list-button-img" alt="Edytuj"></button>
+                    <button class = "list-button" (click)="openDeleteConfirmationPopup(car)"><img src="bin.png" class = "list-button-img" alt="Usuń"></button>
+                    <button class = "list-button" (click)="toggleCar(car)"><img src="arrow.png" class = "list-expand-img" [class.expanded]="car.expanded" alt="Rozwiń"></button>
+                </div>
             </div>
+            @if (car.expanded){
+                <div class = "list-content">
+                    <div class = "list-section-title">dane pojazdu</div>
+                        <div class = "list-row">
+                            <div>marka:</div>
+                            <div>{{ car.brand }}</div>
+                        </div>
+                        <div class = "list-row">
+                            <div>model:</div>
+                            <div>{{ car.model }}</div>
+                        </div>
+                        <div class = "list-row">
+                            <div>numer rejestracyjny:</div>
+                            <div>{{ car.registration }}</div>
+                        </div>
+                        <div class = "list-row">
+                            <div>rok produkcji:</div>
+                            <div>{{ car.year }}</div>
+                        </div>
+                        <div class = "list-row">
+                            <div>VIN:</div>
+                            <div>{{ car.VIN }}</div>
+                        </div>
+                    <div class = "list-section-title">historia napraw</div>
+                        <div class = "list-row">naprawa1</div>
+                </div>
+            }
         </div>
-        @if (car.expanded){
-            <div class = "list-content">
-                <div class = "list-section-title">dane pojazdu</div>
-                    <div class = "list-row">
-                        <div>marka:</div>
-                        <div>{{ car.brand }}</div>
-                    </div>
-                    <div class = "list-row">
-                        <div>model:</div>
-                        <div>{{ car.model }}</div>
-                    </div>
-                    <div class = "list-row">
-                        <div>numer rejestracyjny:</div>
-                        <div>{{ car.registration }}</div>
-                    </div>
-                    <div class = "list-row">
-                        <div>rok produkcji:</div>
-                        <div>{{ car.year }}</div>
-                    </div>
-                    <div class = "list-row">
-                        <div>VIN:</div>
-                        <div>{{ car.VIN }}</div>
-                    </div>
-                <div class = "list-section-title">historia napraw</div>
-                    <div class = "list-row">naprawa1</div>
-            </div>
-        }
     }
 </div>
 <div class = "add-car"><button class = "add-car-button" (click) = "openAddVehiclePopup()" >Dodaj pojazd</button></div>
@@ -102,7 +104,12 @@
 @if (deleteConfirmationPopupOpen) {
     <div class="popup-wrapper">
         <div class="vehicle-popup">
-            <div class="delete-confirmation-header">Usuwanie pojazdu</div>
+            <div class="popup-header">
+                Usuwanie pojazdu
+                <button class = "popup-close-button" (click)="closePopup()">
+                <img src="/x-icon.png" alt="close" class = "popup-close-img">
+            </button>
+            </div>
             <div class="popup-form">
                 <div class="delete-confirmation-message">
                     <p>Czy na pewno chcesz usunąć ten pojazd?</p>
@@ -111,7 +118,6 @@
                 </div>
                 <div class="delete-confirmation-buttons">
                     <button class="popup-submit" (click)="deleteVehicleConfirm()">Potwierdź</button>
-                    <button class="popup-submit" (click)="closePopup()">Anuluj</button>
                 </div>
             </div>
         </div>

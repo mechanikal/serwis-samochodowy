@@ -27,27 +27,29 @@
     display: flex;
     flex-direction: column;
     background-color: #211f1c;
-    padding: 0.2em 0;
+    padding-bottom: 0.1em;
+    padding-top: 0.4em;
+    font-size: 1.2em;
+    min-width: 12em;
 }
 .popup-header{
     display: flex;
     flex-direction: row;
-    color: #fff;
+    color: #000;
     justify-content: center;
     align-items: center;
+    background-color: #eee;
 }
 .popup-form{
-    padding: 0.5em;
     padding-bottom: 0.2em;
-    background-color: #fff;
+    background-color: #eee;
 }
 .inputs-section{
     display: flex;
     align-items: center;
     flex-direction: column;
-    background-color: #d9d9d9;
+    background-color: #eee;
     padding: 0.5em;
-    border-radius: 0.2em;
     padding-bottom: 0.7em;
     
     gap: 0.5em;
@@ -81,6 +83,8 @@
 .submit-row{
     display: flex;
     justify-content: center;
+    
+    font-size: 0.8em;
 }
 
 .popup-submit{
@@ -94,7 +98,7 @@
     padding: 0.4em;
     padding-top: 0.3em;
     padding-bottom: 0.1em;
-    border-radius: 0.2em;
+    border-radius: 1em;
     justify-content: center;
     cursor: pointer;
     margin-top: 0.5em;
@@ -117,13 +121,14 @@
 }
 
 .delete-confirmation-header{
-    background-color: #211f1c;
-    color: #fff;
+    background-color: #eee;
+    color: #000;
     text-align: center;
+    padding: 0.2em;
 }
 
 .delete-confirmation-message{
-    background-color: #d9d9d9;
+    background-color: #eee;
     padding: 0.8em;
     color: #222;
     font-style: italic;
@@ -135,6 +140,7 @@
 
 .delete-confirmation-buttons{
     display: flex;
+    font-size: 0.8em;
     flex-direction: row;
     gap: 0.5em;
     justify-content: center;

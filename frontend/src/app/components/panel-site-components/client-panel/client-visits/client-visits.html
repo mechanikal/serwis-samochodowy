@@ -1,4 +1,129 @@
 <div class ="tab-title">Moje wizyty</div>
 <div class = "tab-description">Tutaj możesz przeglądać swoje nadchodzące, aktualne i zakończone wizyty.</div>
 
-<p>client-visits works!</p>
+<div class = "lists-section">
+    <div class="list-wrapper">
+        <div class = "list-header">
+            <div class = "list-header-title-bold">aktualne</div>
+            <div class = "car-header-buttons">
+                <button class = "list-button" (click)="activeExpanded = !activeExpanded"><img src="arrow.png" class = "list-expand-img" [class.expanded]="activeExpanded " alt="Rozwiń"></button>
+            </div>
+        </div>
+        @if (activeExpanded){
+            @if (clientActiveAppointments.length === 0){
+                <div class="list-empty-placeholder">brak aktualnych wizyt</div>
+            }
+            <div class = "list-content">
+                @for (visit of clientActiveAppointments; track visit) {
+                    <button class = "visit-button" (click)="openVisitPopup(visit)">
+                        <div class = "list-row">
+                            <div>{{ visit.serviceName }}</div>
+                            <div>{{ visit.status }}</div>
+                            <div>{{ visit.dateStr }}</div>
+                        </div>
+                    </button>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="list-wrapper">
+        <div class = "list-header">
+            <div class = "list-header-title-bold">nadchodzące</div>
+            <div class = "car-header-buttons">
+                <button class = "list-button" (click)="futureExpanded = !futureExpanded"><img src="arrow.png" class = "list-expand-img" [class.expanded]="futureExpanded " alt="Rozwiń"></button>
+            </div>
+        </div>
+        @if (futureExpanded){
+            @if (clientFutureAppointments.length === 0){
+                <div class="list-empty-placeholder">brak nadchodzących wizyt </div>
+            }
+            <div class = "list-content">
+                @for (visit of clientFutureAppointments; track visit) {
+                    <button class = "visit-button" (click)="openVisitPopup(visit)">
+                        <div class = "list-row">
+                            <div>{{ visit.serviceName }}</div>
+                            <div>{{ visit.status }}</div>
+                            <div>{{ visit.dateStr }}</div>
+                        </div>
+                    </button>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="list-wrapper">
+        <div class = "list-header">
+            <div class = "list-header-title-bold">zakończone</div>
+            <div class = "car-header-buttons">
+                <button class = "list-button" (click)="pastExpanded = !pastExpanded"><img src="arrow.png" class = "list-expand-img" [class.expanded]="pastExpanded " alt="Rozwiń"></button>
+            </div>
+        </div>
+        @if (pastExpanded){
+            @if (clientPastAppointments.length === 0){
+                <div class="list-empty-placeholder">brak zakończonych wizyt </div>
+            }
+            <div class = "list-content">
+                @for (visit of clientPastAppointments; track visit) {
+                    <button class = "visit-button" (click)="openVisitPopup(visit)">
+                        <div class = "list-row">
+                            <div>{{ visit.serviceName }}</div>
+                            <div>{{ visit.status }}</div>
+                            <div>{{ visit.dateStr }}</div>
+                        </div>
+                    </button>
+                }
+            </div>
+        }
+    </div>
+</div>
+@if(visitPopupOpen){
+    <div class="popup-wrapper">
+        <div class = "visit-popup">
+            <div class = "popup-header">
+                wizyta acha
+                <button class = "popup-close-button" (click)="closePopup()">
+                <img src="/x-icon.png" alt="close" class = "popup-close-img">
+                </button>
+            </div>
+            <div class = "visit-popup-content">
+                <div>
+                    <div class = "visit-popup-section-header">informacje o wizycie</div>
+                    <div class = "visit-popup-section">
+                        status
+                        <div class = "info-box">
+                            w trakcie
+                        </div>
+                        pojazd
+                        <div class = "info-box">
+                            mercedes benc
+                        </div>
+                        opis
+                        <div class = "info-box">
+                            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class = "visit-report">
+                    <div class = "visit-popup-section-header">raport</div>
+                    <div class ="visit-popup-section">
+                        diagnoza mechanika
+                        <div class="info-box">
+                            no coś napewno jest nie tak
+                        </div>
+                        kosztorys
+                        <div class = "estimate">
+                            <div class = "estimate-section-title">potrzebne części</div>
+                            <div class = "estimate-section-title">dodatkowe koszta</div>
+                            <div class = "estimate-section-title">usługi</div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <button>zatwierdzenie kosztorysu</button>
+            </div>
+        </div>
+    </div>
+}

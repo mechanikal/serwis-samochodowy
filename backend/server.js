@@ -263,6 +263,30 @@ app.get(
   }
 );
 
+app.get("/api/client-visits", authenticateToken, async (req, res) => {
+  try {
+    const client = await Client.findOne({ userId: req.user.id });
+    if (!client) {
+        return res.status(404).json({ message: "Nie znaleziono klienta" });
+      }
+    const visits = await Visit.find({ clientId: client._id });
+    const visitsData = visits.map((v) => ({
+      _id: v._id,
+      date: new Date(v.date).toISOString().split("T")[0], // yyyy-mm-dd
+      time: v.time,
+      serviceName: "Naprawa",
+      clientName: v.clientId
+        ? `${v.clientId.name} ${v.clientId.lastName}`
+        : "Nieznany",
+      status: v.status,
+    }));
+    res.json(visitsData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
