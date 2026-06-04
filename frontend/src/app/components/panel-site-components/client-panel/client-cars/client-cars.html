@@ -1,0 +1,125 @@
+<div class ="tab-title">Moje pojazdy</div>
+<div class = "tab-description">Tutaj możesz przeglądać swoje pojazdy, dodawać nowe oraz edytować istniejące.</div>
+<div class = "lists-section">
+    @for (car of client_cars; track $index) {
+        <div class = "list-wrapper">
+            <div class = "list-header">
+                <div class = "list-header-title">{{ car.brand }} {{ car.model }} {{ car.registration }}</div>
+                <div class = "car-header-buttons">
+                    <button class = "list-button" (click)="openEditVehiclePopup(car)"><img src="pencil.png" class = "list-button-img" alt="Edytuj"></button>
+                    <button class = "list-button" (click)="openDeleteConfirmationPopup(car)"><img src="bin.png" class = "list-button-img" alt="Usuń"></button>
+                    <button class = "list-button" (click)="toggleCar(car)"><img src="arrow.png" class = "list-expand-img" [class.expanded]="car.expanded" alt="Rozwiń"></button>
+                </div>
+            </div>
+            @if (car.expanded){
+                <div class = "list-content">
+                    <div class = "list-section-title">dane pojazdu</div>
+                        <div class = "list-row">
+                            <div>marka:</div>
+                            <div>{{ car.brand }}</div>
+                        </div>
+                        <div class = "list-row">
+                            <div>model:</div>
+                            <div>{{ car.model }}</div>
+                        </div>
+                        <div class = "list-row">
+                            <div>numer rejestracyjny:</div>
+                            <div>{{ car.registration }}</div>
+                        </div>
+                        <div class = "list-row">
+                            <div>rok produkcji:</div>
+                            <div>{{ car.year }}</div>
+                        </div>
+                        <div class = "list-row">
+                            <div>VIN:</div>
+                            <div>{{ car.VIN }}</div>
+                        </div>
+                    <div class = "list-section-title">historia napraw</div>
+                        <div class = "list-row">naprawa1</div>
+                </div>
+            }
+        </div>
+    }
+</div>
+<div class = "add-car"><button class = "add-car-button" (click) = "openAddVehiclePopup()" >Dodaj pojazd</button></div>
+@if (addVehiclePopupOpen || editVehiclePopupOpen) {
+    <div class="popup-wrapper">
+    <div class = "vehicle-popup">
+        <div class = "popup-header">
+            @if (addVehiclePopupOpen) {
+                 Dodawanie pojazdu
+            }
+            @if (editVehiclePopupOpen) {
+                 Edycja pojazdu
+            }
+            <button class = "popup-close-button" (click)="closePopup()">
+                <img src="/x-icon.png" alt="close" class = "popup-close-img">
+            </button>
+        </div>
+        <form class = "popup-form">
+            <div class = "inputs-section">
+                <div class="inputs-row">
+                    
+                    <div class="small-input">
+                        <label for="brand">Marka:</label>
+                        <input type="text" id="brand" name="brand" [(ngModel)] = "vechicleForm.brand" required>
+                    </div>
+
+                    <div class="small-input">
+                        <label for="model">Model:</label>
+                        <input type="text" id="model" name="model" [(ngModel)] = "vechicleForm.model" required>
+                    </div>
+                </div>
+
+                <div class="inputs-row">
+                    <div class="small-input">
+                        <label for="year">Rok produkcji:</label>
+                        <input type="number" id="year" name="year" [(ngModel)] = "vechicleForm.year" min="1900" max="2100">
+                    </div>
+
+                    <div class="small-input">
+                        <label for="registration">Numer rejestracyjny:</label>
+                        <input type="text" id="registration" name="registration" [(ngModel)] = "vechicleForm.registration">
+                    </div>
+                </div>
+                <div class = "small-input">
+                    <label for="vin">VIN:</label>
+                    <input type="text" id="vin" name="vin" [(ngModel)] = "vechicleForm.VIN">
+                </div>
+            </div>
+            <div class = "submit-row">
+                <button type="submit" class="popup-submit">
+                    @if (addVehiclePopupOpen) {
+                    Dodaj pojazd
+                    }
+                    @if (editVehiclePopupOpen) {
+                    Zapisz zmiany
+                    }
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+}
+@if (deleteConfirmationPopupOpen) {
+    <div class="popup-wrapper">
+        <div class="vehicle-popup">
+            <div class="popup-header">
+                Usuwanie pojazdu
+                <button class = "popup-close-button" (click)="closePopup()">
+                <img src="/x-icon.png" alt="close" class = "popup-close-img">
+            </button>
+            </div>
+            <div class="popup-form">
+                <div class="delete-confirmation-message">
+                    <p>Czy na pewno chcesz usunąć ten pojazd?</p>
+                    <p><b>{{ vechicleForm.brand }} {{ vechicleForm.model }}</b></p>
+                    <p>Ta operacja jest nieodwracalna.</p>
+                </div>
+                <div class="delete-confirmation-buttons">
+                    <button class="popup-submit" (click)="deleteVehicleConfirm()">Potwierdź</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

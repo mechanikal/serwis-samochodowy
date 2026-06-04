@@ -6,5 +6,5 @@ CREATE TABLE users (
   first_name VARCHAR(50),
   last_name VARCHAR(50),
   phone VARCHAR(20),
-  role ENUM('user', 'mechanic') DEFAULT 'user'
+  role ENUM('user', 'mechanic', 'admin') DEFAULT 'user'
 );

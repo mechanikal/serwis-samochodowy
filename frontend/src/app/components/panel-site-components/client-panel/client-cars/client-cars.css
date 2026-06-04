@@ -1,0 +1,147 @@
+.add-car{
+    display: flex;
+    margin-top: 1em;
+    width: 100%;
+    justify-content: center;
+}
+.add-car-button{
+    background-color: #444;
+    text-align: center;
+    align-items: center;
+    color: #fff;
+    font-size: 0.75em;
+    padding: 0.4em;
+    padding-top: 0.3em;
+    padding-bottom: 0.1em;
+    border-radius: 0.2em;
+    cursor: pointer;
+}
+.add-car-button:hover{
+    background-color: #000;
+}
+
+/* popup */
+
+.vehicle-popup{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    background-color: #211f1c;
+    padding-bottom: 0.1em;
+    padding-top: 0.4em;
+    font-size: 1.2em;
+    min-width: 12em;
+}
+.popup-header{
+    display: flex;
+    flex-direction: row;
+    color: #000;
+    justify-content: center;
+    align-items: center;
+    background-color: #eee;
+}
+.popup-form{
+    padding-bottom: 0.2em;
+    background-color: #eee;
+}
+.inputs-section{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color: #eee;
+    padding: 0.5em;
+    padding-bottom: 0.7em;
+    
+    gap: 0.5em;
+}
+.popup-form input{
+    font-size: 0.6em;
+    width: 8em;
+    font-weight: 500;
+    background-color: #fff;
+    border-radius: 0.2em;
+    padding: 0.2em;
+    text-align: center;
+}
+.popup-form label{
+    font-size: 0.6em;
+    font-weight: 500;
+    color: #222;
+    font-style: italic;
+}
+.inputs-row{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+}
+.small-input{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0em;
+}
+.submit-row{
+    display: flex;
+    justify-content: center;
+    
+    font-size: 0.8em;
+}
+
+.popup-submit{
+    display: flex;
+    transition: background-color 0.3s ease;
+    display: flex;
+    background-color: #211F1C;
+    min-width: 6em;
+    color: #fff;
+    font-size: 0.75em;
+    padding: 0.4em;
+    padding-top: 0.3em;
+    padding-bottom: 0.1em;
+    border-radius: 1em;
+    justify-content: center;
+    cursor: pointer;
+    margin-top: 0.5em;
+}
+.popup-close-button{
+    position: absolute;
+    right: 0;
+    align-items: center;
+    justify-content: center;
+}
+.popup-close-button img{
+    height: 0.7em;
+    width: auto;
+    cursor: pointer;
+    padding-right: 0.4em;
+    margin-top: -0.2em;
+}
+.popup-submit:hover{
+    background-color: #000;
+}
+
+.delete-confirmation-header{
+    background-color: #eee;
+    color: #000;
+    text-align: center;
+    padding: 0.2em;
+}
+
+.delete-confirmation-message{
+    background-color: #eee;
+    padding: 0.8em;
+    color: #222;
+    font-style: italic;
+    font-size: 0.6em;
+    font-weight: 500;
+    text-align: center;
+    border-radius: 0.2em;
+}
+
+.delete-confirmation-buttons{
+    display: flex;
+    font-size: 0.8em;
+    flex-direction: row;
+    gap: 0.5em;
+    justify-content: center;
+}
