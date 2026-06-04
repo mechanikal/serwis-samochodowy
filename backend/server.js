@@ -2,8 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.JWT_SECRET;
 require("dotenv").config();
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const db = require("./db");
 const connectMongo = require("./mongo");
@@ -65,7 +65,7 @@ app.post("/api/login", async (req, res) => {
             WHERE email = ? OR username = ?
             LIMIT 1
         `;
-    const [rows] = db.query(sql, [identifier, identifier]);
+    const [rows] = await db.promise().query(sql, [identifier, identifier]);
     const user = rows[0];
 
     if (!user) {
@@ -210,7 +210,7 @@ app.get("/api/visits", authenticateToken, async (req, res) => {
 app.get(
   "/api/stats",
   authenticateToken,
-  requireRole("admin"),
+  requireRole("admin","mechanic"),
   async (req, res) => {
     try {
       const faults = await Fault.find();
@@ -243,6 +243,49 @@ app.get(
     }
   },
 );
+
+app.get(
+  "/api/client-cars",
+  authenticateToken,
+  requireRole("user"),
+  async (req, res) => {
+    try {
+      const client = await Client.findOne({ userId: req.user.id });
+      if (!client) {
+        return res.status(404).json({ message: "Nie znaleziono klienta" });
+      }
+      const cars = await Vehicle.find({ clientId: client._id });
+      res.json(cars);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server error");
+    }
+  }
+);
+
+app.get("/api/client-visits", authenticateToken, async (req, res) => {
+  try {
+    const client = await Client.findOne({ userId: req.user.id });
+    if (!client) {
+        return res.status(404).json({ message: "Nie znaleziono klienta" });
+      }
+    const visits = await Visit.find({ clientId: client._id });
+    const visitsData = visits.map((v) => ({
+      _id: v._id,
+      date: new Date(v.date).toISOString().split("T")[0], // yyyy-mm-dd
+      time: v.time,
+      serviceName: "Naprawa",
+      clientName: v.clientId
+        ? `${v.clientId.name} ${v.clientId.lastName}`
+        : "Nieznany",
+      status: v.status,
+    }));
+    res.json(visitsData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
 
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
