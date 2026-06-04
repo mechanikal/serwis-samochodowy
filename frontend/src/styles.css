@@ -22,6 +22,12 @@ app-root {
 
 /* panel site styles */
 
+.lists-section{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
 .tab-title{
   font-size: 1.2em;
   font-weight: 600;
@@ -94,6 +100,12 @@ app-root {
   color: #222;
   font-style: italic;
 }
+.list-header-title-bold{
+  font-size: 0.85em;
+  font-weight: 500;
+  color: #222;
+  font-weight: 600;
+}
 
 .list-content{
   padding: 0 0.5em 0.3em;
@@ -108,6 +120,18 @@ app-root {
   font-weight: 500;
   justify-content: space-between;
   color: #222;
+}
+
+.list-empty-placeholder{
+  color: #444;
+  font-size: 0.7em;
+  font-style: italic;
+  height: 1em;
+  margin-top: -0.5em;
+  margin-bottom: 0.5em;
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
 .list-section-title{

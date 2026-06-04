@@ -2,19 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
-interface Appointment {
+interface Appointment{
   time: string;
   serviceName: string;
   clientName: string;
-  dateStr?: string; // dodane do łatwiejszego filtrowania
+  dateStr: string;
+  status: string;
 }
-
-interface DaySchedule {
-  dayAbbr: string;
-  dayNumber: number;
-  appointments: Appointment[];
-}
-
 @Component({
   selector: 'client-visits',
   imports: [CommonModule, HttpClientModule],
@@ -22,87 +16,53 @@ interface DaySchedule {
   styleUrl: './client-visits.css',
 })
 export class ClientVisits implements OnInit {
-  currentWeekStart: Date = this.getMonday(new Date());
-  polishMonths: string[] = [
-    'styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec',
-    'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień'
-  ];
-  polishDays: string[] = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb'];
-  
-  allAppointments: Appointment[] = [];
-
   constructor(private http: HttpClient) {}
 
-  ngOnInit() {
+  clientAppointments : Appointment[] = [];
+
+  clientFutureAppointments : Appointment[] = [];
+  clientActiveAppointments : Appointment[] = [];
+  clientPastAppointments : Appointment[] = [];
+  activeExpanded : boolean = true;
+  futureExpanded : boolean = true;
+  pastExpanded : boolean = false;
+
+  visitPopupOpen :boolean = false;
+  popupVisit :Appointment | null = null;
+  
+  ngOnInit(): void {
     this.fetchAppointments();
   }
 
   fetchAppointments() {
     const token = localStorage.getItem('token');
-    this.http.get<any[]>('http://localhost:3000/api/visits', {
+    this.http.get<any[]>('http://localhost:3000/api/client-visits', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     }).subscribe({
       next: (data) => {
-        this.allAppointments = data.map(v => ({
+        this.clientAppointments = data.map(v => ({
           time: v.time,
           serviceName: v.serviceName,
           clientName: v.clientName,
-          dateStr: v.date
+          dateStr: v.date,
+          status: v.status
         }));
+        this.clientFutureAppointments = this.clientAppointments.filter(e => e.status == 'awaiting');
+        this.clientPastAppointments = this.clientAppointments.filter(e => e.status == 'closed');
+        this.clientActiveAppointments = this.clientAppointments.filter(e => e.status != 'awaiting' && e.status != 'closed');
       },
-      error: (err) => console.error('Błąd pobierania wizyt w kalendarzu', err)
+      error: (err) => console.error('Błąd pobierania wizyt w kalendarzu', err),
+      complete: () => console.log('Pobrano wizyty w kalendarzu',this.clientAppointments)
     });
   }
-
-  get monthYear(): string {
-    const middleOfWeek = new Date(this.currentWeekStart);
-    middleOfWeek.setDate(middleOfWeek.getDate() + 3);
-    const month = this.polishMonths[middleOfWeek.getMonth()];
-    const year = middleOfWeek.getFullYear();
-    return `${month} ${year}`;
+  openVisitPopup(visit :Appointment){
+    this.popupVisit = visit;
+    this.visitPopupOpen = true;
   }
-
-  get weekDays(): DaySchedule[] {
-    const days: DaySchedule[] = [];
-    for (let i = 0; i < 6; i++) {
-      const date = new Date(this.currentWeekStart);
-      date.setDate(date.getDate() + i);
-      const dateStr = date.toISOString().split('T')[0];
-      
-      days.push({
-        dayAbbr: this.polishDays[i],
-        dayNumber: date.getDate(),
-        appointments: this.allAppointments.filter(a => a.dateStr === dateStr),
-      });
-    }
-    return days;
-  }
-
-  previousWeek(): void {
-    const newStart = new Date(this.currentWeekStart);
-    newStart.setDate(newStart.getDate() - 7);
-    this.currentWeekStart = newStart;
-  }
-
-  nextWeek(): void {
-    const newStart = new Date(this.currentWeekStart);
-    newStart.setDate(newStart.getDate() + 7);
-    this.currentWeekStart = newStart;
-  }
-
-  onAppointmentClick(day: DaySchedule, appointment: Appointment): void {
-    // Placeholder — will be implemented when button functionality is defined
-    console.log('Clicked appointment:', day.dayAbbr, day.dayNumber, appointment);
-  }
-
-  private getMonday(date: Date): Date {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-    d.setDate(diff);
-    d.setHours(0, 0, 0, 0);
-    return d;
+  closePopup(){
+    this.visitPopupOpen = false;
+    this.popupVisit = null;
   }
 }
