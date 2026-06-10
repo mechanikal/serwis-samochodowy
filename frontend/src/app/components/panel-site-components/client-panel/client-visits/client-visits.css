@@ -11,6 +11,7 @@
     background-color: #211F1C;
     padding-top: 0.6em;
     padding-bottom: 0.3em;
+    font-size: 0.7em;
 }
 .popup-header{
     position: relative;
@@ -57,13 +58,13 @@
 }
 
 .info-box{
-    background-color: #fff;
+    background-color: #efefef;
     font-size: 1.2em;
     width: 80vw;
     white-space: pre-wrap;
     overflow-wrap: break-word;
     padding: 0.1em 0.4em;
-    border-radius: 0.2em;
+    /* border-radius: 0.2em; */
     font-weight: 400;
 }
 
@@ -79,4 +80,39 @@
 .estimate-section-title{
     font-weight: 400;
     text-align: left;
+}
+
+.accept-estimate-button{
+    background-color: #211F1C;
+    transition: background-color ease 0.3s;
+    color: #d9d9d9;
+    width: 10em;
+    border-radius: 1em;
+    padding: 0.1em;
+    padding-top: 0.2em;
+    align-self: center;
+    cursor: pointer;
+}
+
+.accept-estimate-button:hover{
+    background-color: #000;
+}
+
+.part-info{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    background-color: #ececec;
+    margin: 0.2em;
+}
+.middle-column{
+    text-align: center;
+}
+.left-column{
+    text-align: left;
+    margin-left: 0.1em;
+}
+
+.right-column{
+    text-align: right;
+    margin-right: 0.1em;
 }
