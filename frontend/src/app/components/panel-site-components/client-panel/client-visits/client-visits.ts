@@ -9,6 +9,32 @@ interface Appointment{
   dateStr: string;
   status: string;
 }
+
+interface Fault{
+  name: String;
+  description: String;
+}
+
+interface Service{
+  name: String;
+  price:string
+}
+
+interface Part{
+  name: String;
+  description: String;
+  price: Number;
+}
+
+interface Diagnosis{
+  diagnosisDescription: String,
+  faults: Fault[];
+  requiredServices: Service[],
+  requiredParts: Part[];
+  totalPrice: Number;
+}
+
+
 @Component({
   selector: 'client-visits',
   imports: [CommonModule, HttpClientModule],
@@ -29,7 +55,8 @@ export class ClientVisits implements OnInit {
 
   visitPopupOpen :boolean = false;
   popupVisit :Appointment | null = null;
-  
+  popupDiagnosis : Diagnosis | null = null;
+
   ngOnInit(): void {
     this.fetchAppointments();
   }
@@ -59,10 +86,61 @@ export class ClientVisits implements OnInit {
   }
   openVisitPopup(visit :Appointment){
     this.popupVisit = visit;
+    this.popupDiagnosis = createMockDiagnosis();
     this.visitPopupOpen = true;
   }
+
   closePopup(){
     this.visitPopupOpen = false;
     this.popupVisit = null;
   }
+
+}
+
+function createMockDiagnosis(): Diagnosis {
+  return {
+    diagnosisDescription: 'Zużyty układ hamulcowy',
+
+    faults: [
+      {
+        name: 'Zużyte klocki hamulcowe',
+        description: 'Grubość okładzin poniżej normy'
+      },
+      {
+        name: 'Porysowane tarcze',
+        description: 'Widoczne głębokie rowki na powierzchni'
+      }
+    ],
+
+    requiredServices: [
+      {
+        name: 'Wymiana klocków hamulcowych',
+        price: '150'
+      },
+      {
+        name: 'Wymiana tarcz hamulcowych',
+        price: '200'
+      }
+    ],
+
+    requiredParts: [
+      {
+        name: 'Komplet klocków hamulcowych',
+        description: 'Przód',
+        price: 180
+      },
+      {
+        name: 'Tarcza hamulcowa',
+        description: 'Przód lewa',
+        price: 250
+      },
+      {
+        name: 'Tarcza hamulcowa',
+        description: 'Przód prawa',
+        price: 250
+      }
+    ],
+
+    totalPrice: 1030
+  };
 }
