@@ -81,7 +81,7 @@
     <div class="popup-wrapper">
         <div class = "visit-popup">
             <div class = "popup-header">
-                wizyta acha
+                {{popupVisit?.serviceName}}
                 <button class = "popup-close-button" (click)="closePopup()">
                 <img src="/x-icon.png" alt="close" class = "popup-close-img">
                 </button>
@@ -92,16 +92,15 @@
                     <div class = "visit-popup-section">
                         status
                         <div class = "info-box">
-                            w trakcie
+                            {{popupVisit?.status}}
                         </div>
                         pojazd
                         <div class = "info-box">
-                            mercedes benc
+                            trzeba tu ewidentnie dodac pojazd
                         </div>
                         opis
                         <div class = "info-box">
-                            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-                            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                            tutaj równie ewidentnie trzeba dodać opis
                         </div>
                     </div>
                 </div>
@@ -111,18 +110,38 @@
                     <div class ="visit-popup-section">
                         diagnoza mechanika
                         <div class="info-box">
-                            no coś napewno jest nie tak
+                            {{popupDiagnosis?.diagnosisDescription}}
                         </div>
                         kosztorys
                         <div class = "estimate">
                             <div class = "estimate-section-title">potrzebne części</div>
-                            <div class = "estimate-section-title">dodatkowe koszta</div>
+                            @for (part of popupDiagnosis?.requiredParts; track $index){
+                                <div class="part-info">
+                                    <div class = "left-column">{{part.name}}</div>
+                                    <div class = "middle-column">{{part.description}}</div>
+                                    <div class = "right-column">{{part.price}} zł</div>
+                                </div>
+                            }
                             <div class = "estimate-section-title">usługi</div>
+                            @for (service of popupDiagnosis?.requiredServices; track $index){
+                                <div class="part-info">
+                                    <div class = "left-column">{{service.name}}</div>
+                                    <div></div>
+                                    <div class = "right-column">{{service.price}} zł</div>
+                                </div>
+                            }
+                            <div class = "estimate-section-title">podsumowanie</div>
+                                <div class="part-info">
+                                    <div class = "left-column">całkowity koszt</div>
+                                    <div></div>
+                                    <div class = "right-column">{{popupDiagnosis?.totalPrice}} zł</div>
+                                </div>
+                            
                         </div>
                     </div>
                     </div>
                 </div>
-                <button>zatwierdzenie kosztorysu</button>
+                <button class = "accept-estimate-button">zatwierdzenie kosztorysu</button>
             </div>
         </div>
     </div>
