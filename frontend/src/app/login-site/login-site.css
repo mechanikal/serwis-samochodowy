@@ -22,6 +22,7 @@
   align-items: stretch;
   z-index: 4;
 }
+
 .background {
   position: absolute;
   inset: 0;
@@ -35,6 +36,7 @@
     font-size: 2.5vw;
   }
 }
+
 @media (max-aspect-ratio: 5/7.5) {
   .login-form{
     width: 60vw;
@@ -42,6 +44,7 @@
     font-size: 6vw;
   }
 }
+
 .login-section {
   display: flex;
   position: absolute;
@@ -50,4 +53,3 @@
   padding-bottom: 35%;
   overflow: hidden;
 }
-
