@@ -11,7 +11,7 @@
     background-color: #211F1C;
     padding-top: 0.6em;
     padding-bottom: 0.3em;
-    font-size: 0.7em;
+    font-size: 0.9em;
 }
 .popup-header{
     position: relative;
@@ -20,7 +20,7 @@
     background-color: #d6d6d6;
     padding: 0.2em 3em;
     gap: 1em;
-    font-size: 1.2em;
+    font-size: 1.4em;
     font-weight: 600;
 }
 .popup-close-img{
@@ -41,7 +41,7 @@
     padding: 0.5em 1em;
     overflow-y: scroll;
     gap: 0.5em;
-    max-height: 80vh;
+    max-height: 75vh;
 }
 .visit-popup-section{
     display: flex;
@@ -70,11 +70,14 @@
 
 .visit-popup-section-header{
     display: flex;
-    font-size: 0.8em;
+    font-size: 1em;
     width: 100%;
     justify-content: center;
     color: #444;
     font-style: italic;
+    font-weight: 500;
+    border-bottom: #000 solid 0.4em;
+    padding: 0.5em;
 }
 
 .estimate-section-title{
@@ -82,7 +85,7 @@
     text-align: left;
 }
 
-.accept-estimate-button{
+.visit-est-button{
     background-color: #211F1C;
     transition: background-color ease 0.3s;
     color: #d9d9d9;
@@ -94,7 +97,7 @@
     cursor: pointer;
 }
 
-.accept-estimate-button:hover{
+.visit-est-button:hover{
     background-color: #000;
 }
 
@@ -115,4 +118,19 @@
 .right-column{
     text-align: right;
     margin-right: 0.1em;
+}
+
+.visit-est-buttons{
+    background-color: #d6d6d6;
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    padding: 0.3em;
+    justify-content: center;
+}
+
+.section-divider{
+    background-color: #ccc;
+    width: 100%;
+    height: 0.1em;
 }

@@ -16,12 +16,12 @@
   <form (ngSubmit)="onSubmit()" class="login-form">
     <div class="field">
       <div class="fields-title">login</div>
-      <input class="input-field" type="text" [(ngModel)]="loginValue" name="loginValue" />
+      <input class="input-field" type="text" [(ngModel)]="loginValue" name="loginValue", (input)="onInputChange()"/>
     </div>
     @if (mode === 'login'){
     <div class="field">
       <div class="fields-title">hasło</div>
-      <input class="input-field" type="password" [(ngModel)]="passwordValue" name="passwordValue" />
+      <input class="input-field" type="password" [(ngModel)]="passwordValue" name="passwordValue", (input)="onInputChange()"/>
     </div>
     } @if (mode === 'register'){
     <div class="fields">
@@ -56,8 +56,11 @@
       </div>
     </div>
     } @if (mode ==='login'){
-    <button type="submit" class="submit-button" (click)="scrollToTop()">zaloguj</button>
-    } @else {
+    <button type="submit" class="submit-button">zaloguj</button>
+    @if (loginError){
+      <div class = "incorrect-login-msg"><b>niepoprawne dane logowania!</b></div>
+    }
+  } @else {
     <button type="submit" class="submit-button">rejestruj</button>
     }
   </form>
