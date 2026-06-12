@@ -81,7 +81,8 @@ async function seed() {
             clientId: mongoClient._id,
             status: 'w trakcie',
             date: new Date(),
-            time: '10:00'
+            time: '10:00',
+            description: 'coś stuka jak jadę, proszę o diagnozę i naprawę'
         });
 
         await Diagnosis.create({
@@ -90,7 +91,9 @@ async function seed() {
             diagnosisDescription: 'Uszkodzony sworzeń wahacza dolnego.',
             faults: [fault._id],
             requiredServices: [service._id],
-            requiredParts: [part._id]
+            requiredParts: [part._id],
+            totalPrice: 450,
+            accepted: false,
         });
 
         await Notification.create({
