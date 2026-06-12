@@ -13,6 +13,8 @@ const Vehicle = require("./models/vehicle");
 const Visit = require("./models/visit");
 const Fault = require("./models/fault");
 const Service = require("./models/service");
+const diagnosis = require("./models/diagnosis");
+const Part = require("./models/part");
 
 connectMongo();
 
@@ -269,18 +271,53 @@ app.get("/api/client-visits", authenticateToken, async (req, res) => {
     if (!client) {
         return res.status(404).json({ message: "Nie znaleziono klienta" });
       }
-    const visits = await Visit.find({ clientId: client._id });
+    const visits = await Visit.find({ clientId: client._id })
+      .populate("vehicleId", 'brand model registration VIN');
     const visitsData = visits.map((v) => ({
       _id: v._id,
       date: new Date(v.date).toISOString().split("T")[0], // yyyy-mm-dd
       time: v.time,
       serviceName: "Naprawa",
-      clientName: v.clientId
-        ? `${v.clientId.name} ${v.clientId.lastName}`
-        : "Nieznany",
+      clientName: `${client.name} ${client.lastName}`,
       status: v.status,
+      vehicle: v.vehicleId ? {
+        model: v.vehicleId.model,
+        brand: v.vehicleId.brand,
+        registration: v.vehicleId.registration,
+        VIN: v.vehicleId.VIN
+      } : null,
+      description: v.description
     }));
     res.json(visitsData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
+app.get("/api/visit-diagnosis/:id", authenticateToken, async (req, res) => {
+  try {
+    const visit = await Visit.findOne({ _id: req.params.id }).populate("clientId");
+    const client = await Client.findOne({ userId: req.user.id });
+    if (!visit.clientId._id.equals(client._id)) {
+      return res.status(403).json({ message: 'Brak dostępu do tej wizyty' });
+    }
+    const estimate = await diagnosis.findOne({ visitId: visit._id })
+      .populate("faults")
+      .populate("requiredServices")
+      .populate("requiredParts");
+    if (estimate== null){
+      return res.status(404).json({ message: "Brak diagnozy dla wizyty" });
+    }
+    const diagnosisData = {
+      diagnosisDescription: estimate.diagnosisDescription,
+      faults: estimate.faults,
+      requiredServices: estimate.requiredServices,
+      requiredParts: estimate.requiredParts,
+      totalPrice: estimate.totalPrice,
+      accepted: estimate.accepted ? estimate.accepted : false,
+    };
+    res.json(diagnosisData);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
