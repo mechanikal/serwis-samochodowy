@@ -2,12 +2,22 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
+interface CarInfo{
+  model: string;
+  brand: string;
+  registration: string;
+  VIN: string;
+}
+
 interface Appointment{
+  _id: string;
   time: string;
   serviceName: string;
   clientName: string;
   dateStr: string;
   status: string;
+  description: string;
+  car: CarInfo;
 }
 
 interface Fault{
@@ -32,6 +42,7 @@ interface Diagnosis{
   requiredServices: Service[],
   requiredParts: Part[];
   totalPrice: Number;
+  accepted: boolean;
 }
 
 
@@ -70,11 +81,14 @@ export class ClientVisits implements OnInit {
     }).subscribe({
       next: (data) => {
         this.clientAppointments = data.map(v => ({
+          _id: v._id,
           time: v.time,
           serviceName: v.serviceName,
           clientName: v.clientName,
           dateStr: v.date,
-          status: v.status
+          status: v.status,
+          description: v.description,
+          car: v.vehicle
         }));
         this.clientFutureAppointments = this.clientAppointments.filter(e => e.status == 'awaiting');
         this.clientPastAppointments = this.clientAppointments.filter(e => e.status == 'closed');
@@ -84,9 +98,32 @@ export class ClientVisits implements OnInit {
       complete: () => console.log('Pobrano wizyty w kalendarzu',this.clientAppointments)
     });
   }
+
+  fetchAppointmentEstimate(visit :Appointment) {
+    const token = localStorage.getItem('token');
+    this.http.get<any>(`http://localhost:3000/api/visit-diagnosis/${visit._id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }).subscribe({
+      next: (data) => {
+        this.popupDiagnosis = {
+          diagnosisDescription: data.diagnosisDescription,
+          faults: data.faults,
+          requiredServices: data.requiredServices,
+          requiredParts: data.requiredParts,
+          totalPrice: data.totalPrice,
+          accepted: data.accepted,
+        };
+      },
+      error: (err) => console.error('błąd pobierania wizyty', err),
+      complete: () => console.log('Pobrano kosztorys wizyty',this.popupDiagnosis)
+    });
+  }
+
   openVisitPopup(visit :Appointment){
     this.popupVisit = visit;
-    this.popupDiagnosis = createMockDiagnosis();
+    this.fetchAppointmentEstimate(visit);
     this.visitPopupOpen = true;
   }
 
@@ -95,52 +132,4 @@ export class ClientVisits implements OnInit {
     this.popupVisit = null;
   }
 
-}
-
-function createMockDiagnosis(): Diagnosis {
-  return {
-    diagnosisDescription: 'Zużyty układ hamulcowy',
-
-    faults: [
-      {
-        name: 'Zużyte klocki hamulcowe',
-        description: 'Grubość okładzin poniżej normy'
-      },
-      {
-        name: 'Porysowane tarcze',
-        description: 'Widoczne głębokie rowki na powierzchni'
-      }
-    ],
-
-    requiredServices: [
-      {
-        name: 'Wymiana klocków hamulcowych',
-        price: '150'
-      },
-      {
-        name: 'Wymiana tarcz hamulcowych',
-        price: '200'
-      }
-    ],
-
-    requiredParts: [
-      {
-        name: 'Komplet klocków hamulcowych',
-        description: 'Przód',
-        price: 180
-      },
-      {
-        name: 'Tarcza hamulcowa',
-        description: 'Przód lewa',
-        price: 250
-      },
-      {
-        name: 'Tarcza hamulcowa',
-        description: 'Przód prawa',
-        price: 250
-      }
-    ],
-
-    totalPrice: 1030
-  };
 }

@@ -86,8 +86,14 @@
                 <img src="/x-icon.png" alt="close" class = "popup-close-img">
                 </button>
             </div>
+            <div>
+                    <div class="section-divider"></div>
+            </div>
             <div class = "visit-popup-content">
                 <div>
+                <div>
+                    <div class="section-divider"></div>
+                </div>
                     <div class = "visit-popup-section-header">informacje o wizycie</div>
                     <div class = "visit-popup-section">
                         status
@@ -96,13 +102,16 @@
                         </div>
                         pojazd
                         <div class = "info-box">
-                            trzeba tu ewidentnie dodac pojazd
+                            {{popupVisit?.car?.brand}} {{popupVisit?.car?.model}} {{popupVisit?.car?.registration}}
                         </div>
                         opis
                         <div class = "info-box">
-                            tutaj równie ewidentnie trzeba dodać opis
+                            {{popupVisit?.description}}
                         </div>
                     </div>
+                </div>
+                <div>
+                    <div class="section-divider"></div>
                 </div>
                 <div>
                     <div class = "visit-report">
@@ -141,8 +150,19 @@
                     </div>
                     </div>
                 </div>
-                <button class = "accept-estimate-button">zatwierdzenie kosztorysu</button>
+                
             </div>
+                <div>
+                    <div class="section-divider"></div>
+                </div>
+                <div class="visit-est-buttons">
+                    @if(popupDiagnosis != null && !popupDiagnosis.accepted){
+                    <button class = "visit-est-button">zatwierdź kosztorys</button>
+                    }
+                    @if(popupDiagnosis == null || !popupDiagnosis.accepted){
+                        <button class = "visit-est-button">zrezygnuj z wizyty</button>
+                    }
+                </div>
         </div>
     </div>
 }

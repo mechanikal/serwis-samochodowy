@@ -18,6 +18,7 @@ export class LoginForm {
   //login
   loginValue: string = '';
   passwordValue: string = '';
+  loginError: boolean = false;
   //register
   repeatPasswordValue: string = '';
   nameValue: string = '';
@@ -56,6 +57,7 @@ export class LoginForm {
         }
       },
       error: (err) => {
+        this.loginError = true;
         console.error('BĹ‚Ä…d logowania:', err);
       }
     });
@@ -87,8 +89,12 @@ export class LoginForm {
       this.registerSubmit();
     }
   }
+  onInputChange() {
+    this.loginError= false;
+  }
 
   setMode(mode: 'login' | 'register') {
+    this.loginError = false;
     this.mode = mode;
   }
   goToMechanic() {
