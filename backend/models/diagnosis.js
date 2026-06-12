@@ -6,7 +6,9 @@ const DiagnosisSchema = new mongoose.Schema({
   diagnosisDescription: String,
   faults: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Fault' }],
   requiredServices: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Service' }],
-  requiredParts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Part' }]
+  requiredParts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Part' }],
+  accepted: Boolean,
+  totalPrice: Number
 });
 
 module.exports = mongoose.model('Diagnosis', DiagnosisSchema);
