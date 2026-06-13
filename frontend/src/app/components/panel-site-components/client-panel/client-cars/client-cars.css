@@ -126,6 +126,15 @@
     background-color: #000;
 }
 
+.popup-submit:disabled{
+    background-color: #888;
+    cursor: default;
+}
+
+.popup-submit:disabled:hover{
+    background-color: #888;
+}
+
 .delete-confirmation-header{
     background-color: #eee;
     color: #000;

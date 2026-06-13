@@ -93,14 +93,15 @@
                 </div>
             </div>
             <div class = "submit-row">
-                <button type="submit" class="popup-submit">
-                    @if (addVehiclePopupOpen) {
+                @if (addVehiclePopupOpen) {
+                <button type="submit" class="popup-submit" [disabled]="isVehicleFormInvalid()" (click)="addVehicleConfirm()">
                     Dodaj pojazd
-                    }
-                    @if (editVehiclePopupOpen) {
-                    Zapisz zmiany
-                    }
                 </button>
+                }@else if (editVehiclePopupOpen) {
+                    <button type="submit" class="popup-submit" [disabled]="isVehicleFormInvalid()" (click)="editVehicleConfirm()">
+                    Zapisz zmiany
+                    </button>
+                }
             </div>
         </form>
     </div>
@@ -125,6 +126,20 @@
                     <button class="popup-submit" (click)="deleteVehicleConfirm()">Potwierdź</button>
                 </div>
             </div>
+        </div>
+    </div>
+}
+
+@if(showInfoBox){
+    <div class = "info-box-wrapper">
+        <div class = "info-box">
+            <div class="info-topbar"></div>
+            <div class = "info-box-info">
+               {{infoBoxText}}
+            </div>
+            <button class = 'info-box-ok' (click)="closeInfoBox()">
+                ok
+            </button>
         </div>
     </div>
 }

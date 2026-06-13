@@ -67,6 +67,8 @@ export class ClientVisits implements OnInit {
   visitPopupOpen :boolean = false;
   popupVisit :Appointment | null = null;
   popupDiagnosis : Diagnosis | null = null;
+  acceptEstimateConfirmationPopupOpen: boolean = false;
+  cancelVisitConfirmationPopupOpen: boolean = false;
 
   showInfoBox: boolean = false;
   infoBoxText: string = 'ja jestem infobox hehe';
@@ -134,6 +136,31 @@ export class ClientVisits implements OnInit {
   closePopup(){
     this.visitPopupOpen = false;
     this.popupVisit = null;
+    this.popupDiagnosis = null;
+    this.closeConfirmationPopup();
+  }
+
+  closeConfirmationPopup(){
+    this.acceptEstimateConfirmationPopupOpen = false;
+    this.cancelVisitConfirmationPopupOpen = false;
+  }
+
+  openAcceptEstimateConfirmationPopup(){
+    this.acceptEstimateConfirmationPopupOpen = true;
+  }
+
+  openCancelVisitConfirmationPopup(){
+    this.cancelVisitConfirmationPopupOpen = true;
+  }
+
+  confirmAcceptEstimate(){
+    this.closeConfirmationPopup();
+    this.acceptEstimate();
+  }
+
+  confirmCancelVisit(){
+    this.closeConfirmationPopup();
+    this.cancelVisit();
   }
 
   acceptEstimate(){
