@@ -68,6 +68,10 @@ export class ClientVisits implements OnInit {
   popupVisit :Appointment | null = null;
   popupDiagnosis : Diagnosis | null = null;
 
+  showInfoBox: boolean = false;
+  infoBoxText: string = 'ja jestem infobox hehe';
+
+
   ngOnInit(): void {
     this.fetchAppointments();
   }
@@ -130,6 +134,14 @@ export class ClientVisits implements OnInit {
   closePopup(){
     this.visitPopupOpen = false;
     this.popupVisit = null;
+  }
+
+  acceptEstimate(){
+    this.showInfoBox = true;
+  }
+
+  cancelVisit(){
+
   }
 
 }

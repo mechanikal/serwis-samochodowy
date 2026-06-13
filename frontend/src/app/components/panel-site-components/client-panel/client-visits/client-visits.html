@@ -97,15 +97,15 @@
                     <div class = "visit-popup-section-header">informacje o wizycie</div>
                     <div class = "visit-popup-section">
                         status
-                        <div class = "info-box">
+                        <div class = "popup-info">
                             {{popupVisit?.status}}
                         </div>
                         pojazd
-                        <div class = "info-box">
+                        <div class = "popup-info">
                             {{popupVisit?.car?.brand}} {{popupVisit?.car?.model}} {{popupVisit?.car?.registration}}
                         </div>
                         opis
-                        <div class = "info-box">
+                        <div class = "popup-info">
                             {{popupVisit?.description}}
                         </div>
                     </div>
@@ -118,7 +118,7 @@
                     <div class = "visit-popup-section-header">raport</div>
                     <div class ="visit-popup-section">
                         diagnoza mechanika
-                        <div class="info-box">
+                        <div class="popup-info">
                             {{popupDiagnosis?.diagnosisDescription}}
                         </div>
                         kosztorys
@@ -157,12 +157,26 @@
                 </div>
                 <div class="visit-est-buttons">
                     @if(popupDiagnosis != null && !popupDiagnosis.accepted){
-                    <button class = "visit-est-button">zatwierdź kosztorys</button>
+                    <button class = "visit-est-button" (click) = "acceptEstimate()">zatwierdź kosztorys</button>
                     }
                     @if(popupDiagnosis == null || !popupDiagnosis.accepted){
-                        <button class = "visit-est-button">zrezygnuj z wizyty</button>
+                        <button class = "visit-est-button" (click) = "cancelVisit()" >zrezygnuj z wizyty</button>
                     }
                 </div>
+        </div>
+    </div>
+}
+
+@if(showInfoBox){
+    <div class = "info-box-wrapper">
+        <div class = "info-box">
+            <div class="info-topbar"></div>
+            <div class = "info-box-info">
+               {{infoBoxText}}
+            </div>
+            <button class = 'info-box-ok' (click)="showInfoBox = false">
+                ok
+        </button>
         </div>
     </div>
 }

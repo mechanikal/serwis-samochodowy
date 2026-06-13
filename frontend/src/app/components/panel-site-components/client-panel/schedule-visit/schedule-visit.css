@@ -187,6 +187,14 @@
     cursor: pointer;
 }
 
+.schedule-button:disabled{
+  background-color: #888;
+  cursor: default;
+}
+.schedule-button:disabled:hover{
+  background-color: #888;
+}
+
 .schedule-button:hover{
     background-color: #000;
 }
@@ -230,4 +238,93 @@
     justify-content: space-between;
     margin-bottom: 0.5em;
     padding: 0 2em;
+}
+
+.schedule-popup{
+  background-color: #ececec;
+  width: 20em;
+  font-size: 0.8em;
+}
+
+.close-btn{
+  cursor: pointer;
+}
+
+.popup-topbar{
+  height: 0.4em;
+  background-color: #211f1c;
+  width: 100%;
+}
+
+.popup-botbar{
+  height: 0.2em;
+  background-color: #211f1c;
+  width: 100%;
+}
+
+.popup-header{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.2em 0.5em;
+  font-weight: 500;
+  font-size: 1.2em;
+  box-shadow: 0 0.1em 0.3em #555;
+}
+
+.popup-close-img{
+  height: 0.8em;
+}
+
+.popup-btn{
+  display: flex;
+  justify-content: center;
+  padding: 0.4em;
+  padding-top: 0.5em;
+}
+
+.popup-submit{
+  background-color: #211f1c;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 0.2em;
+  padding: 0.1em 1em;
+  padding-bottom: 0;
+  transition: background-color 0.3s ease;
+  font-size: 0.8em;
+}
+
+.visit-information{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+  padding: 0.5em;
+  font-size: 0.8em;
+  padding-top: 1em;
+}
+
+.visit-detail{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  background-color: #fff;
+  border-radius: 0.2em;
+  margin-bottom: 0.2em;
+}
+
+.ghost{
+  width: 0.8em;
+}
+
+.popup-submit:hover{
+  background-color: #000;
+}
+
+.schedule-visit-input-box:disabled{
+  width: 100%;
+  background-color: #fff;
 }

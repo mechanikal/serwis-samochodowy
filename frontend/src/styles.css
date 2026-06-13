@@ -155,3 +155,69 @@ app-root {
   align-items: center;
   z-index: 20;
 }
+
+.info-box-wrapper{
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.5);
+  justify-content: center;
+  opacity: 1;
+  align-items: center;
+  z-index: 21;
+}
+
+.info-box{
+  display: flex;
+  flex-direction: column;
+  background-color: #ececec;
+  width: 8em;
+  height: 5em;
+  border-radius: 0.2em;
+  padding: 0.2em;
+  align-items: center;
+}
+
+.info-topbar{
+  height: 0.3em;
+  background-color: #211f1c;
+  width: 8em;
+  margin-top: -0.2em;
+}
+
+.info-box-ok{
+  display: flex;
+  color: #fff;
+  background-color: #211f1c;
+  width: 3em;
+  height: 1.2em;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0.1em;
+  align-self: center;
+  margin-top: 0.2em;
+  border-radius: 0.2em;
+  font-size: 0.8em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.info-box-ok:hover{
+  background-color: #000;
+}
+
+.info-box-info{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  border-radius: 0.2em;
+  text-align: center;
+  font-size: 0.7em;
+  height: 4.2em;
+  margin-top: 0.5em;
+  width: 100%;
+}

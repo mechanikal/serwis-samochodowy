@@ -35,33 +35,67 @@
       </div>
     </div>
   }
-  @if (selectedTimeSlot != null){
-
-    <div class = "schedule-visit-form">
-    <div class = "tab-description">szczegóły wizyty</div>
-        <div class = "form-top">
-            <div class = "schedule-visit-form-row">
-                pojazd:
-                <select [(ngModel)]= "selectedClientCarId" name="brand" class = "car-selector">
-                <option [ngValue]="null" disabled>
-                    -- Wybierz pojazd --
-                </option>
-                @for (car of clientCars; track car.id) {
-                    <option [value]="car.id">
-                    {{ car.brand }}
-                    </option>
+  <div class = "schedule-visit-form">
+  <div class = "tab-description">szczegóły wizyty</div>
+      <div class = "form-top">
+          <div class = "schedule-visit-form-row">
+              pojazd:
+              <select [(ngModel)]="selectedClientCar" name="brand" class = "car-selector">
+              <option [ngValue]="null" disabled>
+                @if(clientCars.length == 0){
+                  -- Brak pojazdów --
+                }@else {
+                  -- Wybierz pojazd --
                 }
-                </select>
-            </div>
-            
-            <div class = "schedule-visit-form-row">
-                wybrany termin:
+              </option>
+              @for (car of clientCars; track car._id) {
+                  <option [ngValue]="car">
+                  {{ car.brand }} {{ car.model }} {{car.registration}}
+                  </option>
+              }
+              </select>
+          </div>
+          
+          <div class = "schedule-visit-form-row">
+              wybrany termin:
+              @if (selectedTimeSlot != null) {
                 <div class="slot-info"> {{selectedTimeSlot.dateStr}} {{selectedTimeSlot.startHour}}</div>
-            </div>
-    </div>
-    cel wizyty:
-    <textarea class = "schedule-visit-input-box" placeholder="Wpisz cel wizyty lub opisz problem np.: przegląd okresowy, stukanie w podwoziu podczas jazdy, klimatyzacja nie chłodzi powietrza. Możesz wpisać wiele problemów i usług"></textarea>
-        <button class="schedule-button">umów wizytę</button>
-    </div>
-  }
+              } @else {
+                <div class="slot-info"> wybierz datę z kalendarza</div>
+              }
+          </div>
+  </div>
+  cel wizyty:
+  <textarea [(ngModel)]="visitDescription" class = "schedule-visit-input-box" placeholder="Wpisz cel wizyty lub opisz problem np.: przegląd okresowy, stukanie w podwoziu podczas jazdy, klimatyzacja nie chłodzi powietrza. Możesz wpisać wiele problemów i usług"></textarea>
+      <button [disabled]="selectedTimeSlot == null || selectedClientCar == null || visitDescription.length == 0" class="schedule-button" (click)="visitSchedule()">umów wizytę</button>
+  </div>
 </div>
+
+@if (confirmPopupShown){
+  <div class="popup-wrapper">
+        <div class="schedule-popup">
+          <div class = "popup-topbar"></div>
+            <div class="popup-header">
+              <div class="ghost"></div>
+                Umawianie wizyty
+                <button class= "close-btn" (click)="confirmPopupShown = false">
+                  <img src="/x-icon.png" alt="close" class = "popup-close-img">
+                </button>
+            </div>
+            <div class="popup-form">
+                <div class="visit-information">
+                  <i>Pojazd:</i>
+                  <div class="visit-detail"> {{ selectedClientCar?.brand }} {{ selectedClientCar?.model }} {{ selectedClientCar?.registration }}</div>
+                  <i>Termin:</i>
+                  <div class="visit-detail"> {{ selectedTimeSlot?.dateStr }} {{ selectedTimeSlot?.startHour }}</div>
+                  <i>Cel wizyty:</i>
+                  <textarea disabled="true" [(ngModel)]="visitDescription" class = "schedule-visit-input-box"></textarea>
+                </div>
+                <div class="popup-btn">
+                    <button class="popup-submit" >Potwierdź</button>
+                </div>
+            </div>
+          <div class="popup-botbar"></div>
+        </div>
+    </div>
+}

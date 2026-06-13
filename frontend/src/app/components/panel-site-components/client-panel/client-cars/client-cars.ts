@@ -9,8 +9,17 @@ interface Vehicle {
   registration: string;
   VIN: string;
   id: string;
+  visits: Visit[];
 
   expanded: boolean;
+}
+
+interface Visit{
+      _id: string;
+      date: string;
+      serviceName: string,
+      status: string,
+      description: string
 }
 
 @Component({
@@ -60,6 +69,7 @@ export class ClientCars {
           year: c.year,
           registration: c.registration,
           VIN: c.VIN,
+          visits: c.visits,
           expanded: false,
           id: c._id
         }));

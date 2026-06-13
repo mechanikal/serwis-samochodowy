@@ -35,7 +35,12 @@
                             <div>{{ car.VIN }}</div>
                         </div>
                     <div class = "list-section-title">historia napraw</div>
-                        <div class = "list-row">naprawa1</div>
+                    @for(visit of car.visits; track visit._id){
+                        <div class = "list-row">
+                            <div>{{visit.serviceName}} ({{visit.status}})</div>
+                            <div>{{visit.date}}</div>
+                        </div>
+                    }
                 </div>
             }
         </div>
