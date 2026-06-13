@@ -324,6 +324,15 @@
   background-color: #000;
 }
 
+.popup-submit:disabled{
+  background-color: #888;
+  cursor: default;
+}
+
+.popup-submit:disabled:hover{
+  background-color: #888;
+}
+
 .schedule-visit-input-box:disabled{
   width: 100%;
   background-color: #fff;

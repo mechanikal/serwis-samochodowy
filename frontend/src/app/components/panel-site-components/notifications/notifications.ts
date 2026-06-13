@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 interface NotificationItem {
   id: number;
@@ -14,6 +15,7 @@ interface NotificationItem {
   styleUrl: './notifications.css',
 })
 export class Notifications {
+  constructor(private http: HttpClient){};
   notifications: NotificationItem[] = [
     {
       id: 1,
@@ -40,8 +42,18 @@ export class Notifications {
       });
     }
   }
-
-  viewNotification(notification: NotificationItem): void {
-    console.log('Opening notification:', notification);
+  private getAuthHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+      'Authorization': `Bearer ${token}`
+    };
   }
+  
+  fetchNotifications(){
+    this.http.get<any[]>("url",{
+      headers: this.getAuthHeaders()
+    }).subscribe({
+      //todo: implement notifications fetch
+    });
+  }  
 }
