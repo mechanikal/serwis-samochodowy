@@ -11,7 +11,7 @@
     background-color: #211F1C;
     padding-top: 0.6em;
     padding-bottom: 0.3em;
-    font-size: 0.9em;
+    font-size: 0.8em;
 }
 .popup-header{
     position: relative;
@@ -22,6 +22,7 @@
     gap: 1em;
     font-size: 1.4em;
     font-weight: 600;
+    min-height: 1.4em;
 }
 .popup-close-img{
     height: 0.6em;
@@ -57,10 +58,10 @@
     font-weight: 500;
 }
 
-.info-box{
+.popup-info{
     background-color: #efefef;
     font-size: 1.2em;
-    width: 80vw;
+    width: 40em;
     white-space: pre-wrap;
     overflow-wrap: break-word;
     padding: 0.1em 0.4em;
@@ -89,8 +90,9 @@
     background-color: #211F1C;
     transition: background-color ease 0.3s;
     color: #d9d9d9;
-    width: 10em;
-    border-radius: 1em;
+    width: 8em;
+    font-size: 0.8em;
+    border-radius: 0.2em;
     padding: 0.1em;
     padding-top: 0.2em;
     align-self: center;

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { ClientCars } from '../client-cars/client-cars';
 
 interface Appointment {
   time: string;
@@ -24,6 +25,14 @@ interface DaySchedule {
   appointments: Appointment[];
 }
 
+interface ClientCar {
+  brand: string;
+  model: string;
+  registration: string;
+  _id: string;
+}
+
+
 @Component({
   selector: 'schedule-visit',
   imports: [CommonModule, HttpClientModule, FormsModule],
@@ -42,17 +51,17 @@ export class ScheduleVisit implements OnInit {
   weekTimeSlots: TimeSlot[] = [];
   selectedTimeSlot: TimeSlot|null = null;
 
-  clientCars = [
-    { id: 1, brand: 'ferari' },
-    { id: 2, brand: 'porsze' }
-  ];
+  clientCars :ClientCar[] = [];
 
-selectedClientCarId: number | null = null;
+  confirmPopupShown :boolean = false;
+  selectedClientCar: ClientCar | null = null;
+  visitDescription: string = '';
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
     this.fetchAppointments();
+    this.fetchClientCars();
     this.selectedTimeSlot = null;
   }
 
@@ -76,6 +85,32 @@ selectedClientCarId: number | null = null;
       complete: () => console.log('Pobrano wizyty w kalendarzu',this.allAppointments)
     });
   }
+  postVisit(){
+    const token = localStorage.getItem('token');
+    //todo: send request to backend
+  }
+
+  fetchClientCars() {
+    const token = localStorage.getItem('token');
+    this.http.get<any[]>('http://localhost:3000/api/client-cars', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }).subscribe({
+      next: (data) => {
+        this.clientCars = data.map(c => ({
+          brand: c.brand,
+          model: c.model ?? '',
+          registration: c.registration,
+          _id: c._id
+        }));
+      },
+      error: (err) => {
+        console.error('Błąd podczas pobierania samochodów klienta:', err);
+      }
+    });
+  }
+
 
   selectTimeSlot(slot:TimeSlot){
     if (slot.free){
@@ -171,9 +206,21 @@ selectedClientCarId: number | null = null;
   private getMonday(date: Date): Date {
     const d = new Date(date);
     const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    var shift = - day;
+    if (day == 0 || day == 6){
+      shift += 7
+    }
+    const diff = d.getDate() + shift + 1;
     d.setDate(diff);
     d.setHours(0, 0, 0, 0);
     return d;
   }
+
+  visitSchedule(){
+    this.confirmPopupShown = true;
+  }
+  scheduleVisit(){
+
+  }
+
 }

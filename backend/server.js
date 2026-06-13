@@ -173,7 +173,7 @@ app.get(
               registration: v.registration,
             })),
             visits: visits.map((v) => ({
-              serviceName: "Naprawa",
+              serviceName: v.title,
               status: v.status,
               date: new Date(v.date).toLocaleDateString(),
             })),
@@ -196,7 +196,7 @@ app.get("/api/visits", authenticateToken, async (req, res) => {
       _id: v._id,
       date: new Date(v.date).toISOString().split("T")[0], // yyyy-mm-dd
       time: v.time,
-      serviceName: "Naprawa",
+      serviceName: v.title,
       clientName: v.clientId
         ? `${v.clientId.name} ${v.clientId.lastName}`
         : "Nieznany",
@@ -257,7 +257,18 @@ app.get(
         return res.status(404).json({ message: "Nie znaleziono klienta" });
       }
       const cars = await Vehicle.find({ clientId: client._id });
-      res.json(cars);
+      const carData = await Promise.all(
+      cars.map(async(c)=>({
+        brand: c.brand,
+        model: c.model,
+        year: c.year,
+        registration: c.registration,
+        VIN: c.VIN,
+        _id: c._id,
+        visits: await Visit.find({ vehicleId: c._id }).select(" date serviceName status description")
+      }))
+    );
+      res.json(carData);
     } catch (err) {
       console.error(err);
       res.status(500).send("Server error");
@@ -277,7 +288,7 @@ app.get("/api/client-visits", authenticateToken, async (req, res) => {
       _id: v._id,
       date: new Date(v.date).toISOString().split("T")[0], // yyyy-mm-dd
       time: v.time,
-      serviceName: "Naprawa",
+      serviceName: v.title,
       clientName: `${client.name} ${client.lastName}`,
       status: v.status,
       vehicle: v.vehicleId ? {
@@ -286,6 +297,29 @@ app.get("/api/client-visits", authenticateToken, async (req, res) => {
         registration: v.vehicleId.registration,
         VIN: v.vehicleId.VIN
       } : null,
+      description: v.description
+    }));
+    res.json(visitsData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
+app.get("/api/car-visits/:id", authenticateToken, async (req, res) => {
+  try {
+    const car = await Vehicle.findOne({ _id: req.params.id }).populate("clientId");
+    const client = await Client.findOne({ userId: req.user.id });
+    if (!visit.clientId._id.equals(client._id)) {
+      return res.status(403).json({ message: 'Brak dostępu do tej wizyty' });
+    }
+    
+    const visitsData = visits.map((v) => ({
+      _id: v._id,
+      date: new Date(v.date).toISOString().split("T")[0], // yyyy-mm-dd
+      time: v.time,
+      serviceName: v.title,
+      status: v.status,
       description: v.description
     }));
     res.json(visitsData);
