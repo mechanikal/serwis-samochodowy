@@ -30,10 +30,11 @@ interface Visit{
 })
 export class ClientCars {
   client_cars: Vehicle[] = []
-  editingCar: Vehicle | null = null;
   addVehiclePopupOpen: boolean = false;
   editVehiclePopupOpen: boolean = false;
   deleteConfirmationPopupOpen: boolean = false;
+  showInfoBox: boolean = false;
+  infoBoxText: string = '';
   vechicleForm = {
     brand: '',
     model: '',
@@ -44,6 +45,8 @@ export class ClientCars {
     id: ''
   }
 
+  editingVehicle : Vehicle | null = null;
+  deletingVehicle  : Vehicle | null = null;
 
   toggleCar(car: Vehicle): void {
     car.expanded = !car.expanded;
@@ -53,6 +56,49 @@ export class ClientCars {
 
   ngOnInit() {
     this.fetchClientCars();
+  }
+
+
+  deleteClientCar(car:Vehicle){
+    this.http.delete(`http://localhost:3000/api/client-cars/${car.id}`,)
+      .subscribe({
+        next: (res) => {
+        this.infoBoxText = 'pojazd usunięty';
+        this.showInfoBox = true;
+      },
+      error: (err) => {
+        this.infoBoxText = 'nie udało się usunąć pojazdu';
+        this.showInfoBox = true;
+      }
+    });
+  }
+
+  addClientCar(car:Vehicle){
+    this.http.post(`http://localhost:3000/api/client-cars`, car)
+      .subscribe({
+        next: (res) => {
+        this.infoBoxText = 'pojazd dodany';
+        this.showInfoBox = true;
+      },
+      error: (err) => {
+        this.infoBoxText = 'nie udało się dodać pojazdu';
+        this.showInfoBox = true;
+      }
+    });
+  }
+
+  modifyClientCar(car:Vehicle){
+    this.http.put(`http://localhost:3000/api/client-cars/${car.id}`, car)
+      .subscribe({
+        next: (res) => {
+        this.infoBoxText = 'pojazd zmodyfikowany';
+        this.showInfoBox = true;
+      },
+      error: (err) => {
+        this.infoBoxText = 'nie udało się edytować pojazdu';
+        this.showInfoBox = true;
+      }
+    });
   }
 
   fetchClientCars() {
@@ -91,7 +137,6 @@ export class ClientCars {
     }
   }
   openEditVehiclePopup(car : Vehicle) {
-    
     this.vechicleForm.registration = car.registration;
     this.vechicleForm.brand = car.brand;
     this.vechicleForm.model = car.model;
@@ -99,11 +144,23 @@ export class ClientCars {
     this.vechicleForm.VIN = car.VIN;
     this.vechicleForm.id = car.id;
     this.editVehiclePopupOpen = true;
+    this.editingVehicle = car;
   }
   closePopup() {
     this.addVehiclePopupOpen = false;
     this.editVehiclePopupOpen = false;
     this.deleteConfirmationPopupOpen = false;
+  }
+  closeInfoBox() {
+    this.showInfoBox = false;
+    this.closePopup();
+  }
+  isVehicleFormInvalid(): boolean {
+    return this.vechicleForm.brand.trim().length === 0 ||
+      this.vechicleForm.model.trim().length === 0 ||
+      this.vechicleForm.registration.trim().length === 0 ||
+      this.vechicleForm.VIN.trim().length === 0 ||
+      this.vechicleForm.year == null;
   }
   openDeleteConfirmationPopup(car: Vehicle) {
     this.vechicleForm.registration = car.registration;
@@ -113,7 +170,34 @@ export class ClientCars {
     this.vechicleForm.VIN = car.VIN;
     this.vechicleForm.id = car.id;
     this.deleteConfirmationPopupOpen = true;
+    this.deletingVehicle =  car;
   }
+
   deleteVehicleConfirm() {
+    if (this.deletingVehicle != null){
+      this.deleteClientCar(this.deletingVehicle);
+    }
+  }
+
+  editVehicleConfirm() {
+    if (this.editingVehicle != null){
+      this.modifyClientCar(this.editingVehicle);
+    }
+  }
+
+addVehicleConfirm() {
+    if (this.deletingVehicle != null){
+      const newVehicle : Vehicle = {
+        brand: this.vechicleForm.brand,
+        model: this.vechicleForm.model,
+        year: this.vechicleForm.year,
+        registration: this.vechicleForm.registration,
+        VIN: this.vechicleForm.VIN,
+        visits: [],
+        id: '',
+        expanded: false
+      }
+      this.addClientCar(newVehicle);
+    }
   }
 }

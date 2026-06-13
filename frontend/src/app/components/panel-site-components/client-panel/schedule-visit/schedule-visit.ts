@@ -56,6 +56,8 @@ export class ScheduleVisit implements OnInit {
   confirmPopupShown :boolean = false;
   selectedClientCar: ClientCar | null = null;
   visitDescription: string = '';
+  showInfoBox: boolean = false;
+  infoBoxText: string = '';
 
   constructor(private http: HttpClient) {}
 
@@ -218,6 +220,10 @@ export class ScheduleVisit implements OnInit {
 
   visitSchedule(){
     this.confirmPopupShown = true;
+  }
+  closeInfoBox(){
+    this.showInfoBox = false;
+    this.confirmPopupShown = false;
   }
   scheduleVisit(){
 

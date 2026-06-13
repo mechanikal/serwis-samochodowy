@@ -157,12 +157,58 @@
                 </div>
                 <div class="visit-est-buttons">
                     @if(popupDiagnosis != null && !popupDiagnosis.accepted){
-                    <button class = "visit-est-button" (click) = "acceptEstimate()">zatwierdź kosztorys</button>
+                    <button class = "visit-est-button" (click) = "openAcceptEstimateConfirmationPopup()">zatwierdź kosztorys</button>
                     }
                     @if(popupDiagnosis == null || !popupDiagnosis.accepted){
-                        <button class = "visit-est-button" (click) = "cancelVisit()" >zrezygnuj z wizyty</button>
+                        <button class = "visit-est-button" (click) = "openCancelVisitConfirmationPopup()" >zrezygnuj z wizyty</button>
                     }
                 </div>
+        </div>
+    </div>
+}
+
+@if(acceptEstimateConfirmationPopupOpen){
+    <div class="popup-wrapper">
+        <div class="visit-confirmation-popup">
+            <div class="popup-header">
+                Zatwierdzanie kosztorysu
+                <button class = "popup-close-button" (click)="closeConfirmationPopup()">
+                    <img src="/x-icon.png" alt="close" class = "popup-close-img">
+                </button>
+            </div>
+            <div class="visit-confirmation-form">
+                <div class="visit-confirmation-message">
+                    <p>Czy na pewno chcesz zatwierdzić ten kosztorys?</p>
+                    <p><b>{{popupDiagnosis?.totalPrice}} zł</b></p>
+                    <p>Po zatwierdzeniu mechanik będzie mógł kontynuować naprawę.</p>
+                </div>
+                <div class="visit-confirmation-buttons">
+                    <button class="popup-submit" (click)="confirmAcceptEstimate()">Potwierdź</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if(cancelVisitConfirmationPopupOpen){
+    <div class="popup-wrapper">
+        <div class="visit-confirmation-popup">
+            <div class="popup-header">
+                Rezygnacja z wizyty
+                <button class = "popup-close-button" (click)="closeConfirmationPopup()">
+                    <img src="/x-icon.png" alt="close" class = "popup-close-img">
+                </button>
+            </div>
+            <div class="visit-confirmation-form">
+                <div class="visit-confirmation-message">
+                    <p>Czy na pewno chcesz zrezygnować z tej wizyty?</p>
+                    <p><b>{{popupVisit?.serviceName}}</b></p>
+                    <p>Ta operacja anuluje wybraną wizytę.</p>
+                </div>
+                <div class="visit-confirmation-buttons">
+                    <button class="popup-submit" (click)="confirmCancelVisit()">Potwierdź</button>
+                </div>
+            </div>
         </div>
     </div>
 }

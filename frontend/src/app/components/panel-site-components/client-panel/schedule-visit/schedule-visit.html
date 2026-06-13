@@ -99,3 +99,17 @@
         </div>
     </div>
 }
+
+@if(showInfoBox){
+    <div class = "info-box-wrapper">
+        <div class = "info-box">
+            <div class="info-topbar"></div>
+            <div class = "info-box-info">
+               {{infoBoxText}}
+            </div>
+            <button class = 'info-box-ok' (click)="closeInfoBox()">
+                ok
+            </button>
+        </div>
+    </div>
+}
