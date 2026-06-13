@@ -79,6 +79,7 @@ async function seed() {
         const visit = await Visit.create({
             vehicleId: auto1._id,
             clientId: mongoClient._id,
+            title: 'naprawa wachacza',
             status: 'w trakcie',
             date: new Date(),
             time: '10:00',
