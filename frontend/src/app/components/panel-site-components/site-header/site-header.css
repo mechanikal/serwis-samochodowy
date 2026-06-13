@@ -48,6 +48,7 @@
   width: 100%;
   overflow: hidden;
   position: relative;
+  background: linear-gradient(90deg,rgba(224, 224, 224, 1) 0%, rgba(255, 255, 255, 1) 51%, rgba(242, 242, 242, 1) 100%);
 }
 .car {
   max-height: 90%;

@@ -24,6 +24,21 @@ interface DaySchedule {
   appointments: Appointment[];
 }
 
+interface ClientCar {
+  brand: string;
+  model: string;
+  registration: string;
+  _id: string;
+}
+
+interface VisitPayload {
+  vehicle: string;
+  date: string;
+  time: string;
+  description: string;
+}
+
+
 @Component({
   selector: 'schedule-visit',
   imports: [CommonModule, HttpClientModule, FormsModule],
@@ -42,26 +57,32 @@ export class ScheduleVisit implements OnInit {
   weekTimeSlots: TimeSlot[] = [];
   selectedTimeSlot: TimeSlot|null = null;
 
-  clientCars = [
-    { id: 1, brand: 'ferari' },
-    { id: 2, brand: 'porsze' }
-  ];
+  clientCars :ClientCar[] = [];
 
-selectedClientCarId: number | null = null;
+  confirmPopupShown :boolean = false;
+  selectedClientCar: ClientCar | null = null;
+  visitDescription: string = '';
+  showInfoBox: boolean = false;
+  infoBoxText: string = '';
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
     this.fetchAppointments();
+    this.fetchClientCars();
     this.selectedTimeSlot = null;
   }
 
-  fetchAppointments() {
+  private getAuthHeaders() {
     const token = localStorage.getItem('token');
+    return {
+      'Authorization': `Bearer ${token}`
+    };
+  }
+
+  fetchAppointments() {
     this.http.get<any[]>('http://localhost:3000/api/visits', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: this.getAuthHeaders()
     }).subscribe({
       next: (data) => {
         this.allAppointments = data.map(v => ({
@@ -76,6 +97,41 @@ selectedClientCarId: number | null = null;
       complete: () => console.log('Pobrano wizyty w kalendarzu',this.allAppointments)
     });
   }
+
+  addVisit(visit: VisitPayload){
+    this.http.post('http://localhost:3000/api/visits', visit, {
+      headers: this.getAuthHeaders()
+    }).subscribe({
+      next: (res) => {
+        this.fetchAppointments();
+        this.infoBoxText = 'wizyta została umówiona';
+        this.showInfoBox = true;
+      },
+      error: (err) => {
+        this.infoBoxText = 'nie udało się umówić wizyty';
+        this.showInfoBox = true;
+      }
+    });
+  }
+
+  fetchClientCars() {
+    this.http.get<any[]>('http://localhost:3000/api/client-cars', {
+      headers: this.getAuthHeaders()
+    }).subscribe({
+      next: (data) => {
+        this.clientCars = data.map(c => ({
+          brand: c.brand,
+          model: c.model ?? '',
+          registration: c.registration,
+          _id: c._id
+        }));
+      },
+      error: (err) => {
+        console.error('Błąd podczas pobierania samochodów klienta:', err);
+      }
+    });
+  }
+
 
   selectTimeSlot(slot:TimeSlot){
     if (slot.free){
@@ -171,9 +227,33 @@ selectedClientCarId: number | null = null;
   private getMonday(date: Date): Date {
     const d = new Date(date);
     const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    var shift = - day;
+    if (day == 0 || day == 6){
+      shift += 7
+    }
+    const diff = d.getDate() + shift + 1;
     d.setDate(diff);
     d.setHours(0, 0, 0, 0);
     return d;
   }
+
+  visitSchedule(){
+    this.confirmPopupShown = true;
+  }
+  closeInfoBox(){
+    this.showInfoBox = false;
+    this.confirmPopupShown = false;
+  }
+  scheduleVisit(){
+    if (this.selectedClientCar == null || this.selectedTimeSlot == null || this.visitDescription.trim().length === 0){
+      return;
+    }
+    this.addVisit({
+      vehicle: this.selectedClientCar._id,
+      date: this.selectedTimeSlot.dateStr,
+      time: this.selectedTimeSlot.startHour,
+      description: this.visitDescription.trim()
+    });
+  }
+
 }

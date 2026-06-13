@@ -10,8 +10,8 @@
     </div>
     <div class="notification-actions">
       @if (notification.id != 0){
-        <button class="btn-primary" (click)="viewNotification(notification)">Otwórz</button>
-        <button class="btn-secondary" (click)="deleteNotification(notification.id)">Odrzuć</button>
+        <button class="btn-primary" >Oznacz jako przeczytane</button>
+        <button class="btn-secondary" (click)="deleteNotification(notification.id)">Usuń powiadominie</button>
       }
     </div>
   </div>

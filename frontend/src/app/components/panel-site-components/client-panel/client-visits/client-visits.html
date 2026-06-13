@@ -97,15 +97,15 @@
                     <div class = "visit-popup-section-header">informacje o wizycie</div>
                     <div class = "visit-popup-section">
                         status
-                        <div class = "info-box">
+                        <div class = "popup-info">
                             {{popupVisit?.status}}
                         </div>
                         pojazd
-                        <div class = "info-box">
+                        <div class = "popup-info">
                             {{popupVisit?.car?.brand}} {{popupVisit?.car?.model}} {{popupVisit?.car?.registration}}
                         </div>
                         opis
-                        <div class = "info-box">
+                        <div class = "popup-info">
                             {{popupVisit?.description}}
                         </div>
                     </div>
@@ -118,7 +118,7 @@
                     <div class = "visit-popup-section-header">raport</div>
                     <div class ="visit-popup-section">
                         diagnoza mechanika
-                        <div class="info-box">
+                        <div class="popup-info">
                             {{popupDiagnosis?.diagnosisDescription}}
                         </div>
                         kosztorys
@@ -157,12 +157,72 @@
                 </div>
                 <div class="visit-est-buttons">
                     @if(popupDiagnosis != null && !popupDiagnosis.accepted){
-                    <button class = "visit-est-button">zatwierdź kosztorys</button>
+                    <button class = "visit-est-button" (click) = "openAcceptEstimateConfirmationPopup()">zatwierdź kosztorys</button>
                     }
                     @if(popupDiagnosis == null || !popupDiagnosis.accepted){
-                        <button class = "visit-est-button">zrezygnuj z wizyty</button>
+                        <button class = "visit-est-button" (click) = "openCancelVisitConfirmationPopup()" >zrezygnuj z wizyty</button>
                     }
                 </div>
+        </div>
+    </div>
+}
+
+@if(acceptEstimateConfirmationPopupOpen){
+    <div class="popup-wrapper">
+        <div class="visit-confirmation-popup">
+            <div class="popup-header">
+                Zatwierdzanie kosztorysu
+                <button class = "popup-close-button" (click)="closeConfirmationPopup()">
+                    <img src="/x-icon.png" alt="close" class = "popup-close-img">
+                </button>
+            </div>
+            <div class="visit-confirmation-form">
+                <div class="visit-confirmation-message">
+                    <p>Czy na pewno chcesz zatwierdzić ten kosztorys?</p>
+                    <p><b>{{popupDiagnosis?.totalPrice}} zł</b></p>
+                    <p>Po zatwierdzeniu mechanik będzie mógł kontynuować naprawę.</p>
+                </div>
+                <div class="visit-confirmation-buttons">
+                    <button class="popup-submit" (click)="confirmAcceptEstimate()">Potwierdź</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if(cancelVisitConfirmationPopupOpen){
+    <div class="popup-wrapper">
+        <div class="visit-confirmation-popup">
+            <div class="popup-header">
+                Rezygnacja z wizyty
+                <button class = "popup-close-button" (click)="closeConfirmationPopup()">
+                    <img src="/x-icon.png" alt="close" class = "popup-close-img">
+                </button>
+            </div>
+            <div class="visit-confirmation-form">
+                <div class="visit-confirmation-message">
+                    <p>Czy na pewno chcesz zrezygnować z tej wizyty?</p>
+                    <p><b>{{popupVisit?.serviceName}}</b></p>
+                    <p>Ta operacja anuluje wybraną wizytę.</p>
+                </div>
+                <div class="visit-confirmation-buttons">
+                    <button class="popup-submit" (click)="confirmCancelVisit()">Potwierdź</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if(showInfoBox){
+    <div class = "info-box-wrapper">
+        <div class = "info-box">
+            <div class="info-topbar"></div>
+            <div class = "info-box-info">
+               {{infoBoxText}}
+            </div>
+            <button class = 'info-box-ok' (click)="closeInfoBox()">
+                ok
+        </button>
         </div>
     </div>
 }

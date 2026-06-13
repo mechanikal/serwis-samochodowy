@@ -29,19 +29,24 @@
     background-color: #211f1c;
     padding-bottom: 0.1em;
     padding-top: 0.4em;
-    font-size: 1.2em;
+    font-size: 1em;
     min-width: 12em;
 }
 .popup-header{
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: row;
     color: #000;
     justify-content: center;
     align-items: center;
     background-color: #eee;
+    box-shadow: 0 0.1em 0.3em #555;
+    font-weight: 500;
 }
 .popup-form{
-    padding-bottom: 0.2em;
+    padding-top: 0.2em;
+    padding-bottom: 0.1em;
     background-color: #eee;
 }
 .inputs-section{
@@ -49,10 +54,10 @@
     align-items: center;
     flex-direction: column;
     background-color: #eee;
-    padding: 0.5em;
-    padding-bottom: 0.7em;
+    padding: 0.1em;
+    padding-bottom: 0.3em;
     
-    gap: 0.5em;
+    gap: 0.2em;
 }
 .popup-form input{
     font-size: 0.6em;
@@ -83,8 +88,8 @@
 .submit-row{
     display: flex;
     justify-content: center;
-    
     font-size: 0.8em;
+    padding-bottom: 0.5em;
 }
 
 .popup-submit{
@@ -95,13 +100,14 @@
     min-width: 6em;
     color: #fff;
     font-size: 0.75em;
-    padding: 0.4em;
-    padding-top: 0.3em;
-    padding-bottom: 0.1em;
-    border-radius: 1em;
+    /* padding: 0.4em; */
+    padding-top: 0.1em;
+    /* padding-bottom: 0.1em; */
+    border-radius: 0.2em;
     justify-content: center;
     cursor: pointer;
     margin-top: 0.5em;
+    font-size: 0.8em;
 }
 .popup-close-button{
     position: absolute;
@@ -118,6 +124,15 @@
 }
 .popup-submit:hover{
     background-color: #000;
+}
+
+.popup-submit:disabled{
+    background-color: #888;
+    cursor: default;
+}
+
+.popup-submit:disabled:hover{
+    background-color: #888;
 }
 
 .delete-confirmation-header{
@@ -144,4 +159,5 @@
     flex-direction: row;
     gap: 0.5em;
     justify-content: center;
+    padding-bottom: 0.5em;
 }

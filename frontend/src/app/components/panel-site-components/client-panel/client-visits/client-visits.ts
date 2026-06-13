@@ -67,17 +67,27 @@ export class ClientVisits implements OnInit {
   visitPopupOpen :boolean = false;
   popupVisit :Appointment | null = null;
   popupDiagnosis : Diagnosis | null = null;
+  acceptEstimateConfirmationPopupOpen: boolean = false;
+  cancelVisitConfirmationPopupOpen: boolean = false;
+
+  showInfoBox: boolean = false;
+  infoBoxText: string = '';
+
 
   ngOnInit(): void {
     this.fetchAppointments();
   }
 
-  fetchAppointments() {
+  private getAuthHeaders() {
     const token = localStorage.getItem('token');
+    return {
+      'Authorization': `Bearer ${token}`
+    };
+  }
+
+  fetchAppointments() {
     this.http.get<any[]>('http://localhost:3000/api/client-visits', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: this.getAuthHeaders()
     }).subscribe({
       next: (data) => {
         this.clientAppointments = data.map(v => ({
@@ -100,11 +110,8 @@ export class ClientVisits implements OnInit {
   }
 
   fetchAppointmentEstimate(visit :Appointment) {
-    const token = localStorage.getItem('token');
     this.http.get<any>(`http://localhost:3000/api/visit-diagnosis/${visit._id}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: this.getAuthHeaders()
     }).subscribe({
       next: (data) => {
         this.popupDiagnosis = {
@@ -130,6 +137,77 @@ export class ClientVisits implements OnInit {
   closePopup(){
     this.visitPopupOpen = false;
     this.popupVisit = null;
+    this.popupDiagnosis = null;
+    this.closeConfirmationPopup();
+  }
+
+  closeInfoBox(){
+    this.showInfoBox = false;
+    this.closePopup();
+  }
+
+  closeConfirmationPopup(){
+    this.acceptEstimateConfirmationPopupOpen = false;
+    this.cancelVisitConfirmationPopupOpen = false;
+  }
+
+  openAcceptEstimateConfirmationPopup(){
+    this.acceptEstimateConfirmationPopupOpen = true;
+  }
+
+  openCancelVisitConfirmationPopup(){
+    this.cancelVisitConfirmationPopupOpen = true;
+  }
+
+  confirmAcceptEstimate(){
+    this.closeConfirmationPopup();
+    this.acceptEstimate();
+  }
+
+  confirmCancelVisit(){
+    this.closeConfirmationPopup();
+    this.cancelVisit();
+  }
+
+  acceptEstimate(){
+    if (this.popupVisit == null){
+      return;
+    }
+    this.http.post(`http://localhost:3000/api/client-visits/accept/${this.popupVisit._id}`, {}, {
+      headers: this.getAuthHeaders()
+    }).subscribe({
+      next: (res) => {
+        this.fetchAppointments();
+        if (this.popupVisit != null){
+          this.fetchAppointmentEstimate(this.popupVisit);
+        }
+        this.infoBoxText = 'kosztorys zatwierdzony';
+        this.showInfoBox = true;
+      },
+      error: (err) => {
+        this.infoBoxText = 'nie udało się zatwierdzić kosztorysu';
+        this.showInfoBox = true;
+      }
+    });
+  }
+
+  cancelVisit(){
+    if (this.popupVisit == null){
+      return;
+    }
+    this.http.post(`http://localhost:3000/api/client-visits/cancel/${this.popupVisit._id}`, {}, {
+      headers: this.getAuthHeaders()
+    }).subscribe({
+      next: (res) => {
+        this.fetchAppointments();
+        this.infoBoxText = 'wizyta anulowana';
+        this.showInfoBox = true;
+      },
+      error: (err) => {
+        this.infoBoxText = 'nie udało się odwołać wizyty';
+        this.showInfoBox = true;
+      }
+    });
   }
 
 }
