@@ -94,11 +94,11 @@
             </div>
             <div class = "submit-row">
                 @if (addVehiclePopupOpen) {
-                <button type="submit" class="popup-submit" [disabled]="isVehicleFormInvalid()" (click)="addVehicleConfirm()">
+                <button type="button" class="popup-submit" [disabled]="isVehicleFormInvalid()" (click)="addVehicleConfirm()">
                     Dodaj pojazd
                 </button>
                 }@else if (editVehiclePopupOpen) {
-                    <button type="submit" class="popup-submit" [disabled]="isVehicleFormInvalid()" (click)="editVehicleConfirm()">
+                    <button type="button" class="popup-submit" [disabled]="isVehicleFormInvalid()" (click)="editVehicleConfirm()">
                     Zapisz zmiany
                     </button>
                 }

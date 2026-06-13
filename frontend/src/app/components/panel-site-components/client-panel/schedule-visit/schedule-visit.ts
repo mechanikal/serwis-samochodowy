@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { ClientCars } from '../client-cars/client-cars';
 
 interface Appointment {
   time: string;
@@ -30,6 +29,13 @@ interface ClientCar {
   model: string;
   registration: string;
   _id: string;
+}
+
+interface VisitPayload {
+  vehicle: string;
+  date: string;
+  time: string;
+  description: string;
 }
 
 
@@ -67,12 +73,16 @@ export class ScheduleVisit implements OnInit {
     this.selectedTimeSlot = null;
   }
 
-  fetchAppointments() {
+  private getAuthHeaders() {
     const token = localStorage.getItem('token');
+    return {
+      'Authorization': `Bearer ${token}`
+    };
+  }
+
+  fetchAppointments() {
     this.http.get<any[]>('http://localhost:3000/api/visits', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: this.getAuthHeaders()
     }).subscribe({
       next: (data) => {
         this.allAppointments = data.map(v => ({
@@ -87,17 +97,26 @@ export class ScheduleVisit implements OnInit {
       complete: () => console.log('Pobrano wizyty w kalendarzu',this.allAppointments)
     });
   }
-  postVisit(){
-    const token = localStorage.getItem('token');
-    //todo: send request to backend
+
+  addVisit(visit: VisitPayload){
+    this.http.post('http://localhost:3000/api/visits', visit, {
+      headers: this.getAuthHeaders()
+    }).subscribe({
+      next: (res) => {
+        this.fetchAppointments();
+        this.infoBoxText = 'wizyta została umówiona';
+        this.showInfoBox = true;
+      },
+      error: (err) => {
+        this.infoBoxText = 'nie udało się umówić wizyty';
+        this.showInfoBox = true;
+      }
+    });
   }
 
   fetchClientCars() {
-    const token = localStorage.getItem('token');
     this.http.get<any[]>('http://localhost:3000/api/client-cars', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: this.getAuthHeaders()
     }).subscribe({
       next: (data) => {
         this.clientCars = data.map(c => ({
@@ -226,7 +245,15 @@ export class ScheduleVisit implements OnInit {
     this.confirmPopupShown = false;
   }
   scheduleVisit(){
-
+    if (this.selectedClientCar == null || this.selectedTimeSlot == null || this.visitDescription.trim().length === 0){
+      return;
+    }
+    this.addVisit({
+      vehicle: this.selectedClientCar._id,
+      date: this.selectedTimeSlot.dateStr,
+      time: this.selectedTimeSlot.startHour,
+      description: this.visitDescription.trim()
+    });
   }
 
 }

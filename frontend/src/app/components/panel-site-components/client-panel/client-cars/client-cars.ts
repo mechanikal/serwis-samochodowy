@@ -22,6 +22,14 @@ interface Visit{
       description: string
 }
 
+interface VehiclePayload {
+  brand: string;
+  model: string;
+  year: number;
+  registration: string;
+  VIN: string;
+}
+
 @Component({
   selector: 'client-cars',
   imports: [FormsModule],
@@ -58,11 +66,20 @@ export class ClientCars {
     this.fetchClientCars();
   }
 
+  private getAuthHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+      'Authorization': `Bearer ${token}`
+    };
+  }
 
   deleteClientCar(car:Vehicle){
-    this.http.delete(`http://localhost:3000/api/client-cars/${car.id}`,)
+    this.http.delete(`http://localhost:3000/api/client-cars/${car.id}`, {
+      headers: this.getAuthHeaders()
+    })
       .subscribe({
         next: (res) => {
+        this.fetchClientCars();
         this.infoBoxText = 'pojazd usunięty';
         this.showInfoBox = true;
       },
@@ -73,10 +90,13 @@ export class ClientCars {
     });
   }
 
-  addClientCar(car:Vehicle){
-    this.http.post(`http://localhost:3000/api/client-cars`, car)
+  addClientCar(car:VehiclePayload){
+    this.http.post(`http://localhost:3000/api/client-cars`, car, {
+      headers: this.getAuthHeaders()
+    })
       .subscribe({
         next: (res) => {
+        this.fetchClientCars();
         this.infoBoxText = 'pojazd dodany';
         this.showInfoBox = true;
       },
@@ -87,10 +107,13 @@ export class ClientCars {
     });
   }
 
-  modifyClientCar(car:Vehicle){
-    this.http.put(`http://localhost:3000/api/client-cars/${car.id}`, car)
+  modifyClientCar(carId: string, car:VehiclePayload){
+    this.http.put(`http://localhost:3000/api/client-cars/${carId}`, car, {
+      headers: this.getAuthHeaders()
+    })
       .subscribe({
         next: (res) => {
+        this.fetchClientCars();
         this.infoBoxText = 'pojazd zmodyfikowany';
         this.showInfoBox = true;
       },
@@ -102,11 +125,8 @@ export class ClientCars {
   }
 
   fetchClientCars() {
-    const token = localStorage.getItem('token');
     this.http.get<any[]>('http://localhost:3000/api/client-cars', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: this.getAuthHeaders()
     }).subscribe({
       next: (data) => {
         this.client_cars = data.map(c => ({
@@ -150,6 +170,8 @@ export class ClientCars {
     this.addVehiclePopupOpen = false;
     this.editVehiclePopupOpen = false;
     this.deleteConfirmationPopupOpen = false;
+    this.editingVehicle = null;
+    this.deletingVehicle = null;
   }
   closeInfoBox() {
     this.showInfoBox = false;
@@ -181,23 +203,22 @@ export class ClientCars {
 
   editVehicleConfirm() {
     if (this.editingVehicle != null){
-      this.modifyClientCar(this.editingVehicle);
+      this.modifyClientCar(this.editingVehicle.id, this.getVehiclePayloadFromForm());
     }
   }
 
-addVehicleConfirm() {
-    if (this.deletingVehicle != null){
-      const newVehicle : Vehicle = {
-        brand: this.vechicleForm.brand,
-        model: this.vechicleForm.model,
-        year: this.vechicleForm.year,
-        registration: this.vechicleForm.registration,
-        VIN: this.vechicleForm.VIN,
-        visits: [],
-        id: '',
-        expanded: false
-      }
-      this.addClientCar(newVehicle);
-    }
+  addVehicleConfirm() {
+    this.addClientCar(this.getVehiclePayloadFromForm());
   }
+
+  private getVehiclePayloadFromForm(): VehiclePayload {
+    return {
+      brand: this.vechicleForm.brand.trim(),
+      model: this.vechicleForm.model.trim(),
+      year: this.vechicleForm.year,
+      registration: this.vechicleForm.registration.trim(),
+      VIN: this.vechicleForm.VIN.trim()
+    };
+  }
+
 }

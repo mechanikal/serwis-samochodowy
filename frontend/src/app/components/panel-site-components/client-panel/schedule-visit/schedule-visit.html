@@ -92,7 +92,7 @@
                   <textarea disabled="true" [(ngModel)]="visitDescription" class = "schedule-visit-input-box"></textarea>
                 </div>
                 <div class="popup-btn">
-                    <button class="popup-submit" >Potwierdź</button>
+                    <button class="popup-submit" [disabled]="selectedTimeSlot == null || selectedClientCar == null || visitDescription.length == 0" (click)="scheduleVisit()">Potwierdź</button>
                 </div>
             </div>
           <div class="popup-botbar"></div>
