@@ -22,12 +22,27 @@
 
       @if (section.expanded) {
         <div class="repairs__section-content">
+          <div class="repairs__header">
+            <span>Data</span>
+            <span>Godz.</span>
+            <span>Usługa</span>
+            <span>Klient</span>
+            <span></span>
+          </div>
           @for (item of filteredItems(section.items); track $index) {
-            <div class="repairs__row">
+            <div class="repairs__row repairs__row--clickable" (click)="openPopup(item)">
               <span>{{ item.date }}</span>
               <span>{{ item.time }}</span>
               <span>{{ item.service }}</span>
               <span>{{ item.client }}</span>
+              <button
+                type="button"
+                class="repairs__delete-btn"
+                (click)="deleteItem(section, item); $event.stopPropagation()"
+                title="Usuń wizytę"
+              >
+                <img src="/x-icon.png" alt="usuń" class="repairs__delete-icon" />
+              </button>
             </div>
           }
         </div>
@@ -35,3 +50,232 @@
     </div>
   }
 </div>
+
+<!-- ── Visit detail popup ── -->
+@if(popupItem){
+    <div class="popup-wrapper">
+        <div class="visit-popup">
+            <div class="popup-header">
+                Szczegóły wizyty
+                <button class="popup-close-button" (click)="closePopup()">
+                <img src="/x-icon.png" alt="zamknij" class="popup-close-img">
+                </button>
+            </div>
+            <div>
+                    <div class="section-divider"></div>
+            </div>
+            <div class="visit-popup-content">
+                <div>
+                <div>
+                    <div class="section-divider"></div>
+                </div>
+                    <div class="visit-popup-section-header">informacje o wizycie</div>
+                    <div class="visit-popup-section">
+                        klient
+                        <div class="popup-info">
+                            {{popupItem.client}}
+                        </div>
+                        data
+                        <div class="popup-info">
+                            {{popupItem.date}}
+                        </div>
+                        godzina
+                        <div class="popup-info">
+                            {{popupItem.time}}
+                        </div>
+                        usługa
+                        <div class="popup-info">
+                            {{popupItem.service}}
+                        </div>
+                        status
+                        <div class="popup-info rep-popup__status" [attr.data-status]="popupItem.status">
+                            {{popupItem.status}}
+                        </div>
+        @if (popupItem.description) {
+          <div class="popup-info">
+              Opis klienta: {{popupItem.description}}
+          </div>
+        }
+
+        @if (popupItem.status === 'oczekiwanie na kosztorys') {
+          <div><div class="section-divider" style="margin: 0.5em 0;"></div></div>
+          <div class="visit-popup-section-header" style="border-bottom-width: 0.2em; padding: 0.2em;">Wypełnij kosztorys</div>
+          
+          <div style="display: flex; flex-direction: column; gap: 0.3em; margin-top: 0.5em; text-align: left;">
+            <label style="font-size: 0.8em; font-weight: 500; font-style: italic; color: #444;">Opis diagnozy</label>
+            <textarea [(ngModel)]="diagDescription" rows="2" style="width: 100%; background-color: #fff; border: 1px solid #ccc; border-radius: 0.2em; padding: 0.3em; resize: vertical; box-sizing: border-box; font-family: 'Khand', sans-serif;" placeholder="Wpisz opis diagnozy..."></textarea>
+            
+            <label style="font-size: 0.8em; font-weight: 500; font-style: italic; color: #444;">Wybierz usterki</label>
+            <div class="custom-list-container">
+              @for (f of faultsList; track f._id) {
+                <div class="custom-list-item" [class.selected]="diagSelectedFaults.includes(f._id)" (click)="toggleFault(f._id)">
+                  <span class="custom-list-check">{{ diagSelectedFaults.includes(f._id) ? '✔' : '' }}</span>
+                  <span class="custom-list-text">{{ f.name }}</span>
+                </div>
+              }
+            </div>
+
+            <label style="font-size: 0.8em; font-weight: 500; font-style: italic; color: #444;">Wybierz usługi</label>
+            <div class="custom-list-container">
+              @for (s of servicesList; track s._id) {
+                <div class="custom-list-item" [class.selected]="diagSelectedServices.includes(s._id)" (click)="toggleService(s._id)">
+                  <span class="custom-list-check">{{ diagSelectedServices.includes(s._id) ? '✔' : '' }}</span>
+                  <span class="custom-list-text">{{ s.name }} ({{ s.price }} zł)</span>
+                </div>
+              }
+            </div>
+
+            <label style="font-size: 0.8em; font-weight: 500; font-style: italic; color: #444;">Wybierz części</label>
+            <div class="custom-list-container">
+              @for (p of partsList; track p._id) {
+                <div class="custom-list-item" (click)="addPart(p._id)">
+                  <span class="custom-list-check" style="font-weight: 900; font-size: 1.1em;">+</span>
+                  <span class="custom-list-text">{{ p.name }} ({{ p.price }} zł)</span>
+                </div>
+              }
+            </div>
+
+            @if (diagSelectedParts.length > 0) {
+              <div style="margin-top: 0.2em; border: 1px solid #ccc; border-radius: 0.2em; padding: 0.3em; background-color: #fff;">
+                <label style="font-size: 0.8em; font-weight: 600; color: #444;">Dodane części:</label>
+                @for (partId of diagSelectedParts; track $index) {
+                  <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.2em 0; border-bottom: 1px solid #eee;">
+                    <span style="font-size: 0.9em; color: #333;">{{ getPartName(partId) }} ({{ getPartPrice(partId) }} zł)</span>
+                    <button class="visit-est-button" style="min-width: unset; padding: 0 0.4em; background-color: #8c2020;" (click)="removePart($index)">usuń</button>
+                  </div>
+                }
+              </div>
+            }
+
+            <div style="margin-top: 0.5em; text-align: right; font-size: 1.1em; font-weight: 600; color: #222;">
+              Suma kosztorysu: {{ diagTotalPrice }} zł
+            </div>
+          </div>
+        }
+
+        @if (popupItem.status === 'oczekiwanie na zatwierdzenie kosztorysu' || popupItem.status === 'w trakcie naprawy' || popupItem.status === 'zakończone') {
+          <div><div class="section-divider" style="margin: 0.5em 0;"></div></div>
+          <div class="visit-popup-section-header" style="border-bottom-width: 0.2em; padding: 0.2em;">Zatwierdzony kosztorys</div>
+          
+          <div style="display: flex; flex-direction: column; gap: 0.3em; margin-top: 0.5em; text-align: left;">
+            <label style="font-size: 0.8em; font-weight: 500; font-style: italic; color: #444;">Opis diagnozy</label>
+            <div class="popup-info" style="background-color: #fff; border: 1px solid #ccc; font-family: 'Khand', sans-serif;">{{ diagDescription || 'Brak opisu' }}</div>
+            
+            <label style="font-size: 0.8em; font-weight: 500; font-style: italic; color: #444;">Wykryte usterki</label>
+            <div class="popup-info" style="background-color: #fff; border: 1px solid #ccc; font-family: 'Khand', sans-serif;">
+              @if (diagSelectedFaults.length > 0) {
+                <ul style="margin: 0; padding-left: 1.2em;">
+                  @for (f of diagSelectedFaults; track $index) {
+                    <li>{{ getFaultName(f) }}</li>
+                  }
+                </ul>
+              } @else {
+                <span style="color: #666; font-style: italic;">Brak wybranych usterek</span>
+              }
+            </div>
+
+            <label style="font-size: 0.8em; font-weight: 500; font-style: italic; color: #444;">Wymagane usługi</label>
+            <div class="popup-info" style="background-color: #fff; border: 1px solid #ccc; font-family: 'Khand', sans-serif;">
+              @if (diagSelectedServices.length > 0) {
+                <ul style="margin: 0; padding-left: 1.2em;">
+                  @for (s of diagSelectedServices; track $index) {
+                    <li>{{ getServiceName(s) }} ({{ getServicePrice(s) }} zł)</li>
+                  }
+                </ul>
+              } @else {
+                <span style="color: #666; font-style: italic;">Brak wybranych usług</span>
+              }
+            </div>
+
+            <label style="font-size: 0.8em; font-weight: 500; font-style: italic; color: #444;">Wymagane części</label>
+            <div class="popup-info" style="background-color: #fff; border: 1px solid #ccc; font-family: 'Khand', sans-serif;">
+              @if (diagSelectedParts.length > 0) {
+                <ul style="margin: 0; padding-left: 1.2em;">
+                  @for (p of diagSelectedParts; track $index) {
+                    <li>{{ getPartName(p) }} ({{ getPartPrice(p) }} zł)</li>
+                  }
+                </ul>
+              } @else {
+                <span style="color: #666; font-style: italic;">Brak wymaganych części</span>
+              }
+            </div>
+
+            <div style="margin-top: 0.5em; text-align: right; font-size: 1.1em; font-weight: 600; color: #222;">
+              Suma kosztorysu: {{ diagTotalPrice }} zł
+            </div>
+          </div>
+        }
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="section-divider"></div>
+            </div>
+            <div class="visit-est-buttons-container">
+                @if (getNextStatus(popupItem.status)) {
+                    <div class="visit-est-buttons-row">
+                        <button class="visit-est-button visit-est-button--full" 
+                                [disabled]="popupItem.status === 'oczekiwanie na kosztorys' && !isDiagnosisValid"
+                                [class.disabled-btn]="popupItem.status === 'oczekiwanie na kosztorys' && !isDiagnosisValid"
+                                (click)="changeStatus(popupItem, getNextStatus(popupItem.status)!)">
+                            Zmień status na: {{ getNextStatus(popupItem.status) }} <span style="font-size: 1.1em; line-height: 0;">➔</span>
+                        </button>
+                    </div>
+                }
+                <div class="visit-est-buttons-row">
+                    @if (popupItem.status !== 'anulowane' && popupItem.status !== 'zakończone') {
+                        <button class="visit-est-button" (click)="openCancelConfirmation()">anuluj wizytę</button>
+                    }
+                    <button class="visit-est-button" (click)="closePopup()">zamknij</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@if (deleteConfirmationOpen) {
+  <div class="popup-wrapper">
+    <div class="vehicle-popup">
+      <div class="popup-header">
+        Usuwanie wizyty
+        <button class="popup-close-button" (click)="cancelDelete()">
+          <img src="/x-icon.png" alt="zamknij" class="popup-close-img">
+        </button>
+      </div>
+      <div class="popup-form">
+        <div class="delete-confirmation-message">
+          <p>Czy na pewno chcesz usunąć tę wizytę?</p>
+          <p><b>{{ pendingDeleteItem?.date }} {{ pendingDeleteItem?.time }} – {{ pendingDeleteItem?.service }}</b></p>
+          <p>Ta operacja jest nieodwracalna.</p>
+        </div>
+        <div class="delete-confirmation-buttons">
+          <button class="popup-submit" (click)="confirmDelete()">Potwierdź</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (cancelConfirmationOpen) {
+  <div class="popup-wrapper" style="z-index: 10000;">
+    <div class="vehicle-popup">
+      <div class="popup-header">
+        Anulowanie wizyty
+        <button class="popup-close-button" (click)="closeCancelConfirmation()">
+          <img src="/x-icon.png" alt="zamknij" class="popup-close-img">
+        </button>
+      </div>
+      <div class="popup-form">
+        <div class="delete-confirmation-message">
+          <p>Czy na pewno chcesz anulować tę wizytę?</p>
+          <p><b>{{ popupItem?.date }} {{ popupItem?.time }} – {{ popupItem?.service }}</b></p>
+          <p>Ta operacja jest nieodwracalna, a klient zostanie o niej powiadomiony.</p>
+        </div>
+        <div class="delete-confirmation-buttons">
+          <button class="popup-submit" (click)="confirmCancel()">Potwierdź</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

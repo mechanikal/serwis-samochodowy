@@ -4,7 +4,7 @@ const VisitSchema = new mongoose.Schema({
   vehicleId: { type: mongoose.Schema.Types.ObjectId, ref: 'Vehicle', required: true },
   clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'Client', required: true },
   title: String,
-  status: { type: String, default: 'awaiting' },
+  status: { type: String, default: 'nadchodzące' },
   date: { type: Date, required: true },
   time: { type: String, required: true },
   description: String

@@ -6,14 +6,50 @@ interface Appointment {
   time: string;
   serviceName: string;
   clientName: string;
-  dateStr?: string; // dodane do łatwiejszego filtrowania
+  dateStr?: string;
+  status?: string;
+}
+
+interface HourSlot {
+  hour: number;        // 8, 9, ... 20
+  label: string;       // '8:00', '9:00', ... '20:00'
+  endLabel: string;    // '9:00', '10:00', ... '21:00'
+  appointments: Appointment[];
 }
 
 interface DaySchedule {
   dayAbbr: string;
   dayNumber: number;
-  appointments: Appointment[];
+  slots: HourSlot[];
+  appointments: Appointment[]; // kept for onAppointmentClick signature compatibility
 }
+
+interface PopupVisit {
+  clientName: string;
+  serviceName: string;
+  date: string;
+  timeStart: string;
+  timeEnd: string;
+  status: string;
+}
+
+// Working hours: 8:00 – 20:00 (13 slots)
+const HOUR_START = 8;
+const HOUR_END   = 20;
+
+const STATUS_LABELS: Record<string, string> = {
+  'nadchodzące':                              'Nadchodzące',
+  'oczekiwanie na kosztorys':                'Oczekiwanie na kosztorys',
+  'oczekiwanie na zatwierdzenie kosztorysu': 'Oczekiwanie na zatw. kosztorysu',
+  'w trakcie naprawy':                       'W trakcie naprawy',
+  'zakończone':                              'Zakończone',
+  'anulowane':                               'Anulowane',
+  // legacy fallbacks
+  'oczekuje':   'Nadchodzące',
+  'w trakcie':  'W trakcie naprawy',
+  'zakończona': 'Zakończone',
+  'anulowana':  'Anulowane',
+};
 
 @Component({
   selector: 'app-calendar',
@@ -28,8 +64,11 @@ export class Calendar implements OnInit {
     'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień'
   ];
   polishDays: string[] = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb'];
-  
+
   allAppointments: Appointment[] = [];
+
+  // Popup state
+  popupVisit: PopupVisit | null = null;
 
   constructor(private http: HttpClient) {}
 
@@ -49,7 +88,8 @@ export class Calendar implements OnInit {
           time: v.time,
           serviceName: v.serviceName,
           clientName: v.clientName,
-          dateStr: v.date
+          dateStr: v.date,
+          status: v.status,
         }));
       },
       error: (err) => console.error('Błąd pobierania wizyt w kalendarzu', err)
@@ -64,17 +104,39 @@ export class Calendar implements OnInit {
     return `${month} ${year}`;
   }
 
+  /** Parse 'HH:MM' or 'H:MM' → integer hour */
+  private parseHour(timeStr: string): number {
+    if (!timeStr) return -1;
+    const parts = timeStr.split(':');
+    return parseInt(parts[0], 10);
+  }
+
   get weekDays(): DaySchedule[] {
     const days: DaySchedule[] = [];
     for (let i = 0; i < 6; i++) {
       const date = new Date(this.currentWeekStart);
       date.setDate(date.getDate() + i);
       const dateStr = date.toISOString().split('T')[0];
-      
+
+      // Filter appointments for this day, sorted by time
+      const dayApts = this.allAppointments
+        .filter(a => a.dateStr === dateStr)
+        .sort((a, b) => this.parseHour(a.time) - this.parseHour(b.time));
+
+      // Build hourly slots 8 → 20 (inclusive)
+      const slots: HourSlot[] = [];
+      for (let h = HOUR_START; h <= HOUR_END; h++) {
+        const label = `${h}:00`;
+        const endLabel = `${h + 1}:00`;
+        const appointments = dayApts.filter(a => this.parseHour(a.time) === h);
+        slots.push({ hour: h, label, endLabel, appointments });
+      }
+
       days.push({
         dayAbbr: this.polishDays[i],
         dayNumber: date.getDate(),
-        appointments: this.allAppointments.filter(a => a.dateStr === dateStr),
+        slots,
+        appointments: dayApts,
       });
     }
     return days;
@@ -92,9 +154,24 @@ export class Calendar implements OnInit {
     this.currentWeekStart = newStart;
   }
 
-  onAppointmentClick(day: DaySchedule, appointment: Appointment): void {
-    // Placeholder — will be implemented when button functionality is defined
-    console.log('Clicked appointment:', day.dayAbbr, day.dayNumber, appointment);
+  onAppointmentClick(day: DaySchedule, slot: HourSlot): void {
+    const apt = slot.appointments[0];
+    // Format date as DD.MM.YYYY
+    const [y, m, d] = (apt.dateStr ?? '').split('-');
+    const dateFormatted = apt.dateStr ? `${d}.${m}.${y}` : '—';
+
+    this.popupVisit = {
+      clientName:  apt.clientName,
+      serviceName: apt.serviceName,
+      date:        dateFormatted,
+      timeStart:   slot.label,
+      timeEnd:     slot.endLabel,
+      status:      STATUS_LABELS[apt.status ?? ''] ?? apt.status ?? '—',
+    };
+  }
+
+  closePopup(): void {
+    this.popupVisit = null;
   }
 
   private getMonday(date: Date): Date {

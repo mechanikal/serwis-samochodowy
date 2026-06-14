@@ -41,25 +41,25 @@ async function seed() {
             database: process.env.DB_NAME || 'users_db',
             port: process.env.DB_PORT || 3306
         });
-        console.log('Połączono z MySQL do seedowania');
-
-        await clearDatabase();
-
-        // Mock user creation
-        const hashedPassword = await bcrypt.hash('password123', 10);
-
-        const [mechRes] = await mysqlConn.execute(
-            'INSERT INTO users (username, email, password_hash, first_name, last_name, phone, role) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            ['mechanik1', 'jan@serwis.pl', hashedPassword, 'Jan', 'Kowalski', '123456789', 'mechanic']
-        );
-        const mechId = mechRes.insertId;
-
-        const [mockClient] = await mysqlConn.execute(
-            'INSERT INTO users (username, email, password_hash, first_name, last_name, phone, role) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            ['klient1', 'adam@gmail.com', hashedPassword, 'Adam', 'Nowak', '987654321', 'user']
-        );
-        const mockClientId = mockClient.insertId;
-
+        //console.log('Połączono z MySQL do seedowania');
+//
+        //await clearDatabase();
+//
+        //// Mock user creation
+        //const hashedPassword = await bcrypt.hash('password123', 10);
+//
+        //const [mechRes] = await mysqlConn.execute(
+        //    'INSERT INTO users (username, email, password_hash, first_name, last_name, phone, role) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        //    ['mechanik1', 'jan@serwis.pl', hashedPassword, 'Jan', 'Kowalski', '123456789', 'mechanic']
+        //);
+        const mechId = 1;
+//
+        //const [mockClient] = await mysqlConn.execute(
+        //    'INSERT INTO users (username, email, password_hash, first_name, last_name, phone, role) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        //    ['klient1', 'adam@gmail.com', hashedPassword, 'Adam', 'Nowak', '987654321', 'user']
+        //);
+        const mockClientId = 2;
+//
         const mongoMech = await Mechanic.create({ userId: mechId, name: 'Jan', lastName: 'Kowalski' });
         const mongoClient = await Client.create({ userId: mockClientId, name: 'Adam', lastName: 'Nowak' });
 

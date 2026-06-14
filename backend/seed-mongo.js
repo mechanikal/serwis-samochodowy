@@ -79,7 +79,7 @@ const PARTS_DATA = [
     { name: 'Sworzeń wahacza',               description: 'Meyle 116 010 0008',         price: 70  },
 ];
 
-const VISIT_STATUSES = ['oczekuje', 'w trakcie', 'zakończona', 'anulowana'];
+const VISIT_STATUSES = ['nadchodzące', 'oczekiwanie na kosztorys', 'oczekiwanie na zatwierdzenie kosztorysu', 'w trakcie naprawy', 'zakończone', 'anulowane'];
 const TIMES = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00'];
 
 const VEHICLES_POOL = [
@@ -184,16 +184,28 @@ async function seedMongo() {
             for (let i = 0; i < visitCount; i++) {
                 const vehicle = pick(clientVehicles);
 
-                // Przeszłe wizyty – różne statusy; ostatnia może być przyszła
+                // Przeszłe wizyty – różne statusy; kilka ostatnich to wizyty aktywne
                 let visitDate;
                 let status;
-                if (i === visitCount - 1) {
-                    // Ostatnia wizyta – oczekująca w przyszłości
+                const isLast       = i === visitCount - 1;
+                const isSecondLast = i === visitCount - 2;
+                const isThirdLast  = i === visitCount - 3;
+
+                if (isLast) {
+                    // Ostatnia wizyta – nadchodząca w przyszłości
                     visitDate = daysAhead(rand(3, 30));
-                    status = 'oczekuje';
+                    status = 'nadchodzące';
+                } else if (isSecondLast) {
+                    // Przedostatnia – czeka na zatwierdzenie kosztorysu
+                    visitDate = daysAhead(rand(1, 7));
+                    status = 'oczekiwanie na zatwierdzenie kosztorysu';
+                } else if (isThirdLast) {
+                    // Trzecia od końca – czeka na kosztorys
+                    visitDate = daysAhead(rand(1, 5));
+                    status = 'oczekiwanie na kosztorys';
                 } else {
                     visitDate = daysAgo(rand(10, 365));
-                    status = pick(['zakończona', 'w trakcie', 'anulowana', 'zakończona', 'zakończona']);
+                    status = pick(['zakończone', 'w trakcie naprawy', 'anulowane', 'zakończone', 'zakończone']);
                 }
 
                 const visitFault   = pick(faults);
@@ -210,8 +222,8 @@ async function seedMongo() {
                     description: `Klient zgłasza: ${visitFault.description}`,
                 });
 
-                // Diagnoza – tylko dla zakończonych / w trakcie
-                if (status !== 'anulowana' && status !== 'oczekuje') {
+                // Diagnoza istnieje gdy kosztorys jest już wystawiony (nie dla nadchodzących i anulowanych)
+                if (!['anulowane', 'nadchodzące'].includes(status)) {
                     const totalPrice = visitService.price + visitPart.price;
                     await Diagnosis.create({
                         visitId:             visit._id,
@@ -221,7 +233,7 @@ async function seedMongo() {
                         requiredServices:    [visitService._id],
                         requiredParts:       [visitPart._id],
                         totalPrice:          totalPrice,
-                        accepted:            status === 'zakończona',
+                        accepted:            ['oczekiwanie na zatwierdzenie kosztorysu', 'w trakcie naprawy', 'zakończone'].includes(status),
                     });
                 }
 
@@ -229,15 +241,15 @@ async function seedMongo() {
                 await Notification.create({
                     visitId:        visit._id,
                     newVisitStatus: status,
-                    status:         status === 'zakończona' ? 'read' : 'unread',
+                    status:         status === 'zakończone' ? 'read' : 'unread',
                     date:           visitDate,
                 });
 
                 // Dla zakończonych – powiadomienie o zakończeniu
-                if (status === 'zakończona') {
+                if (status === 'zakończone') {
                     await Notification.create({
                         visitId:        visit._id,
-                        newVisitStatus: 'zakończona',
+                        newVisitStatus: 'zakończone',
                         status:         'read',
                         date:           new Date(visitDate.getTime() + 3600 * 1000 * 2),
                     });
@@ -285,11 +297,21 @@ async function seedMongo() {
                 // Status zależy od tego, czy data jest przeszła, dzisiejsza czy przyszła
                 let status;
                 if (date < today) {
-                    status = pick(['zakończona', 'zakończona', 'w trakcie', 'anulowana']);
+                    // Wizyty przeszłe – zakończone lub anulowane
+                    status = pick(['zakończone', 'zakończone', 'zakończone', 'anulowane']);
                 } else if (date.getTime() === today.getTime()) {
-                    status = pick(['w trakcie', 'oczekuje', 'w trakcie']);
+                    // Dzisiejsze – aktywne statusy
+                    status = pick(['w trakcie naprawy', 'oczekiwanie na kosztorys', 'oczekiwanie na zatwierdzenie kosztorysu']);
                 } else {
-                    status = 'oczekuje';
+                    // Przyszłe – mix aktywnych statusów i nadchodzących
+                    status = pick([
+                        'nadchodzące',
+                        'nadchodzące',
+                        'nadchodzące',
+                        'oczekiwanie na kosztorys',
+                        'oczekiwanie na zatwierdzenie kosztorysu',
+                        'w trakcie naprawy',
+                    ]);
                 }
 
                 const visitFault   = pick(faults);
@@ -306,7 +328,9 @@ async function seedMongo() {
                     description: `Klient zgłasza: ${visitFault.description}`,
                 });
 
-                if (status !== 'anulowana' && status !== 'oczekuje') {
+                // Diagnoza istnieje gdy kosztorys jest już wystawiony (nie dla nadchodzących i anulowanych)
+                const hasDiagnosis = !['anulowane', 'nadchodzące'].includes(status);
+                if (hasDiagnosis) {
                     await Diagnosis.create({
                         visitId:             visit._id,
                         mechanicId:          mechanic._id,
@@ -315,14 +339,14 @@ async function seedMongo() {
                         requiredServices:    [visitService._id],
                         requiredParts:       [visitPart._id],
                         totalPrice:          visitService.price + visitPart.price,
-                        accepted:            status === 'zakończona',
+                        accepted:            ['oczekiwanie na zatwierdzenie kosztorysu', 'w trakcie naprawy', 'zakończone'].includes(status),
                     });
                 }
 
                 await Notification.create({
                     visitId:        visit._id,
                     newVisitStatus: status,
-                    status:         status === 'zakończona' ? 'read' : 'unread',
+                    status:         status === 'zakończone' ? 'read' : 'unread',
                     date:           date,
                 });
 
