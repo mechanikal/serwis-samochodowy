@@ -53,6 +53,15 @@ const requireRole =
 app.use(cors());
 app.use(express.json());
 
+/** Timezone-safe yyyy-MM-dd formatter (uses local date parts, not UTC) */
+function toLocalDateStr(date) {
+  const d = new Date(date);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 app.get("/", (req, res) => {
   res.send("API works");
 });
@@ -112,14 +121,31 @@ app.post("/api/register", async (req, res) => {
   const { username, email, password, first_name, last_name, phone } = req.body;
 
   try {
+    // Validate required fields
+    if (!username || !email || !password || !first_name || !last_name || !phone) {
+      return res.status(400).json({ message: "Wszystkie pola są wymagane" });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Nieprawidłowy format adresu e-mail" });
+    }
+
+    // Validate password strength
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Hasło musi mieć co najmniej 6 znaków" });
+    }
+
+    // Check for duplicate username or email
     const nameEmailCheck = `
-            SELECT COUNT(*) FROM users
+            SELECT COUNT(*) AS cnt FROM users
                 WHERE email = ? OR username = ?
         `;
 
-    const [result] = db.query(nameEmailCheck, [email, username]);
+    const [rows] = await db.promise().query(nameEmailCheck, [email, username]);
 
-    if (result.count > 0) {
+    if (rows[0].cnt > 0) {
       return res
         .status(409)
         .json({ message: "Email lub nazwa użytkownika już istnieje" });
@@ -132,22 +158,18 @@ app.post("/api/register", async (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?, 'user')
         `;
 
-    db.query(
+    const [result] = await db.promise().query(
       sql,
       [username, email, hashedPassword, first_name, last_name, phone],
-      (err, result) => {
-        if (err) {
-          return res.status(500).send(err);
-        }
-
-        res.send({
-          message: "Użytkownik utworzony",
-          id: result.insertId,
-        });
-      },
     );
+
+    res.json({
+      message: "Użytkownik utworzony",
+      id: result.insertId,
+    });
   } catch (err) {
-    res.status(500).send(err);
+    console.error("Register error:", err);
+    res.status(500).json({ message: "Błąd serwera podczas rejestracji" });
   }
 });
 
@@ -175,7 +197,7 @@ app.get(
             visits: visits.map((v) => ({
               serviceName: v.title,
               status: v.status,
-              date: new Date(v.date).toLocaleDateString(),
+              date: toLocalDateStr(v.date),
             })),
           };
         }),
@@ -194,7 +216,7 @@ app.get("/api/visits", authenticateToken, async (req, res) => {
     const visits = await Visit.find().populate("clientId");
     const visitsData = visits.map((v) => ({
       _id: v._id,
-      date: new Date(v.date).toISOString().split("T")[0], // yyyy-mm-dd
+      date: toLocalDateStr(v.date),
       time: v.time,
       serviceName: v.title,
       clientName: v.clientId
@@ -205,6 +227,57 @@ app.get("/api/visits", authenticateToken, async (req, res) => {
     res.json(visitsData);
   } catch (err) {
     console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
+app.post("/api/visits", authenticateToken, requireRole("user"), async (req, res) => {
+  try {
+    const { vehicle, date, time, description } = req.body;
+    if (!vehicle || !date || !time || !description) {
+      return res.status(400).json({ message: "Wszystkie pola są wymagane" });
+    }
+
+    const client = await Client.findOne({ userId: req.user.id });
+    if (!client) {
+      return res.status(404).json({ message: "Nie znaleziono klienta" });
+    }
+
+    // Verify vehicle belongs to client
+    const vehicleDoc = await Vehicle.findOne({ _id: vehicle, clientId: client._id });
+    if (!vehicleDoc) {
+      return res.status(403).json({ message: "Pojazd nie należy do klienta" });
+    }
+
+    // Parse date as local midnight to avoid timezone shift
+    const [year, month, day] = date.split('-').map(Number);
+    const visitDate = new Date(year, month - 1, day);
+
+    // Check if time slot is already taken
+    const existingVisit = await Visit.findOne({
+      date: {
+        $gte: new Date(year, month - 1, day, 0, 0, 0),
+        $lt: new Date(year, month - 1, day + 1, 0, 0, 0)
+      },
+      time: time
+    });
+    if (existingVisit) {
+      return res.status(409).json({ message: "Wybrany termin jest już zajęty" });
+    }
+
+    const visit = await Visit.create({
+      vehicleId: vehicleDoc._id,
+      clientId: client._id,
+      title: description.substring(0, 80),
+      status: 'nadchodzące',
+      date: visitDate,
+      time: time,
+      description: description
+    });
+
+    res.status(201).json({ message: "Wizyta umówiona", visitId: visit._id });
+  } catch (err) {
+    console.error("Create visit error:", err);
     res.status(500).send("Server error");
   }
 });
@@ -439,7 +512,7 @@ app.get("/api/client-visits", authenticateToken, async (req, res) => {
       .populate("vehicleId", 'brand model registration VIN');
     const visitsData = visits.map((v) => ({
       _id: v._id,
-      date: new Date(v.date).toISOString().split("T")[0], // yyyy-mm-dd
+      date: toLocalDateStr(v.date),
       time: v.time,
       serviceName: v.title,
       clientName: `${client.name} ${client.lastName}`,
@@ -469,7 +542,7 @@ app.get("/api/car-visits/:id", authenticateToken, async (req, res) => {
     
     const visitsData = visits.map((v) => ({
       _id: v._id,
-      date: new Date(v.date).toISOString().split("T")[0], // yyyy-mm-dd
+      date: toLocalDateStr(v.date),
       time: v.time,
       serviceName: v.title,
       status: v.status,
