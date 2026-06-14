@@ -9,7 +9,7 @@
       <p>{{ notification.body }}</p>
     </div>
     <div class="notification-actions">
-      @if (notification.id != 0){
+      @if (notification.id != '0'){
         <button class="btn-primary" >Oznacz jako przeczytane</button>
         <button class="btn-secondary" (click)="deleteNotification(notification.id)">Usuń powiadominie</button>
       }
