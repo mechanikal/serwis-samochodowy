@@ -209,6 +209,159 @@ app.get("/api/visits", authenticateToken, async (req, res) => {
   }
 });
 
+app.delete(
+  "/api/visits/:id",
+  authenticateToken,
+  requireRole("mechanic"),
+  async (req, res) => {
+    try {
+      const deleted = await Visit.findByIdAndDelete(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Wizyta nie znaleziona" });
+      }
+      res.json({ message: "Wizyta usunięta" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server error");
+    }
+  }
+);
+
+app.patch(
+  "/api/visits/:id/status",
+  authenticateToken,
+  requireRole("mechanic"),
+  async (req, res) => {
+    try {
+      const { status } = req.body;
+      if (!status) {
+        return res.status(400).json({ message: "Brak statusu" });
+      }
+      
+      const visit = await Visit.findById(req.params.id);
+      if (!visit) {
+        return res.status(404).json({ message: "Wizyta nie znaleziona" });
+      }
+
+      visit.status = status;
+      await visit.save();
+
+      // Create a notification for the client
+      const Notification = require("./models/notification");
+      await Notification.create({
+          visitId:        visit._id,
+          newVisitStatus: status,
+          status:         status === 'zakończone' ? 'read' : 'unread',
+          date:           new Date()
+      });
+
+      res.json({ message: "Status zaktualizowany pomyślnie", visit });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server error");
+    }
+  }
+);
+
+app.get("/api/mechanic/visits/:id/diagnosis", authenticateToken, requireRole("mechanic"), async (req, res) => {
+  try {
+    const existingDiagnosis = await diagnosis.findOne({ visitId: req.params.id });
+    if (!existingDiagnosis) {
+      return res.json(null);
+    }
+    res.json(existingDiagnosis);
+  } catch (err) {
+    res.status(500).send("Server error");
+  }
+});
+
+// Endpoints for diagnosis dictionary data
+app.get("/api/faults", authenticateToken, requireRole("mechanic"), async (req, res) => {
+  try {
+    const faults = await Fault.find();
+    res.json(faults);
+  } catch (err) {
+    res.status(500).send("Server error");
+  }
+});
+
+app.get("/api/services", authenticateToken, requireRole("mechanic"), async (req, res) => {
+  try {
+    const services = await Service.find();
+    res.json(services);
+  } catch (err) {
+    res.status(500).send("Server error");
+  }
+});
+
+app.get("/api/parts", authenticateToken, requireRole("mechanic"), async (req, res) => {
+  try {
+    const parts = await Part.find();
+    res.json(parts);
+  } catch (err) {
+    res.status(500).send("Server error");
+  }
+});
+
+app.put("/api/visits/:id/diagnosis", authenticateToken, requireRole("mechanic"), async (req, res) => {
+  try {
+    const { diagnosisDescription, faults, requiredServices, requiredParts } = req.body;
+    const visit = await Visit.findById(req.params.id);
+    if (!visit) {
+      return res.status(404).json({ message: "Wizyta nie znaleziona" });
+    }
+
+    const Mechanic = require("./models/mechanic");
+    const mechanic = await Mechanic.findOne({ userId: req.user.id });
+    if (!mechanic) {
+      return res.status(403).json({ message: "Mechanic not found" });
+    }
+
+    // Calculate total price from services and parts in DB to avoid client-side tampering
+    const servicesData = await Service.find({ _id: { $in: requiredServices } });
+    const partsData = await Part.find({ _id: { $in: requiredParts } });
+    
+    let totalPrice = 0;
+    requiredServices.forEach(id => {
+      const s = servicesData.find(sd => sd._id.toString() === id);
+      if (s) totalPrice += s.price;
+    });
+    requiredParts.forEach(id => {
+      const p = partsData.find(pd => pd._id.toString() === id);
+      if (p) totalPrice += p.price;
+    });
+
+    // Find if diagnosis already exists, otherwise create
+    let existingDiagnosis = await diagnosis.findOne({ visitId: visit._id });
+    if (existingDiagnosis) {
+      existingDiagnosis.diagnosisDescription = diagnosisDescription;
+      existingDiagnosis.faults = faults;
+      existingDiagnosis.requiredServices = requiredServices;
+      existingDiagnosis.requiredParts = requiredParts;
+      existingDiagnosis.totalPrice = totalPrice;
+      existingDiagnosis.accepted = false;
+      existingDiagnosis.mechanicId = mechanic._id;
+      await existingDiagnosis.save();
+    } else {
+      await diagnosis.create({
+        visitId: visit._id,
+        mechanicId: mechanic._id,
+        diagnosisDescription,
+        faults,
+        requiredServices,
+        requiredParts,
+        totalPrice,
+        accepted: false
+      });
+    }
+
+    res.json({ message: "Kosztorys zapisany", totalPrice });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
 app.get(
   "/api/stats",
   authenticateToken,

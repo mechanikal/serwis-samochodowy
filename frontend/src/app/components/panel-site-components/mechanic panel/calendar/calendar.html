@@ -16,19 +16,81 @@
           <span class="calendar__time-start">8:00</span>
           <span class="calendar__time-end">20:00</span>
         </div>
-        <div class="calendar__appointments">
-          @for (apt of day.appointments; track $index) {
-            <button
-              class="calendar__appointment"
-              type="button"
-              (click)="onAppointmentClick(day, apt)">
-              <span class="calendar__apt-time">{{ apt.time }}</span>
-              <span class="calendar__apt-service">{{ apt.serviceName }}</span>
-              <span class="calendar__apt-client">{{ apt.clientName }}</span>
-            </button>
+        <div class="calendar__slots">
+          @for (slot of day.slots; track slot.hour) {
+            @if (slot.appointments.length === 0) {
+              <div class="calendar__slot calendar__slot--empty">
+                <span class="calendar__apt-time">{{ slot.label }}</span>
+                <span class="calendar__apt-service">{{ slot.endLabel }}</span>
+              </div>
+            } @else {
+              <button
+                class="calendar__slot calendar__slot--booked"
+                type="button"
+                (click)="onAppointmentClick(day, slot)">
+                <span class="calendar__apt-time">{{ slot.label }}</span>
+                <span class="calendar__apt-service">{{ slot.endLabel }}</span>
+                <span class="calendar__apt-client">{{ slot.appointments[0].clientName }}</span>
+                @if (slot.appointments.length > 1) {
+                  <span class="calendar__apt-more">+{{ slot.appointments.length - 1 }}</span>
+                }
+              </button>
+            }
           }
         </div>
       </div>
     </div>
   }
 </div>
+
+<!-- ── Visit detail popup ── -->
+@if (popupVisit) {
+  <div class="cal-overlay" (click)="closePopup()">
+    <div class="cal-popup" (click)="$event.stopPropagation()">
+
+      <div class="cal-popup__topbar"></div>
+
+      <div class="cal-popup__header">
+        <span class="cal-popup__title">Szczegóły wizyty</span>
+        <button class="cal-popup__close" (click)="closePopup()">✕</button>
+      </div>
+
+      <div class="cal-popup__body">
+
+        <div class="cal-popup__row">
+          <span class="cal-popup__label">Klient</span>
+          <span class="cal-popup__value">{{ popupVisit.clientName }}</span>
+        </div>
+
+        <div class="cal-popup__row">
+          <span class="cal-popup__label">Data</span>
+          <span class="cal-popup__value">{{ popupVisit.date }}</span>
+        </div>
+
+        <div class="cal-popup__row">
+          <span class="cal-popup__label">Godzina</span>
+          <span class="cal-popup__value">{{ popupVisit.timeStart }} – {{ popupVisit.timeEnd }}</span>
+        </div>
+
+        <div class="cal-popup__row">
+          <span class="cal-popup__label">Usługa</span>
+          <span class="cal-popup__value">{{ popupVisit.serviceName }}</span>
+        </div>
+
+        <div class="cal-popup__row">
+          <span class="cal-popup__label">Status</span>
+          <span class="cal-popup__value cal-popup__status" [attr.data-status]="popupVisit.status">
+            {{ popupVisit.status }}
+          </span>
+        </div>
+
+      </div>
+
+      <div class="cal-popup__footer">
+        <button class="cal-popup__btn" (click)="closePopup()">Zamknij</button>
+      </div>
+
+      <div class="cal-popup__botbar"></div>
+    </div>
+  </div>
+}
