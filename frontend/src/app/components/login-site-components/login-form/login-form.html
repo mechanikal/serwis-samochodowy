@@ -15,19 +15,19 @@
 
   <form (ngSubmit)="onSubmit()" class="login-form">
     <div class="field">
-      <div class="fields-title">login</div>
-      <input class="input-field" type="text" [(ngModel)]="loginValue" name="loginValue", (input)="onInputChange()"/>
+      <div class="fields-title">{{ mode === 'register' ? 'nazwa użytkownika' : 'login' }}</div>
+      <input class="input-field" type="text" [(ngModel)]="loginValue" name="loginValue" (input)="onInputChange()"/>
     </div>
     @if (mode === 'login'){
     <div class="field">
       <div class="fields-title">hasło</div>
-      <input class="input-field" type="password" [(ngModel)]="passwordValue" name="passwordValue", (input)="onInputChange()"/>
+      <input class="input-field" type="password" [(ngModel)]="passwordValue" name="passwordValue" (input)="onInputChange()"/>
     </div>
     } @if (mode === 'register'){
     <div class="fields">
       <div class="field">
         <div class="fields-title">hasło</div>
-        <input class="input-field" type="password" [(ngModel)]="passwordValue" name="passwordValue" />
+        <input class="input-field" type="password" [(ngModel)]="passwordValue" name="passwordValue" (input)="onInputChange()" />
       </div>
       <div class="field">
         <div class="fields-title">powtórz hasło</div>
@@ -36,23 +36,24 @@
           type="password"
           [(ngModel)]="repeatPasswordValue"
           name="repeatPasswordValue"
+          (input)="onInputChange()"
         />
       </div>
       <div class="field">
         <div class="fields-title">imię</div>
-        <input class="input-field" type="text" [(ngModel)]="nameValue" name="nameValue" />
+        <input class="input-field" type="text" [(ngModel)]="nameValue" name="nameValue" (input)="onInputChange()" />
       </div>
       <div class="field">
         <div class="fields-title">nazwisko</div>
-        <input class="input-field" type="text" [(ngModel)]="surnameValue" name="surnameValue" />
+        <input class="input-field" type="text" [(ngModel)]="surnameValue" name="surnameValue" (input)="onInputChange()" />
       </div>
       <div class="field">
         <div class="fields-title">nr telefonu</div>
-        <input class="input-field" type="text" [(ngModel)]="phoneValue" name="phoneValue" />
+        <input class="input-field" type="tel" [(ngModel)]="phoneValue" name="phoneValue" (input)="onInputChange()" />
       </div>
       <div class="field">
         <div class="fields-title">adres e-mail</div>
-        <input class="input-field" type="text" [(ngModel)]="emailValue" name="emailValue" />
+        <input class="input-field" type="email" [(ngModel)]="emailValue" name="emailValue" (input)="onInputChange()" />
       </div>
     </div>
     } @if (mode ==='login'){
@@ -62,6 +63,12 @@
     }
   } @else {
     <button type="submit" class="submit-button">rejestruj</button>
+    @if (registerError){
+      <div class="incorrect-login-msg"><b>{{ registerError }}</b></div>
+    }
+    @if (registerSuccess){
+      <div class="register-success-msg"><b>Rejestracja zakończona pomyślnie!</b></div>
+    }
     }
   </form>
 </div>
