@@ -1,3 +1,6 @@
+<div class ="tab-title">Kalendarz wizyt</div>
+<div class = "tab-description">Tutaj możesz przeglądać wizyty klientów w kalendarzu.</div>
+
 <div class="calendar">
   <div class="calendar__nav">
     <button class="calendar__arrow" type="button" (click)="previousWeek()">◀</button>
@@ -31,9 +34,6 @@
                 <span class="calendar__apt-time">{{ slot.label }}</span>
                 <span class="calendar__apt-service">{{ slot.endLabel }}</span>
                 <span class="calendar__apt-client">{{ slot.appointments[0].clientName }}</span>
-                @if (slot.appointments.length > 1) {
-                  <span class="calendar__apt-more">+{{ slot.appointments.length - 1 }}</span>
-                }
               </button>
             }
           }
@@ -52,7 +52,7 @@
 
       <div class="cal-popup__header">
         <span class="cal-popup__title">Szczegóły wizyty</span>
-        <button class="cal-popup__close" (click)="closePopup()">✕</button>
+        <button class="cal-popup__close" (click)="closePopup()"><img src="x-icon.png"></button>
       </div>
 
       <div class="cal-popup__body">

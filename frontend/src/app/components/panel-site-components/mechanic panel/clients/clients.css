@@ -116,14 +116,15 @@
   padding: 0.25em 0.3em;
   border-bottom: 1.5px solid #999;
   font-size: 0.7em;
-  font-weight: 500;
+  font-weight: 600;
+  justify-content: space-between;
   color: #222;
 }
 
 /* ── Visit row ── */
 .clients__visit-row {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   padding: 0.25em 0.3em;
   border-bottom: 1.5px solid #999;
   font-size: 0.7em;

@@ -67,9 +67,9 @@
                 @for (visit of clientPastAppointments; track visit) {
                     <button class = "visit-button" (click)="openVisitPopup(visit)">
                         <div class = "list-row">
-                            <div>{{ visit.serviceName }}</div>
-                            <div>{{ visit.status }}</div>
-                            <div>{{ visit.dateStr }}</div>
+                            <div class = "left-column">{{ visit.serviceName }}</div>
+                            <div class = "middle-column">{{ visit.status }}</div>
+                            <div class = "right-column">{{ visit.dateStr }}</div>
                         </div>
                     </button>
                 }
