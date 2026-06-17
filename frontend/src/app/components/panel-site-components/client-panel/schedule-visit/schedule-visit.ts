@@ -67,6 +67,14 @@ export class ScheduleVisit implements OnInit {
 
   constructor(private http: HttpClient) {}
 
+  /** Timezone-safe yyyy-MM-dd formatter (uses local date parts, not UTC) */
+  private toLocalDateStr(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
   ngOnInit() {
     this.fetchAppointments();
     this.fetchClientCars();
@@ -145,7 +153,7 @@ export class ScheduleVisit implements OnInit {
       for (let hour = 8; hour <= 20; hour++) {
         var dateData = new Date(this.currentWeekStart);
         dateData.setDate(dateData.getDate() + dayOffset);
-        var dateStr = dateData.toISOString().split('T')[0];
+        var dateStr = this.toLocalDateStr(dateData);
         slots.push({
           day: dayOffset,
           dateStr: dateStr,
@@ -191,7 +199,7 @@ export class ScheduleVisit implements OnInit {
     for (let i = 0; i < 6; i++) {
       const date = new Date(this.currentWeekStart);
       date.setDate(date.getDate() + i);
-      const dateStr = date.toISOString().split('T')[0];
+      const dateStr = this.toLocalDateStr(date);
       
       days.push({
         dayAbbr: this.polishDays[i],

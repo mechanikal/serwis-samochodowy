@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 
 interface NotificationItem {
   id: string;
@@ -11,7 +12,7 @@ interface NotificationItem {
 
 @Component({
   selector: 'notifications',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './notifications.html',
   styleUrl: './notifications.css',
 })
@@ -110,3 +111,4 @@ export class Notifications implements OnInit {
     });
   }
 }
+

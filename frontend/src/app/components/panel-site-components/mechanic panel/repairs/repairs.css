@@ -95,12 +95,28 @@
   padding: 0 0.5em 0.3em;
 }
 
+/* ── Column header row ── */
+.repairs__header {
+  display: grid;
+  grid-template-columns: 7em 5em 1fr 1fr 1.6em;
+  gap: 0;
+  padding: 0.2em 0.3em;
+  font-size: 0.68em;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid #888;
+}
+
 /* ── Data rows ── */
 .repairs__row {
-  display: flex;
-  gap: 1em;
+  display: grid;
+  grid-template-columns: 7em 5em 1fr 1fr 1.6em;
+  gap: 0;
+  align-items: center;
   padding: 0.3em 0.3em;
-  border-bottom: 1.5px solid #999;
+  border-bottom: 1px solid #ccc;
   font-size: 0.7em;
   color: #222;
   font-weight: 500;
@@ -109,8 +125,43 @@
   border-bottom: 1.5px solid #999;
 }
 
-.repairs__row span {
+/* ── Clickable row ── */
+.repairs__row--clickable {
+  cursor: pointer;
+  transition: background-color 0.12s;
+}
+.repairs__row--clickable:hover {
+  background-color: #dcdcdc;
+}
+
+.repairs__row span,
+.repairs__header span {
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 0.5em;
+}
+
+/* ── Delete button ── */
+.repairs__delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.15s;
+}
+.repairs__delete-btn:hover {
+  opacity: 1;
+}
+
+.repairs__delete-icon {
+  width: 0.9em;
+  height: 0.9em;
+  display: block;
 }
 
 /* ── Responsive: portrait ── */
@@ -121,8 +172,529 @@
   .repairs__section-name {
     font-size: 0.85em;
   }
+  .repairs__header,
   .repairs__row {
-    font-size: 0.65em;
-    gap: 0.6em;
+    grid-template-columns: 6em 4em 1fr 1fr 1.4em;
+    font-size: 0.62em;
   }
+}
+
+/* ═══════════════════════════════════════
+   Visit detail popup
+   ═══════════════════════════════════════ */
+
+.visit-popup{
+    background-color: #211F1C;
+    padding-top: 0.6em;
+    padding-bottom: 0.3em;
+    font-size: 0.8em;
+    width: 32em; /* fixed width for mechanic panel, increased from 25em */
+    border-radius: 0.2em;
+    font-family: 'Khand', sans-serif;
+    color: #fff;
+}
+
+.visit-popup-content{
+    display: flex;
+    flex-direction: column;
+    background-color: #ececec;
+    padding: 0.5em 1em;
+    overflow-y: auto;
+    gap: 0.5em;
+    max-height: 65vh; /* slightly shorter, changed from 75vh */
+    color: #000;
+}
+
+.visit-popup-section{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    background-color: #d9d9d9;
+    border-radius: 0.2em;
+    padding: 0.4em;
+    font-size: 0.8em;
+    gap: 0.2em;
+    font-weight: 500;
+    box-sizing: border-box;
+}
+
+.popup-info{
+    background-color: #efefef;
+    font-size: 1.2em;
+    width: 100%;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    padding: 0.1em 0.4em;
+    font-weight: 400;
+    box-sizing: border-box;
+}
+
+.visit-popup-section-header{
+    display: flex;
+    font-size: 1em;
+    width: 100%;
+    justify-content: center;
+    color: #444;
+    font-style: italic;
+    font-weight: 500;
+    border-bottom: #000 solid 0.4em;
+    padding: 0.5em;
+    box-sizing: border-box;
+}
+
+.custom-list-container {
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 0.2em;
+    max-height: 8em;
+    overflow-y: auto;
+    font-family: 'Khand', sans-serif;
+}
+
+.custom-list-item {
+    display: flex;
+    align-items: center;
+    padding: 0.2em 0.4em;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.15s;
+}
+
+.custom-list-item:last-child {
+    border-bottom: none;
+}
+
+.custom-list-item:hover {
+    background-color: #f5f5f5;
+}
+
+.custom-list-item.selected {
+    background-color: #e0e0e0;
+}
+
+.custom-list-check {
+    width: 1.2em;
+    font-weight: bold;
+    color: #000;
+    display: inline-block;
+    text-align: center;
+}
+
+.custom-list-text {
+    flex: 1;
+    color: #333;
+}
+
+.visit-est-buttons-container {
+    background-color: #d6d6d6;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    padding: 0.4em;
+    border-bottom-left-radius: 0.2em;
+    border-bottom-right-radius: 0.2em;
+}
+
+.visit-est-buttons-row {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    justify-content: center;
+}
+
+.visit-est-button--full {
+    width: 100%;
+    max-width: 100%;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    font-size: 0.85em;
+}
+
+.visit-est-button{
+    background-color: #211F1C;
+    transition: background-color ease 0.3s;
+    color: #d9d9d9;
+    width: auto;
+    min-width: 6em;
+    font-size: 0.8em;
+    border-radius: 0.2em;
+    padding: 0.1em 1em;
+    padding-top: 0.2em;
+    align-self: center;
+    cursor: pointer;
+    border: none;
+    font-family: 'Khand', sans-serif;
+}
+
+.visit-est-button:hover{
+    background-color: #000;
+}
+
+.visit-est-button--cancel {
+    background-color: #8c2020;
+}
+
+.visit-est-button--cancel:hover {
+    background-color: #661010;
+}
+
+.disabled-btn {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #555 !important;
+}
+
+/* status colours */
+.rep-popup__status[data-status="nadchodzące"]                              { color: #5a5a00; font-weight: 600; }
+.rep-popup__status[data-status="oczekiwanie na kosztorys"]                { color: #8a4d00; font-weight: 600; }
+.rep-popup__status[data-status="oczekiwanie na zatwierdzenie kosztorysu"] { color: #6b2d8b; font-weight: 600; }
+.rep-popup__status[data-status="w trakcie naprawy"]                       { color: #1a5276; font-weight: 600; }
+.rep-popup__status[data-status="zakończone"]                              { color: #1e6b2e; font-weight: 600; }
+.rep-popup__status[data-status="anulowane"]                               { color: #7b1c1c; font-weight: 600; }
+
+/* ── Confirmation popup (same design as client-cars) ── */
+.vehicle-popup {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background-color: #211f1c;
+  padding-bottom: 0.1em;
+  padding-top: 0.4em;
+  font-size: 1em;
+  min-width: 12em;
+}
+
+.popup-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  color: #000;
+  justify-content: center;
+  align-items: center;
+  background-color: #eee;
+  box-shadow: 0 0.1em 0.3em #555;
+  font-weight: 500;
+}
+
+.popup-form {
+  padding-top: 0.2em;
+  padding-bottom: 0.1em;
+  background-color: #eee;
+}
+
+.popup-close-button {
+  position: absolute;
+  right: 0;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.popup-close-img {
+  height: 0.7em;
+  width: auto;
+  cursor: pointer;
+  padding-right: 0.4em;
+  margin-top: -0.2em;
+}
+
+.popup-submit {
+  display: flex;
+  transition: background-color 0.3s ease;
+  background-color: #211f1c;
+  min-width: 6em;
+  color: #fff;
+  font-size: 0.8em;
+  padding-top: 0.1em;
+  border-radius: 0.2em;
+  justify-content: center;
+  cursor: pointer;
+  margin-top: 0.5em;
+}
+
+.popup-submit:hover {
+  background-color: #000;
+}
+
+.delete-confirmation-message {
+  background-color: #eee;
+  padding: 0.8em;
+  color: #222;
+  font-style: italic;
+  font-size: 0.6em;
+  font-weight: 500;
+  text-align: center;
+  border-radius: 0.2em;
+}
+
+.delete-confirmation-buttons {
+  display: flex;
+  font-size: 0.8em;
+  flex-direction: row;
+  gap: 0.5em;
+  justify-content: center;
+  padding-bottom: 0.5em;
+}
+
+
+/* ── Search bar ── */
+.repairs__search {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.repairs__search-input {
+  width: 100%;
+  padding: 0.3em 2em 0.3em 0.5em;
+  font-family: 'Khand', sans-serif;
+  font-size: 0.75em;
+  border: 1.5px solid #999;
+  border-radius: 0.2em;
+  background-color: #f0f0f0;
+  color: #333;
+  outline: none;
+}
+.repairs__search-input::placeholder {
+  color: #888;
+  font-style: italic;
+}
+.repairs__search-input:focus {
+  border-color: #666;
+}
+
+.repairs__search-icon {
+  position: absolute;
+  height: 80%;
+  right: 0.4em;
+  font-size: 0.75em;
+  color: #666;
+  pointer-events: none;
+}
+
+/* ── Section (accordion) ── */
+.repairs__section {
+  border: 1.5px solid #aaa;
+  border-radius: 0.2em;
+  background-color: #ececec;
+  overflow: hidden;
+}
+
+.repairs__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25em 0.4em;
+  cursor: pointer;
+  user-select: none;
+}
+.repairs__section-header:hover {
+  background-color: #e0e0e0;
+}
+
+.repairs__section-name {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: #222;
+}
+
+.repairs__toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.3em;
+  height: 1.3em;
+  background-color: #444;
+  border: none;
+  border-radius: 0.15em;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.15s;
+}
+.repairs__toggle-btn:hover {
+  background-color: #333;
+}
+
+.repairs__toggle-arrow {
+  color: #fff;
+  font-size: 0.55em;
+  line-height: 1;
+}
+
+/* ── Section content ── */
+.repairs__section-content {
+  padding: 0 0.5em 0.3em;
+}
+
+/* ── Column header row ── */
+.repairs__header {
+  display: grid;
+  grid-template-columns: 7em 5em 1fr 1fr 1.6em;
+  gap: 0;
+  padding: 0.2em 0.3em;
+  font-size: 0.68em;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid #888;
+}
+
+/* ── Data rows ── */
+.repairs__row {
+  display: grid;
+  grid-template-columns: 7em 5em 1fr 1fr 1.6em;
+  gap: 0;
+  align-items: center;
+  padding: 0.3em 0.3em;
+  border-bottom: 1px solid #ccc;
+  font-size: 0.7em;
+  color: #222;
+  font-weight: 500;
+}
+.repairs__row:last-child {
+  border-bottom: 1.5px solid #999;
+}
+
+.repairs__row span,
+.repairs__header span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 0.5em;
+}
+
+/* ── Delete button ── */
+.repairs__delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.15s;
+}
+.repairs__delete-btn:hover {
+  opacity: 1;
+}
+
+.repairs__delete-icon {
+  width: 0.9em;
+  height: 0.9em;
+  display: block;
+}
+
+/* ── Responsive: portrait ── */
+@media (orientation: portrait) {
+  .repairs__search-input {
+    font-size: 0.7em;
+  }
+  .repairs__section-name {
+    font-size: 0.85em;
+  }
+  .repairs__header,
+  .repairs__row {
+    grid-template-columns: 6em 4em 1fr 1fr 1.4em;
+    font-size: 0.62em;
+  }
+}
+
+/* ── Confirmation popup (same design as client-cars) ── */
+.vehicle-popup {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background-color: #211f1c;
+  padding-bottom: 0.1em;
+  padding-top: 0.4em;
+  font-size: 1em;
+  min-width: 18em; /* increased from 12em to make it wider */
+}
+
+.popup-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  color: #000;
+  justify-content: center;
+  align-items: center;
+  background-color: #eee;
+  box-shadow: 0 0.1em 0.3em #555;
+  font-weight: 500;
+}
+
+.popup-form {
+  padding-top: 0.2em;
+  padding-bottom: 0.1em;
+  background-color: #eee;
+}
+
+.popup-close-button {
+  position: absolute;
+  right: 0;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.popup-close-img {
+  height: 0.7em;
+  width: auto;
+  cursor: pointer;
+  padding-right: 0.4em;
+  margin-top: -0.2em;
+}
+
+.popup-submit {
+  display: flex;
+  transition: background-color 0.3s ease;
+  background-color: #211f1c;
+  min-width: 6em;
+  color: #fff;
+  font-size: 0.8em;
+  padding-top: 0.1em;
+  border-radius: 0.2em;
+  justify-content: center;
+  cursor: pointer;
+  margin-top: 0.5em;
+}
+
+.popup-submit:hover {
+  background-color: #000;
+}
+
+.delete-confirmation-message {
+  background-color: #eee;
+  padding: 0.8em;
+  color: #222;
+  font-style: italic;
+  font-size: 0.6em;
+  font-weight: 500;
+  text-align: center;
+  border-radius: 0.2em;
+}
+
+.delete-confirmation-buttons {
+  display: flex;
+  font-size: 0.8em;
+  flex-direction: row;
+  gap: 0.5em;
+  justify-content: center;
+  padding-bottom: 0.5em;
 }

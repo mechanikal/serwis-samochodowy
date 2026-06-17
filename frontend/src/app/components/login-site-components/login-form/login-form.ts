@@ -3,6 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
+const API_URL = 'http://localhost:3000/api';
+
 @Component({
   selector: 'login-form',
   standalone: true,
@@ -25,6 +27,8 @@ export class LoginForm {
   surnameValue: string = '';
   phoneValue: string = '';
   emailValue: string = '';
+  registerError: string = '';
+  registerSuccess: boolean = false;
 
   mode: string = 'login';
 
@@ -33,7 +37,7 @@ export class LoginForm {
   }
 
   loginSubmit() {
-    this.http.post('http://localhost:3000/api/login', {
+    this.http.post(`${API_URL}/login`, {
       identifier: this.loginValue,
       password: this.passwordValue,
     }).subscribe({
@@ -58,14 +62,36 @@ export class LoginForm {
       },
       error: (err) => {
         this.loginError = true;
-        console.error('BĹ‚Ä…d logowania:', err);
+        console.error('Błąd logowania:', err);
       }
     });
   }
 
   registerSubmit() {
+    this.registerError = '';
+    this.registerSuccess = false;
+
+    // Validate required fields
+    if (!this.loginValue || !this.emailValue || !this.passwordValue ||
+        !this.nameValue || !this.surnameValue || !this.phoneValue) {
+      this.registerError = 'Wszystkie pola są wymagane';
+      return;
+    }
+
+    // Validate password confirmation
+    if (this.passwordValue !== this.repeatPasswordValue) {
+      this.registerError = 'Hasła nie są identyczne';
+      return;
+    }
+
+    // Validate password strength
+    if (this.passwordValue.length < 6) {
+      this.registerError = 'Hasło musi mieć co najmniej 6 znaków';
+      return;
+    }
+
     const user = {
-      username: this.nameValue + this.surnameValue,
+      username: this.loginValue,
       email: this.emailValue,
       password: this.passwordValue,
       first_name: this.nameValue,
@@ -73,12 +99,15 @@ export class LoginForm {
       phone: this.phoneValue,
     };
 
-    this.http.post('http://localhost:3000/api/register', user).subscribe({
+    this.http.post(`${API_URL}/register`, user).subscribe({
       next: (res) => {
         console.log('Rejestracja OK:', res);
+        this.registerSuccess = true;
+        this.registerError = '';
       },
       error: (err) => {
         console.error('Błąd rejestracji:', err);
+        this.registerError = err.error?.message || 'Wystąpił błąd podczas rejestracji';
       }
     });
   }
@@ -90,11 +119,15 @@ export class LoginForm {
     }
   }
   onInputChange() {
-    this.loginError= false;
+    this.loginError = false;
+    this.registerError = '';
+    this.registerSuccess = false;
   }
 
   setMode(mode: 'login' | 'register') {
     this.loginError = false;
+    this.registerError = '';
+    this.registerSuccess = false;
     this.mode = mode;
   }
   goToMechanic() {

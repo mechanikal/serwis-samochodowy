@@ -100,9 +100,9 @@ export class ClientVisits implements OnInit {
           description: v.description,
           car: v.vehicle
         }));
-        this.clientFutureAppointments = this.clientAppointments.filter(e => e.status == 'awaiting');
-        this.clientPastAppointments = this.clientAppointments.filter(e => e.status == 'closed');
-        this.clientActiveAppointments = this.clientAppointments.filter(e => e.status != 'awaiting' && e.status != 'closed');
+        this.clientFutureAppointments = this.clientAppointments.filter(e => e.status === 'nadchodzące');
+        this.clientPastAppointments = this.clientAppointments.filter(e => e.status === 'zakończone' || e.status === 'anulowane');
+        this.clientActiveAppointments = this.clientAppointments.filter(e => e.status !== 'nadchodzące' && e.status !== 'zakończone' && e.status !== 'anulowane');
       },
       error: (err) => console.error('Błąd pobierania wizyt w kalendarzu', err),
       complete: () => console.log('Pobrano wizyty w kalendarzu',this.clientAppointments)

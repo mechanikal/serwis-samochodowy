@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1.5em;
+  gap: 0.5em;
   padding: 0.4em 0 0.6em;
   border-bottom: 2px solid #b0b0b0;
   margin-bottom: 0.2em;
@@ -40,7 +40,7 @@
 .calendar__day-row {
   display: flex;
   align-items: flex-start;
-  padding: 0.5em 0;
+  padding: 0.1em 0;
   border-bottom: 1px solid transparent;
 }
 
@@ -83,36 +83,51 @@
   margin-bottom: 0.15em;
 }
 
-/* ── Appointments row ── */
-.calendar__appointments {
+/* ── Slots row ── */
+.calendar__slots {
   display: flex;
-  gap: 0.3em;
+  gap: 0.1em;
   flex-wrap: nowrap;
 }
 
-.calendar__appointment {
+/* ── Base slot ── */
+.calendar__slot {
   flex: 1 1 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   background-color: #e0e0e0;
   border: 1.5px solid #aaa;
   border-radius: 0.15em;
   padding: 0.3em 0.2em;
-  cursor: pointer;
-  transition: background-color 0.15s, border-color 0.15s;
   min-width: 0;
   text-align: center;
-}
-.calendar__appointment:hover {
-  background-color: #cfcfcf;
-  border-color: #888;
+  box-sizing: border-box;
 }
 
+/* ── Empty slot ── */
+.calendar__slot--empty {
+  cursor: default;
+}
+
+/* ── Booked slot ── */
+.calendar__slot--booked {
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+  background-color: #c8c8c8;
+  border-color: #888;
+}
+.calendar__slot--booked:hover {
+  background-color: #b8b8b8;
+  border-color: #666;
+}
+
+/* ── Slot text ── */
 .calendar__apt-time,
 .calendar__apt-service,
-.calendar__apt-client {
+.calendar__apt-client,
+.calendar__apt-more {
   display: block;
   font-size: 0.5em;
   line-height: 1.25;
@@ -136,20 +151,151 @@
   color: #555;
 }
 
+.calendar__apt-more {
+  font-weight: 500;
+  color: #555;
+  font-style: italic;
+}
+
 /* ── Responsive: portrait ── */
 @media (orientation: portrait) {
   .calendar__month {
     font-size: 1.2em;
   }
-  .calendar__appointment {
+  .calendar__slot {
     padding: 0.25em 0.1em;
   }
   .calendar__apt-time,
   .calendar__apt-service,
-  .calendar__apt-client {
+  .calendar__apt-client,
+  .calendar__apt-more {
     font-size: 0.45em;
   }
   .calendar__time-header {
     font-size: 0.5em;
   }
+}
+
+/* ═══════════════════════════════════════
+   Visit detail popup
+   ═══════════════════════════════════════ */
+
+.cal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+}
+
+.cal-popup {
+  background-color: #ececec;
+  width: 22em;
+  border-radius: 0.2em;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Khand', sans-serif;
+  font-size: 1em;
+  box-shadow: 0 0.4em 1.2em rgba(0, 0, 0, 0.35);
+}
+
+/* dark accent bars */
+.cal-popup__topbar,
+.cal-popup__botbar {
+  height: 0.35em;
+  background-color: #211f1c;
+  flex-shrink: 0;
+}
+
+/* header row */
+.cal-popup__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35em 0.7em 0.3em;
+  box-shadow: 0 0.1em 0.25em rgba(0, 0, 0, 0.18);
+}
+
+.cal-popup__title {
+  font-size: 1em;
+  font-weight: 600;
+  color: #222;
+  letter-spacing: 0.01em;
+}
+
+.cal-popup__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9em;
+  color: #444;
+  line-height: 1;
+  padding: 0.1em 0.2em;
+  transition: color 0.15s;
+}
+.cal-popup__close:hover {
+  color: #000;
+}
+
+/* body – label/value rows */
+.cal-popup__body {
+  padding: 0.6em 0.8em 0.4em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+}
+
+.cal-popup__row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+  background-color: #fff;
+  border-radius: 0.15em;
+  padding: 0.2em 0.5em;
+}
+
+.cal-popup__label {
+  font-size: 0.7em;
+  font-weight: 400;
+  color: #666;
+  white-space: nowrap;
+  min-width: 4.5em;
+  font-style: italic;
+}
+
+.cal-popup__value {
+  font-size: 0.8em;
+  font-weight: 500;
+  color: #222;
+}
+
+/* status colours */
+.cal-popup__status[data-status="Oczekuje"]   { color: #8a6d00; font-weight: 600; }
+.cal-popup__status[data-status="W trakcie"]  { color: #1a5276; font-weight: 600; }
+.cal-popup__status[data-status="Zakończona"] { color: #1e6b2e; font-weight: 600; }
+.cal-popup__status[data-status="Anulowana"]  { color: #7b1c1c; font-weight: 600; }
+
+/* footer button */
+.cal-popup__footer {
+  display: flex;
+  justify-content: center;
+  padding: 0.4em 0.8em 0.6em;
+}
+
+.cal-popup__btn {
+  background-color: #211f1c;
+  color: #fff;
+  border: none;
+  border-radius: 0.2em;
+  padding: 0.15em 1.4em 0.05em;
+  font-family: 'Khand', sans-serif;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.cal-popup__btn:hover {
+  background-color: #000;
 }
