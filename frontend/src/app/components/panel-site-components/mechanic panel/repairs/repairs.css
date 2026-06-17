@@ -50,6 +50,7 @@
 }
 
 .repairs__section-header {
+  font-size: 0.8em;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -337,11 +338,11 @@
 }
 
 .visit-est-button--cancel {
-    background-color: #8c2020;
+    background-color: #211F1C;
 }
 
 .visit-est-button--cancel:hover {
-    background-color: #661010;
+    background-color: #000;
 }
 
 .disabled-btn {
@@ -351,12 +352,12 @@
 }
 
 /* status colours */
-.rep-popup__status[data-status="nadchodzące"]                              { color: #5a5a00; font-weight: 600; }
-.rep-popup__status[data-status="oczekiwanie na kosztorys"]                { color: #8a4d00; font-weight: 600; }
-.rep-popup__status[data-status="oczekiwanie na zatwierdzenie kosztorysu"] { color: #6b2d8b; font-weight: 600; }
-.rep-popup__status[data-status="w trakcie naprawy"]                       { color: #1a5276; font-weight: 600; }
-.rep-popup__status[data-status="zakończone"]                              { color: #1e6b2e; font-weight: 600; }
-.rep-popup__status[data-status="anulowane"]                               { color: #7b1c1c; font-weight: 600; }
+.rep-popup__status[data-status="nadchodzące"]                              { color: #6c6c6c; font-weight: 600; }
+.rep-popup__status[data-status="oczekiwanie na kosztorys"]                { color: #5c5c5c; font-weight: 600; }
+.rep-popup__status[data-status="oczekiwanie na zatwierdzenie kosztorysu"] { color: #4c4c4c; font-weight: 600; }
+.rep-popup__status[data-status="w trakcie naprawy"]                       { color: #3c3c3c; font-weight: 600; }
+.rep-popup__status[data-status="zakończone"]                              { color: #2c2c2c; font-weight: 600; }
+.rep-popup__status[data-status="anulowane"]                               { color: #7c7c7c; font-weight: 600; }
 
 /* ── Confirmation popup (same design as client-cars) ── */
 .vehicle-popup {

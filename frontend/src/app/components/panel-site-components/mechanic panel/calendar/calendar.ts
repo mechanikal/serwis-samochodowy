@@ -33,9 +33,9 @@ interface PopupVisit {
   status: string;
 }
 
-// Working hours: 8:00 – 20:00 (13 slots)
+// Working hours: 8:00 – 20:00 (12 slots)
 const HOUR_START = 8;
-const HOUR_END   = 20;
+const HOUR_END   = 19;
 
 const STATUS_LABELS: Record<string, string> = {
   'nadchodzące':                              'Nadchodzące',

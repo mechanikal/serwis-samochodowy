@@ -1,3 +1,5 @@
+<div class ="tab-title">Naprawy</div>
+<div class = "tab-description">Tutaj możesz przeglądać i zarządzać naprawami.</div>
 <div class="repairs">
   <!-- Search bar -->
   <div class="repairs__search">
@@ -141,7 +143,7 @@
                 @for (partId of diagSelectedParts; track $index) {
                   <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.2em 0; border-bottom: 1px solid #eee;">
                     <span style="font-size: 0.9em; color: #333;">{{ getPartName(partId) }} ({{ getPartPrice(partId) }} zł)</span>
-                    <button class="visit-est-button" style="min-width: unset; padding: 0 0.4em; background-color: #8c2020;" (click)="removePart($index)">usuń</button>
+                    <button class="visit-est-button" style="min-width: unset; padding: 0 0.4em; background-color: #3b3b3b;" (click)="removePart($index)">usuń</button>
                   </div>
                 }
               </div>
@@ -164,7 +166,7 @@
             <label style="font-size: 0.8em; font-weight: 500; font-style: italic; color: #444;">Wykryte usterki</label>
             <div class="popup-info" style="background-color: #fff; border: 1px solid #ccc; font-family: 'Khand', sans-serif;">
               @if (diagSelectedFaults.length > 0) {
-                <ul style="margin: 0; padding-left: 1.2em;">
+                <ul>
                   @for (f of diagSelectedFaults; track $index) {
                     <li>{{ getFaultName(f) }}</li>
                   }
@@ -177,7 +179,7 @@
             <label style="font-size: 0.8em; font-weight: 500; font-style: italic; color: #444;">Wymagane usługi</label>
             <div class="popup-info" style="background-color: #fff; border: 1px solid #ccc; font-family: 'Khand', sans-serif;">
               @if (diagSelectedServices.length > 0) {
-                <ul style="margin: 0; padding-left: 1.2em;">
+                <ul>
                   @for (s of diagSelectedServices; track $index) {
                     <li>{{ getServiceName(s) }} ({{ getServicePrice(s) }} zł)</li>
                   }
@@ -190,7 +192,7 @@
             <label style="font-size: 0.8em; font-weight: 500; font-style: italic; color: #444;">Wymagane części</label>
             <div class="popup-info" style="background-color: #fff; border: 1px solid #ccc; font-family: 'Khand', sans-serif;">
               @if (diagSelectedParts.length > 0) {
-                <ul style="margin: 0; padding-left: 1.2em;">
+                <ul>
                   @for (p of diagSelectedParts; track $index) {
                     <li>{{ getPartName(p) }} ({{ getPartPrice(p) }} zł)</li>
                   }
