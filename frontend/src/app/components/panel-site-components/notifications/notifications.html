@@ -1,6 +1,6 @@
 <div class="notifications-list">
   @for (notification of notifications; track notification.id) {
-  <div class="notification-card">
+  <div class="notification-card" [class.read]="notification.status === 'read'">
     <div class="notification-header">
       <span class="notification-title">{{ notification.title }}</span>
       <span class="notification-time">{{ notification.time }}</span>
@@ -10,7 +10,7 @@
     </div>
     <div class="notification-actions">
       @if (notification.id != '0'){
-        <button class="btn-primary" >Oznacz jako przeczytane</button>
+        <button class="btn-primary" (click)="markNotificationAsRead(notification.id)">Oznacz jako przeczytane</button>
         <button class="btn-secondary" (click)="deleteNotification(notification.id)">Usuń powiadominie</button>
       }
     </div>

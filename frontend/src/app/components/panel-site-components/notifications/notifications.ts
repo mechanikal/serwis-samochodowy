@@ -7,6 +7,7 @@ interface NotificationItem {
   title: string;
   time: string;
   body: string;
+  status: string;
 }
 
 @Component({
@@ -16,11 +17,48 @@ interface NotificationItem {
   styleUrl: './notifications.css',
 })
 export class Notifications implements OnInit {
-  constructor(private http: HttpClient){};
   notifications: NotificationItem[] = [];
+
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.fetchNotifications();
+  }
+
+  fetchNotifications(): void {
+    this.http.get<any[]>('http://localhost:3000/api/notifications', {
+      headers: this.getAuthHeaders()
+    }).subscribe({
+      next: (data) => {
+        this.notifications = data.map(n => ({
+          id: n._id ?? n.id,
+          title: n.title ?? 'Zmiana statusu wizyty',
+          time: this.formatNotificationDate(n.date),
+          body: n.body ?? `Status wizyty zostal zmieniony na: ${n.newVisitStatus ?? ''}`,
+          status: n.status ?? 'unread'
+        }));
+        if (this.notifications.length === 0) {
+          this.setEmptyNotificationsPlaceholder();
+        }
+      },
+      error: (err) => {
+        console.error('Blad pobierania powiadomien', err);
+        this.setEmptyNotificationsPlaceholder();
+      }
+    });
+  }
+
+  markNotificationAsRead(id: string): void {
+    this.http.patch(`http://localhost:3000/api/notifications/read/${id}`, {}, {
+      headers: this.getAuthHeaders()
+    }).subscribe({
+      next: () => {
+        this.notifications = this.notifications.map((n) =>
+          n.id === id ? { ...n, status: 'read' } : n
+        );
+      },
+      error: (err) => console.error('Blad oznaczania powiadomienia jako przeczytane', err)
+    });
   }
 
   deleteNotification(id: string): void {
@@ -28,18 +66,29 @@ export class Notifications implements OnInit {
       headers: this.getAuthHeaders()
     }).subscribe({
       next: () => {
-        this.notifications = this.notifications.filter((n) => n.id !== id);
-        if (this.notifications.length === 0) {
-          this.notifications.push({
-            id: '0',
-            title: 'Brak nowych powiadomień',
-            time: '',
-            body: 'Gdy otrzymasz nowe powiadomienia, pojawią się one tutaj.',
-          });
-        }
+        this.removeNotificationFromList(id);
       },
-      error: (err) => console.error('Błąd usuwania powiadomienia', err)
+      error: (err) => console.error('Blad usuwania powiadomienia', err)
     });
+  }
+
+  private removeNotificationFromList(id: string): void {
+    this.notifications = this.notifications.filter((n) => n.id !== id);
+    if (this.notifications.length === 0) {
+      this.setEmptyNotificationsPlaceholder();
+    }
+  }
+
+  private setEmptyNotificationsPlaceholder(): void {
+    this.notifications = [
+      {
+        id: '0',
+        title: 'Brak nowych powiadomien',
+        time: '',
+        body: 'Gdy otrzymasz nowe powiadomienia, pojawia sie one tutaj.',
+        status: 'read'
+      }
+    ];
   }
 
   private getAuthHeaders() {
@@ -48,46 +97,18 @@ export class Notifications implements OnInit {
       'Authorization': `Bearer ${token}`
     };
   }
-  
-  fetchNotifications(){
-    this.http.get<any[]>("http://localhost:3000/api/notifications",{
-      headers: this.getAuthHeaders()
-    }).subscribe({
-      next: (data) => {
-        if (data.length === 0) {
-          this.notifications = [{
-            id: '0',
-            title: 'Brak nowych powiadomień',
-            time: '',
-            body: 'Gdy otrzymasz nowe powiadomienia, pojawią się one tutaj.',
-          }];
-          return;
-        }
-        this.notifications = data.map(n => ({
-          id: n._id,
-          title: n.title,
-          time: this.formatTime(n.time),
-          body: n.body
-        }));
-      },
-      error: (err) => console.error('Błąd pobierania powiadomień', err)
-    });
-  }
 
-  private formatTime(dateStr: string): string {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMin = Math.floor(diffMs / 60000);
-    
-    if (diffMin < 1) return 'teraz';
-    if (diffMin < 60) return `${diffMin} min temu`;
-    
-    const diffHours = Math.floor(diffMin / 60);
-    if (diffHours < 24) return `${diffHours} godz. temu`;
-    
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays} dni temu`;
+  private formatNotificationDate(date: string | Date | null): string {
+    if (date == null) {
+      return '';
+    }
+    return new Date(date).toLocaleString('pl-PL', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 }
 

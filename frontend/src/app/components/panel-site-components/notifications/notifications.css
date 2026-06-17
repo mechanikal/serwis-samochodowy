@@ -14,6 +14,18 @@
   cursor: pointer;
 }
 
+.notification-card.read {
+  background: #eeeeee;
+  box-shadow: none;
+  opacity: 0.65;
+}
+
+.notification-card.read .notification-title,
+.notification-card.read .notification-body p,
+.notification-card.read .notification-time {
+  color: #777777;
+}
+
 .notification-header {
   display: flex;
   justify-content: space-between;
