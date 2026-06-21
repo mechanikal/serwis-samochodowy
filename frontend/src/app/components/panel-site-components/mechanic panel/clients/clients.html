@@ -18,9 +18,16 @@
       <!-- Client header row -->
       <div class="clients__card-header" (click)="toggleClient(client)">
         <span class="clients__card-name">{{ client.firstName }} {{ client.lastName }}</span>
-        <button type="button" class="clients__toggle-btn">
-          <span class="clients__toggle-arrow">{{ client.expanded ? '▲' : '▼' }}</span>
-        </button>
+        <div class="clients__header-buttons">
+          @if (client.expanded) {
+            <button type="button" class="clients__sort-btn" (click)="toggleVisitSort(client, $event)" title="Sortuj wizyty po dacie">
+              {{ client.visitSortOrder === 'asc' ? 'rosnąco ▲' : 'malejąco ▼' }}
+            </button>
+          }
+          <button type="button" class="clients__toggle-btn">
+            <span class="clients__toggle-arrow">{{ client.expanded ? '▲' : '▼' }}</span>
+          </button>
+        </div>
       </div>
 
       <!-- Expanded content -->
