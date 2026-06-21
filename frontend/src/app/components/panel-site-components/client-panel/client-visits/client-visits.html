@@ -6,6 +6,11 @@
         <div class = "list-header">
             <div class = "list-header-title-bold">aktualne</div>
             <div class = "car-header-buttons">
+                @if (activeExpanded) {
+                  <button class="list-sort-btn" (click)="toggleSortCategory('active')" title="Sortuj po dacie">
+                      {{ activeSortOrder === 'asc' ? 'rosnąco ▲' : 'malejąco ▼' }}
+                  </button>
+                }
                 <button class = "list-button" (click)="activeExpanded = !activeExpanded"><img src="arrow.png" class = "list-expand-img" [class.expanded]="activeExpanded " alt="Rozwiń"></button>
             </div>
         </div>
@@ -31,6 +36,11 @@
         <div class = "list-header">
             <div class = "list-header-title-bold">nadchodzące</div>
             <div class = "car-header-buttons">
+                @if (futureExpanded) {
+                  <button class="list-sort-btn" (click)="toggleSortCategory('future')" title="Sortuj po dacie">
+                      {{ futureSortOrder === 'asc' ? 'rosnąco ▲' : 'malejąco ▼' }}
+                  </button>
+                }
                 <button class = "list-button" (click)="futureExpanded = !futureExpanded"><img src="arrow.png" class = "list-expand-img" [class.expanded]="futureExpanded " alt="Rozwiń"></button>
             </div>
         </div>
@@ -56,6 +66,11 @@
         <div class = "list-header">
             <div class = "list-header-title-bold">zakończone</div>
             <div class = "car-header-buttons">
+                @if (pastExpanded) {
+                  <button class="list-sort-btn" (click)="toggleSortCategory('past')" title="Sortuj po dacie">
+                      {{ pastSortOrder === 'asc' ? 'rosnąco ▲' : 'malejąco ▼' }}
+                  </button>
+                }
                 <button class = "list-button" (click)="pastExpanded = !pastExpanded"><img src="arrow.png" class = "list-expand-img" [class.expanded]="pastExpanded " alt="Rozwiń"></button>
             </div>
         </div>

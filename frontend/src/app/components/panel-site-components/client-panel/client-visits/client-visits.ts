@@ -64,6 +64,10 @@ export class ClientVisits implements OnInit {
   futureExpanded : boolean = true;
   pastExpanded : boolean = false;
 
+  activeSortOrder: 'asc' | 'desc' = 'desc';
+  futureSortOrder: 'asc' | 'desc' = 'desc';
+  pastSortOrder: 'asc' | 'desc' = 'desc';
+
   visitPopupOpen :boolean = false;
   popupVisit :Appointment | null = null;
   popupDiagnosis : Diagnosis | null = null;
@@ -100,13 +104,32 @@ export class ClientVisits implements OnInit {
           description: v.description,
           car: v.vehicle
         }));
-        this.clientFutureAppointments = this.clientAppointments.filter(e => e.status === 'nadchodzące');
-        this.clientPastAppointments = this.clientAppointments.filter(e => e.status === 'zakończone' || e.status === 'anulowane');
-        this.clientActiveAppointments = this.clientAppointments.filter(e => e.status !== 'nadchodzące' && e.status !== 'zakończone' && e.status !== 'anulowane');
+        this.clientFutureAppointments = this.clientAppointments.filter(e => e.status === 'nadchodzące').sort((a, b) => this.sortDates(a.dateStr, b.dateStr, this.futureSortOrder));
+        this.clientPastAppointments = this.clientAppointments.filter(e => e.status === 'zakończone' || e.status === 'anulowane').sort((a, b) => this.sortDates(a.dateStr, b.dateStr, this.pastSortOrder));
+        this.clientActiveAppointments = this.clientAppointments.filter(e => e.status !== 'nadchodzące' && e.status !== 'zakończone' && e.status !== 'anulowane').sort((a, b) => this.sortDates(a.dateStr, b.dateStr, this.activeSortOrder));
       },
       error: (err) => console.error('Błąd pobierania wizyt w kalendarzu', err),
       complete: () => console.log('Pobrano wizyty w kalendarzu',this.clientAppointments)
     });
+  }
+
+  toggleSortCategory(category: 'active' | 'future' | 'past'): void {
+    if (category === 'active') {
+      this.activeSortOrder = this.activeSortOrder === 'asc' ? 'desc' : 'asc';
+      this.clientActiveAppointments.sort((a, b) => this.sortDates(a.dateStr, b.dateStr, this.activeSortOrder));
+    } else if (category === 'future') {
+      this.futureSortOrder = this.futureSortOrder === 'asc' ? 'desc' : 'asc';
+      this.clientFutureAppointments.sort((a, b) => this.sortDates(a.dateStr, b.dateStr, this.futureSortOrder));
+    } else if (category === 'past') {
+      this.pastSortOrder = this.pastSortOrder === 'asc' ? 'desc' : 'asc';
+      this.clientPastAppointments.sort((a, b) => this.sortDates(a.dateStr, b.dateStr, this.pastSortOrder));
+    }
+  }
+
+  private sortDates(dateA: string, dateB: string, order: 'asc' | 'desc'): number {
+    const timeA = new Date(dateA).getTime();
+    const timeB = new Date(dateB).getTime();
+    return order === 'asc' ? timeA - timeB : timeB - timeA;
   }
 
   fetchAppointmentEstimate(visit :Appointment) {
@@ -117,8 +140,8 @@ export class ClientVisits implements OnInit {
         this.popupDiagnosis = {
           diagnosisDescription: data.diagnosisDescription,
           faults: data.faults,
-          requiredServices: data.requiredServices,
-          requiredParts: data.requiredParts,
+          requiredServices: data.requiredServices.map((s: any) => ({ name: s.serviceId.name, price: s.price })),
+          requiredParts: data.requiredParts.map((p: any) => ({ name: p.partId.name, description: p.partId.description, price: p.price })),
           totalPrice: data.totalPrice,
           accepted: data.accepted,
         };
