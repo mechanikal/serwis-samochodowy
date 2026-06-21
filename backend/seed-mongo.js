@@ -230,25 +230,25 @@ async function seedMongo() {
                         mechanicId:          mechanic._id,
                         diagnosisDescription:`Zdiagnozowano: ${visitFault.name}. ${visitFault.description}`,
                         faults:              [visitFault._id],
-                        requiredServices:    [visitService._id],
-                        requiredParts:       [visitPart._id],
+                        requiredServices:    [{ serviceId: visitService._id, price: visitService.price }],
+                        requiredParts:       [{ partId: visitPart._id, price: visitPart.price }],
                         totalPrice:          totalPrice,
                         accepted:            ['oczekiwanie na zatwierdzenie kosztorysu', 'w trakcie naprawy', 'zakończone'].includes(status),
                     });
                 }
 
-                // Powiadomienie o każdej zmianie statusu
                 await Notification.create({
                     visitId:        visit._id,
+                    clientId:       client._id,
                     newVisitStatus: status,
                     status:         status === 'zakończone' ? 'read' : 'unread',
                     date:           visitDate,
                 });
 
-                // Dla zakończonych – powiadomienie o zakończeniu
                 if (status === 'zakończone') {
                     await Notification.create({
                         visitId:        visit._id,
+                        clientId:       client._id,
                         newVisitStatus: 'zakończone',
                         status:         'read',
                         date:           new Date(visitDate.getTime() + 3600 * 1000 * 2),
@@ -336,8 +336,8 @@ async function seedMongo() {
                         mechanicId:          mechanic._id,
                         diagnosisDescription: `Zdiagnozowano: ${visitFault.name}. ${visitFault.description}`,
                         faults:              [visitFault._id],
-                        requiredServices:    [visitService._id],
-                        requiredParts:       [visitPart._id],
+                        requiredServices:    [{ serviceId: visitService._id, price: visitService.price }],
+                        requiredParts:       [{ partId: visitPart._id, price: visitPart.price }],
                         totalPrice:          visitService.price + visitPart.price,
                         accepted:            ['oczekiwanie na zatwierdzenie kosztorysu', 'w trakcie naprawy', 'zakończone'].includes(status),
                     });
@@ -345,6 +345,7 @@ async function seedMongo() {
 
                 await Notification.create({
                     visitId:        visit._id,
+                    clientId:       client._id,
                     newVisitStatus: status,
                     status:         status === 'zakończone' ? 'read' : 'unread',
                     date:           date,

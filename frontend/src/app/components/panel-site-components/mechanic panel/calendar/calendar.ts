@@ -8,6 +8,13 @@ interface Appointment {
   clientName: string;
   dateStr?: string;
   status?: string;
+  vehicle?: {
+    brand: string;
+    model: string;
+    year: number;
+    registration: string;
+    VIN: string;
+  } | null;
 }
 
 interface HourSlot {
@@ -31,24 +38,31 @@ interface PopupVisit {
   timeStart: string;
   timeEnd: string;
   status: string;
+  vehicle?: {
+    brand: string;
+    model: string;
+    year: number;
+    registration: string;
+    VIN: string;
+  } | null;
 }
 
 // Working hours: 8:00 – 20:00 (12 slots)
 const HOUR_START = 8;
-const HOUR_END   = 19;
+const HOUR_END = 19;
 
 const STATUS_LABELS: Record<string, string> = {
-  'nadchodzące':                              'Nadchodzące',
-  'oczekiwanie na kosztorys':                'Oczekiwanie na kosztorys',
+  'nadchodzące': 'Nadchodzące',
+  'oczekiwanie na kosztorys': 'Oczekiwanie na kosztorys',
   'oczekiwanie na zatwierdzenie kosztorysu': 'Oczekiwanie na zatw. kosztorysu',
-  'w trakcie naprawy':                       'W trakcie naprawy',
-  'zakończone':                              'Zakończone',
-  'anulowane':                               'Anulowane',
+  'w trakcie naprawy': 'W trakcie naprawy',
+  'zakończone': 'Zakończone',
+  'anulowane': 'Anulowane',
   // legacy fallbacks
-  'oczekuje':   'Nadchodzące',
-  'w trakcie':  'W trakcie naprawy',
+  'oczekuje': 'Nadchodzące',
+  'w trakcie': 'W trakcie naprawy',
   'zakończona': 'Zakończone',
-  'anulowana':  'Anulowane',
+  'anulowana': 'Anulowane',
 };
 
 @Component({
@@ -70,7 +84,7 @@ export class Calendar implements OnInit {
   // Popup state
   popupVisit: PopupVisit | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   ngOnInit() {
     this.fetchAppointments();
@@ -90,6 +104,7 @@ export class Calendar implements OnInit {
           clientName: v.clientName,
           dateStr: v.date,
           status: v.status,
+          vehicle: v.vehicle,
         }));
       },
       error: (err) => console.error('Błąd pobierania wizyt w kalendarzu', err)
@@ -167,6 +182,7 @@ export class Calendar implements OnInit {
       timeStart:   slot.label,
       timeEnd:     slot.endLabel,
       status:      STATUS_LABELS[apt.status ?? ''] ?? apt.status ?? '—',
+      vehicle:     apt.vehicle,
     };
   }
 

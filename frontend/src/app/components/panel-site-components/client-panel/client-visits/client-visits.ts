@@ -140,8 +140,8 @@ export class ClientVisits implements OnInit {
         this.popupDiagnosis = {
           diagnosisDescription: data.diagnosisDescription,
           faults: data.faults,
-          requiredServices: data.requiredServices,
-          requiredParts: data.requiredParts,
+          requiredServices: data.requiredServices.map((s: any) => ({ name: s.serviceId.name, price: s.price })),
+          requiredParts: data.requiredParts.map((p: any) => ({ name: p.partId.name, description: p.partId.description, price: p.price })),
           totalPrice: data.totalPrice,
           accepted: data.accepted,
         };

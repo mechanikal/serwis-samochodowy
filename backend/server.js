@@ -43,14 +43,14 @@ const authenticateToken = (req, res, next) => {
 
 const requireRole =
   (...roles) =>
-  (req, res, next) => {
-    if (!req.user || !roles.includes(req.user.role)) {
-      return res
-        .status(403)
-        .json({ message: "Brak uprawnień do tej operacji" });
-    }
-    next();
-  };
+    (req, res, next) => {
+      if (!req.user || !roles.includes(req.user.role)) {
+        return res
+          .status(403)
+          .json({ message: "Brak uprawnień do tej operacji" });
+      }
+      next();
+    };
 
 app.use(cors());
 app.use(express.json());
@@ -224,7 +224,7 @@ app.get("/api/visits", authenticateToken, async (req, res) => {
   try {
     // Mechanics see all visits; regular users only see date/time for slot availability
     if (req.user.role === "mechanic" || req.user.role === "admin") {
-      const visits = await Visit.find().populate("clientId");
+      const visits = await Visit.find().populate("clientId").populate("vehicleId");
       const visitsData = visits.map((v) => ({
         _id: v._id,
         date: toLocalDateStr(v.date),
@@ -234,6 +234,14 @@ app.get("/api/visits", authenticateToken, async (req, res) => {
           ? `${v.clientId.name} ${v.clientId.lastName}`
           : "Nieznany",
         status: v.status,
+        vehicle: v.vehicleId ? {
+          brand: v.vehicleId.brand,
+          model: v.vehicleId.model,
+          year: v.vehicleId.year,
+          registration: v.vehicleId.registration,
+          VIN: v.vehicleId.VIN
+        } : null,
+        description: v.description
       }));
       res.json(visitsData);
     } else {
@@ -330,7 +338,7 @@ app.patch(
       if (!status) {
         return res.status(400).json({ message: "Brak statusu" });
       }
-      
+
       const visit = await Visit.findById(req.params.id);
       if (!visit) {
         return res.status(404).json({ message: "Wizyta nie znaleziona" });
@@ -341,11 +349,11 @@ app.patch(
 
       // Create a notification for the client
       await Notification.create({
-          visitId:        visit._id,
-          clientId:       visit.clientId,
-          newVisitStatus: status,
-          status:         'unread',
-          date:           new Date()
+        visitId: visit._id,
+        clientId: visit.clientId,
+        newVisitStatus: status,
+        status: 'unread',
+        date: new Date()
       });
 
       res.json({ message: "Status zaktualizowany pomyślnie", visit });
@@ -409,18 +417,12 @@ app.put("/api/visits/:id/diagnosis", authenticateToken, requireRole("mechanic"),
       return res.status(403).json({ message: "Mechanic not found" });
     }
 
-    // Calculate total price from services and parts in DB to avoid client-side tampering
-    const servicesData = await Service.find({ _id: { $in: requiredServices } });
-    const partsData = await Part.find({ _id: { $in: requiredParts } });
-    
     let totalPrice = 0;
-    requiredServices.forEach(id => {
-      const s = servicesData.find(sd => sd._id.toString() === id);
-      if (s) totalPrice += s.price;
+    requiredServices.forEach(item => {
+      totalPrice += Number(item.price) || 0;
     });
-    requiredParts.forEach(id => {
-      const p = partsData.find(pd => pd._id.toString() === id);
-      if (p) totalPrice += p.price;
+    requiredParts.forEach(item => {
+      totalPrice += Number(item.price) || 0;
     });
 
     // Find if diagnosis already exists, otherwise create
@@ -457,7 +459,7 @@ app.put("/api/visits/:id/diagnosis", authenticateToken, requireRole("mechanic"),
 app.get(
   "/api/stats",
   authenticateToken,
-  requireRole("admin","mechanic"),
+  requireRole("admin", "mechanic"),
   async (req, res) => {
     try {
       // Aggregate real fault counts from Diagnosis documents
@@ -518,16 +520,16 @@ app.get(
       }
       const cars = await Vehicle.find({ clientId: client._id });
       const carData = await Promise.all(
-      cars.map(async(c)=>({
-        brand: c.brand,
-        model: c.model,
-        year: c.year,
-        registration: c.registration,
-        VIN: c.VIN,
-        _id: c._id,
-        visits: await Visit.find({ vehicleId: c._id }).select(" date serviceName status description")
-      }))
-    );
+        cars.map(async (c) => ({
+          brand: c.brand,
+          model: c.model,
+          year: c.year,
+          registration: c.registration,
+          VIN: c.VIN,
+          _id: c._id,
+          visits: await Visit.find({ vehicleId: c._id }).select(" date serviceName status description")
+        }))
+      );
       res.json(carData);
     } catch (err) {
       console.error(err);
@@ -647,8 +649,8 @@ app.get("/api/client-visits", authenticateToken, requireRole("user"), async (req
   try {
     const client = await Client.findOne({ userId: req.user.id });
     if (!client) {
-        return res.status(404).json({ message: "Nie znaleziono klienta" });
-      }
+      return res.status(404).json({ message: "Nie znaleziono klienta" });
+    }
     const visits = await Visit.find({ clientId: client._id })
       .populate("vehicleId", 'brand model registration VIN');
     const visitsData = visits.map((v) => ({
@@ -779,8 +781,8 @@ app.get("/api/visit-diagnosis/:id", authenticateToken, requireRole("user"), asyn
     }
     const estimate = await diagnosis.findOne({ visitId: visit._id })
       .populate("faults")
-      .populate("requiredServices")
-      .populate("requiredParts");
+      .populate("requiredServices.serviceId")
+      .populate("requiredParts.partId");
     if (estimate == null) {
       return res.status(404).json({ message: "Brak diagnozy dla wizyty" });
     }
