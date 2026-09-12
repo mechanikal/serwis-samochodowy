@@ -64,6 +64,12 @@
   background-color: #e0e0e0;
 }
 
+.clients__header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
 .clients__card-name {
   font-size: 0.75em;
   font-weight: 500;
@@ -107,6 +113,21 @@
   font-style: italic;
   color: #555;
   padding: 0.2em 0 0.1em;
+}
+
+.clients__sort-btn {
+  background: none;
+  border: none;
+  color: #444;
+  font-size: 0.7em;
+  font-style: italic;
+  cursor: pointer;
+  padding: 0.1em 0.3em;
+  border-radius: 2px;
+  transition: background-color 0.2s;
+}
+.clients__sort-btn:hover {
+  background-color: #ddd;
 }
 
 /* ── Vehicle row ── */

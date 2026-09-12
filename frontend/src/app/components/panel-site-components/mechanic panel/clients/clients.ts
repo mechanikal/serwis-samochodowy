@@ -18,6 +18,7 @@ interface Client {
   firstName: string;
   lastName: string;
   expanded: boolean;
+  visitSortOrder?: 'asc' | 'desc';
   vehicles: Vehicle[];
   visits: Visit[];
 }
@@ -50,8 +51,9 @@ export class Clients implements OnInit {
           firstName: c.firstName,
           lastName: c.lastName,
           expanded: false,
+          visitSortOrder: 'desc',
           vehicles: c.vehicles,
-          visits: c.visits
+          visits: [...c.visits].sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
         }));
       },
       error: (err) => {
@@ -62,6 +64,16 @@ export class Clients implements OnInit {
 
   toggleClient(client: Client): void {
     client.expanded = !client.expanded;
+  }
+
+  toggleVisitSort(client: Client, event: Event): void {
+    event.stopPropagation();
+    client.visitSortOrder = client.visitSortOrder === 'asc' ? 'desc' : 'asc';
+    client.visits.sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      return client.visitSortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
   }
 
   get filteredClients(): Client[] {

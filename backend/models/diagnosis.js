@@ -5,8 +5,14 @@ const DiagnosisSchema = new mongoose.Schema({
   mechanicId: { type: mongoose.Schema.Types.ObjectId, ref: 'Mechanic', required: true },
   diagnosisDescription: String,
   faults: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Fault' }],
-  requiredServices: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Service' }],
-  requiredParts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Part' }],
+  requiredServices: [{
+    serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
+    price: Number
+  }],
+  requiredParts: [{
+    partId: { type: mongoose.Schema.Types.ObjectId, ref: 'Part' },
+    price: Number
+  }],
   accepted: Boolean,
   totalPrice: Number
 });

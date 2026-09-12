@@ -11,6 +11,13 @@ interface RepairItem {
   client: string;
   status: string;
   description: string;
+  vehicle?: {
+    brand: string;
+    model: string;
+    year: number;
+    registration: string;
+    VIN: string;
+  } | null;
 }
 
 interface RepairSection {
@@ -56,7 +63,7 @@ export class Repairs implements OnInit {
   cancelConfirmationOpen = false;
 
   popupItem: RepairItem | null = null;
-  
+
   // Dictionaries for diagnosis
   faultsList: Fault[] = [];
   servicesList: Service[] = [];
@@ -65,12 +72,12 @@ export class Repairs implements OnInit {
   // Diagnosis form state
   diagDescription: string = '';
   diagSelectedFaults: string[] = [];
-  diagSelectedServices: string[] = [];
-  diagSelectedParts: string[] = [];
+  diagSelectedServices: { id: string, price: number }[] = [];
+  diagSelectedParts: { id: string, price: number }[] = [];
 
   get diagTotalPrice(): number {
-    const sPrice = this.servicesList.filter(s => this.diagSelectedServices.includes(s._id)).reduce((acc, s) => acc + s.price, 0);
-    const pPrice = this.partsList.filter(p => this.diagSelectedParts.includes(p._id)).reduce((acc, p) => acc + p.price, 0);
+    const sPrice = this.diagSelectedServices.reduce((acc, p) => acc + p.price, 0);
+    const pPrice = this.diagSelectedParts.reduce((acc, p) => acc + p.price, 0);
     return sPrice + pPrice;
   }
 
@@ -84,14 +91,16 @@ export class Repairs implements OnInit {
     else this.diagSelectedFaults.push(id);
   }
 
-  toggleService(id: string) {
-    const idx = this.diagSelectedServices.indexOf(id);
-    if (idx > -1) this.diagSelectedServices.splice(idx, 1);
-    else this.diagSelectedServices.push(id);
+  addService(id: string) {
+    this.diagSelectedServices.push({ id, price: this.getServicePrice(id) });
+  }
+
+  removeService(index: number) {
+    this.diagSelectedServices.splice(index, 1);
   }
 
   addPart(id: string) {
-    this.diagSelectedParts.push(id);
+    this.diagSelectedParts.push({ id, price: this.getPartPrice(id) });
   }
 
   removePart(index: number) {
@@ -125,13 +134,13 @@ export class Repairs implements OnInit {
 
   openPopup(item: RepairItem): void {
     this.popupItem = item;
-    
+
     // Clear state initially
     this.diagDescription = '';
     this.diagSelectedFaults = [];
     this.diagSelectedServices = [];
     this.diagSelectedParts = [];
-      
+
     if (['oczekiwanie na kosztorys', 'oczekiwanie na zatwierdzenie kosztorysu', 'w trakcie naprawy', 'zakończone'].includes(item.status)) {
       const token = localStorage.getItem('token');
       const headers = { 'Authorization': `Bearer ${token}` };
@@ -140,8 +149,8 @@ export class Repairs implements OnInit {
           if (res) {
             this.diagDescription = res.diagnosisDescription || '';
             this.diagSelectedFaults = res.faults || [];
-            this.diagSelectedServices = res.requiredServices || [];
-            this.diagSelectedParts = res.requiredParts || [];
+            this.diagSelectedServices = (res.requiredServices || []).map((s: any) => ({ id: s.serviceId, price: s.price }));
+            this.diagSelectedParts = (res.requiredParts || []).map((p: any) => ({ id: p.partId, price: p.price }));
           }
         });
     }
@@ -153,8 +162,8 @@ export class Repairs implements OnInit {
       const payload = {
         diagnosisDescription: this.diagDescription,
         faults: this.diagSelectedFaults,
-        requiredServices: this.diagSelectedServices,
-        requiredParts: this.diagSelectedParts
+        requiredServices: this.diagSelectedServices.map(s => ({ serviceId: s.id, price: s.price })),
+        requiredParts: this.diagSelectedParts.map(p => ({ partId: p.id, price: p.price }))
       };
       const token = localStorage.getItem('token');
       const headers = { 'Authorization': `Bearer ${token}` };
@@ -168,7 +177,7 @@ export class Repairs implements OnInit {
     }
   }
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   ngOnInit() {
     this.fetchVisits();
@@ -209,8 +218,8 @@ export class Repairs implements OnInit {
       const payload = {
         diagnosisDescription: this.diagDescription,
         faults: this.diagSelectedFaults,
-        requiredServices: this.diagSelectedServices,
-        requiredParts: this.diagSelectedParts
+        requiredServices: this.diagSelectedServices.map(s => ({ serviceId: s.id, price: s.price })),
+        requiredParts: this.diagSelectedParts.map(p => ({ partId: p.id, price: p.price }))
       };
       this.http.put(`http://localhost:3000/api/visits/${item._id}/diagnosis`, payload, { headers })
         .subscribe({
@@ -271,7 +280,8 @@ export class Repairs implements OnInit {
             service: v.serviceName,
             client: v.clientName,
             status: v.status ?? '',
-            description: v.description ?? ''
+            description: v.description ?? '',
+            vehicle: v.vehicle
           };
 
           const statusLower = (v.status ?? '').toLowerCase().trim();

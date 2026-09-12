@@ -1,5 +1,5 @@
-<div class ="tab-title">Kalendarz wizyt</div>
-<div class = "tab-description">Tutaj możesz przeglądać wizyty klientów w kalendarzu.</div>
+<div class="tab-title">Kalendarz wizyt</div>
+<div class="tab-description">Tutaj możesz przeglądać wizyty klientów w kalendarzu.</div>
 
 <div class="calendar">
   <div class="calendar__nav">
@@ -9,88 +9,102 @@
   </div>
 
   @for (day of weekDays; track day.dayNumber) {
-    <div class="calendar__day-row">
-      <div class="calendar__day-label">
-        <span class="calendar__day-abbr">{{ day.dayAbbr }}</span>
-        <span class="calendar__day-number">{{ day.dayNumber }}</span>
+  <div class="calendar__day-row">
+    <div class="calendar__day-label">
+      <span class="calendar__day-abbr">{{ day.dayAbbr }}</span>
+      <span class="calendar__day-number">{{ day.dayNumber }}</span>
+    </div>
+    <div class="calendar__timeline">
+      <div class="calendar__time-header">
+        <span class="calendar__time-start">8:00</span>
+        <span class="calendar__time-end">20:00</span>
       </div>
-      <div class="calendar__timeline">
-        <div class="calendar__time-header">
-          <span class="calendar__time-start">8:00</span>
-          <span class="calendar__time-end">20:00</span>
+      <div class="calendar__slots">
+        @for (slot of day.slots; track slot.hour) {
+        @if (slot.appointments.length === 0) {
+        <div class="calendar__slot calendar__slot--empty">
+          <span class="calendar__apt-time">{{ slot.label }}</span>
+          <span class="calendar__apt-service">{{ slot.endLabel }}</span>
         </div>
-        <div class="calendar__slots">
-          @for (slot of day.slots; track slot.hour) {
-            @if (slot.appointments.length === 0) {
-              <div class="calendar__slot calendar__slot--empty">
-                <span class="calendar__apt-time">{{ slot.label }}</span>
-                <span class="calendar__apt-service">{{ slot.endLabel }}</span>
-              </div>
-            } @else {
-              <button
-                class="calendar__slot calendar__slot--booked"
-                type="button"
-                (click)="onAppointmentClick(day, slot)">
-                <span class="calendar__apt-time">{{ slot.label }}</span>
-                <span class="calendar__apt-service">{{ slot.endLabel }}</span>
-                <span class="calendar__apt-client">{{ slot.appointments[0].clientName }}</span>
-              </button>
-            }
-          }
-        </div>
+        } @else {
+        <button class="calendar__slot calendar__slot--booked" type="button" (click)="onAppointmentClick(day, slot)">
+          <span class="calendar__apt-time">{{ slot.label }}</span>
+          <span class="calendar__apt-service">{{ slot.endLabel }}</span>
+          <span class="calendar__apt-client">{{ slot.appointments[0].clientName }}</span>
+        </button>
+        }
+        }
       </div>
     </div>
+  </div>
   }
 </div>
 
 <!-- ── Visit detail popup ── -->
 @if (popupVisit) {
-  <div class="cal-overlay" (click)="closePopup()">
-    <div class="cal-popup" (click)="$event.stopPropagation()">
+<div class="cal-overlay" (click)="closePopup()">
+  <div class="cal-popup" (click)="$event.stopPropagation()">
 
-      <div class="cal-popup__topbar"></div>
+    <div class="cal-popup__topbar"></div>
 
-      <div class="cal-popup__header">
-        <span class="cal-popup__title">Szczegóły wizyty</span>
-        <button class="cal-popup__close" (click)="closePopup()"><img src="x-icon.png"></button>
-      </div>
-
-      <div class="cal-popup__body">
-
-        <div class="cal-popup__row">
-          <span class="cal-popup__label">Klient</span>
-          <span class="cal-popup__value">{{ popupVisit.clientName }}</span>
-        </div>
-
-        <div class="cal-popup__row">
-          <span class="cal-popup__label">Data</span>
-          <span class="cal-popup__value">{{ popupVisit.date }}</span>
-        </div>
-
-        <div class="cal-popup__row">
-          <span class="cal-popup__label">Godzina</span>
-          <span class="cal-popup__value">{{ popupVisit.timeStart }} – {{ popupVisit.timeEnd }}</span>
-        </div>
-
-        <div class="cal-popup__row">
-          <span class="cal-popup__label">Usługa</span>
-          <span class="cal-popup__value">{{ popupVisit.serviceName }}</span>
-        </div>
-
-        <div class="cal-popup__row">
-          <span class="cal-popup__label">Status</span>
-          <span class="cal-popup__value cal-popup__status" [attr.data-status]="popupVisit.status">
-            {{ popupVisit.status }}
-          </span>
-        </div>
-
-      </div>
-
-      <div class="cal-popup__footer">
-        <button class="cal-popup__btn" (click)="closePopup()">Zamknij</button>
-      </div>
-
-      <div class="cal-popup__botbar"></div>
+    <div class="cal-popup__header">
+      <span class="cal-popup__title">Szczegóły wizyty</span>
+      <button class="cal-popup__close" (click)="closePopup()"><img src="x-icon.png"></button>
     </div>
+
+    <div class="cal-popup__body">
+
+      <div class="cal-popup__row">
+        <span class="cal-popup__label">Klient</span>
+        <span class="cal-popup__value">{{ popupVisit.clientName }}</span>
+      </div>
+
+      <div class="cal-popup__row">
+        <span class="cal-popup__label">Data</span>
+        <span class="cal-popup__value">{{ popupVisit.date }}</span>
+      </div>
+
+      <div class="cal-popup__row">
+        <span class="cal-popup__label">Godzina</span>
+        <span class="cal-popup__value">{{ popupVisit.timeStart }} – {{ popupVisit.timeEnd }}</span>
+      </div>
+
+      <div class="cal-popup__row">
+        <span class="cal-popup__label">Usługa</span>
+        <span class="cal-popup__value">{{ popupVisit.serviceName }}</span>
+      </div>
+
+      <div class="cal-popup__row">
+        <span class="cal-popup__label">Status</span>
+        <span class="cal-popup__value cal-popup__status" [attr.data-status]="popupVisit.status">
+          {{ popupVisit.status }}
+        </span>
+      </div>
+
+      @if (popupVisit.vehicle) {
+        <div class="cal-popup__row">
+          <span class="cal-popup__label">Pojazd</span>
+          <span class="cal-popup__value">{{popupVisit.vehicle.brand}} {{popupVisit.vehicle.model}} {{popupVisit.vehicle.year ? '(' + popupVisit.vehicle.year + ')' : ''}}</span>
+        </div>
+
+        <div class="cal-popup__row">
+          <span class="cal-popup__label">Rejestracja</span>
+          <span class="cal-popup__value">{{popupVisit.vehicle.registration || 'Brak'}}</span>
+        </div>
+
+        <div class="cal-popup__row">
+          <span class="cal-popup__label">VIN</span>
+          <span class="cal-popup__value">{{popupVisit.vehicle.VIN || 'Brak'}}</span>
+        </div>
+      }
+
+    </div>
+
+    <div class="cal-popup__footer">
+      <button class="cal-popup__btn" (click)="closePopup()">Zamknij</button>
+    </div>
+
+    <div class="cal-popup__botbar"></div>
   </div>
+</div>
 }
