@@ -849,6 +849,28 @@ app.delete("/api/notifications/:id", authenticateToken, async (req, res) => {
   }
 });
 
+app.patch("/api/notifications/read/:id", authenticateToken, async (req, res) => {
+  try {
+    const client = await Client.findOne({ userId: req.user.id });
+    if (!client) {
+      return res.status(404).json({ message: "Nie znaleziono klienta" });
+    }
+
+    const notification = await Notification.findOne({ _id: req.params.id, clientId: client._id });
+    if (!notification) {
+      return res.status(404).json({ message: "Powiadomienie nie znalezione" });
+    }
+
+    notification.status = 'read';
+    await notification.save();
+
+    res.json({ message: "Powiadomienie oznaczone jako przeczytane", notification });
+  } catch (err) {
+    console.error("Mark notification as read error:", err);
+    res.status(500).send("Server error");
+  }
+});
+
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });

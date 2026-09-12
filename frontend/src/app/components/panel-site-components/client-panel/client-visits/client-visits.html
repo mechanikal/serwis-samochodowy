@@ -172,10 +172,8 @@
                 </div>
                 <div class="visit-est-buttons">
                     @if(popupDiagnosis != null && !popupDiagnosis.accepted){
-                    <button class = "visit-est-button" (click) = "openAcceptEstimateConfirmationPopup()">zatwierdź kosztorys</button>
-                    }
-                    @if(popupDiagnosis == null || !popupDiagnosis.accepted){
-                        <button class = "visit-est-button" (click) = "openCancelVisitConfirmationPopup()" >zrezygnuj z wizyty</button>
+                        <button class = "visit-est-button" (click) = "openAcceptEstimateConfirmationPopup()">zatwierdź kosztorys</button>
+                        <button class = "visit-est-button" (click) = "openCancelVisitConfirmationPopup()">zrezygnuj z wizyty</button>
                     }
                 </div>
         </div>
