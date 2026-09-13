@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Notifications } from '../notifications/notifications';
 
@@ -8,9 +8,10 @@ import { Notifications } from '../notifications/notifications';
   templateUrl: './site-header.html',
   styleUrl: './site-header.css',
 })
-export class SiteHeader {
+export class SiteHeader implements OnInit {
+  @Input() userMode?: 'mechanic' | 'client';
   isNotificationsOpen = false;
-  userData = { firstName: 'User', lastName: 'Unknown' };
+  userData = { firstName: 'User', lastName: 'Unknown', role: '' };
   constructor(private router: Router) {}
   ngOnInit() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -18,7 +19,15 @@ export class SiteHeader {
     if (user) {
       this.userData.firstName = user.firstName || 'User';
       this.userData.lastName = user.lastName || 'Unknown';
+      this.userData.role = user.role || '';
     }
+  }
+
+  get isMechanic(): boolean {
+    if (this.userMode) {
+      return this.userMode === 'mechanic';
+    }
+    return this.userData.role === 'mechanic' || (!this.userData.role && this.userMode !== 'client');
   }
 
   openNotifications() {

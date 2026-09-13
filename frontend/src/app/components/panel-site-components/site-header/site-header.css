@@ -31,6 +31,21 @@
   align-items: center;
   gap: 0.5em;
 }
+.user-info {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.45em;
+}
+.user-name {
+  color: #ffffff;
+}
+.user-role {
+  font-size: 0.82em;
+  color: #a8a8a8;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
 .right-section {
   display: flex;
   flex-direction: row;

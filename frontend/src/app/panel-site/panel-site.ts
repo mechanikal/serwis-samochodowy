@@ -16,8 +16,8 @@ export class MechanicSite implements OnInit {
     window.scrollTo(0, 0);
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-    this.selectedUserMode = user.role === 'mechanic'
-      ? 'mechanic'
-      : 'client';
+    this.selectedUserMode = user.role === 'user' || user.role === 'client'
+      ? 'client'
+      : 'mechanic';
   }
 }

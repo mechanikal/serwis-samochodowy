@@ -19,7 +19,12 @@
       </div>
       }
       <img src="/user-icon.svg" alt="user" class="user-icon" />
-      <p>{{ userData.firstName }} {{ userData.lastName }}</p>
+      <div class="user-info">
+        <span class="user-name">{{ userData.firstName }} {{ userData.lastName }}</span>
+        @if (isMechanic) {
+          <span class="user-role">mechanik</span>
+        }
+      </div>
       <button class="bell-icon-button" (click)="openNotifications()" aria-label="Powiadomienia">
         <img src="/bell-icon.svg" alt="bell" class="bell-icon" />
       </button>
