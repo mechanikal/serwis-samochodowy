@@ -114,6 +114,7 @@
           <div style="display: flex; flex-direction: column; gap: 0.3em; margin-top: 0.5em; text-align: left;">
             <label style="font-size: 0.8em; font-weight: 500; font-style: italic; color: #444;">Opis diagnozy</label>
             <textarea [(ngModel)]="diagDescription" rows="2"
+              (input)="clearDiagnosisError()"
               style="width: 100%; background-color: #fff; border: 1px solid #ccc; border-radius: 0.2em; padding: 0.3em; resize: vertical; box-sizing: border-box; font-family: 'Khand', sans-serif;"
               placeholder="Wpisz opis diagnozy..."></textarea>
 
@@ -258,12 +259,14 @@
       @if (getNextStatus(popupItem.status)) {
       <div class="visit-est-buttons-row">
         <button class="visit-est-button visit-est-button--full"
-          [disabled]="popupItem.status === 'oczekiwanie na kosztorys' && !isDiagnosisValid"
           [class.disabled-btn]="popupItem.status === 'oczekiwanie na kosztorys' && !isDiagnosisValid"
-          (click)="changeStatus(popupItem, getNextStatus(popupItem.status)!)">
+          (click)="popupItem.status === 'oczekiwanie na kosztorys' && !isDiagnosisValid ? showDiagnosisError() : changeStatus(popupItem, getNextStatus(popupItem.status)!)">
           Zmień status na: {{ getNextStatus(popupItem.status) }} <span
-            style="font-size: 1.1em; line-height: 0;">➔</span>
+            style="font-size: 1.1em; line-height: 0;">&#x2794;</span>
         </button>
+        @if (diagnosisErrorMsg) {
+          <div class="diag-error-msg">&#9888; {{ diagnosisErrorMsg }}</div>
+        }
       </div>
       }
       <div class="visit-est-buttons-row">

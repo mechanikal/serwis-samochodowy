@@ -85,6 +85,21 @@ export class Repairs implements OnInit {
     return this.diagDescription.trim() !== '';
   }
 
+  /** Komunikat błędu pokazywany gdy próbowano zmienić status bez opisu diagnozy */
+  diagnosisErrorMsg: string = '';
+
+  showDiagnosisError(): void {
+    if (!this.isDiagnosisValid) {
+      this.diagnosisErrorMsg = 'Opis diagnozy jest wymagany przed zmianą statusu.';
+    }
+  }
+
+  clearDiagnosisError(): void {
+    if (this.diagDescription.trim()) {
+      this.diagnosisErrorMsg = '';
+    }
+  }
+
   toggleFault(id: string) {
     const idx = this.diagSelectedFaults.indexOf(id);
     if (idx > -1) this.diagSelectedFaults.splice(idx, 1);
@@ -140,6 +155,7 @@ export class Repairs implements OnInit {
     this.diagSelectedFaults = [];
     this.diagSelectedServices = [];
     this.diagSelectedParts = [];
+    this.diagnosisErrorMsg = '';
 
     if (['oczekiwanie na kosztorys', 'oczekiwanie na zatwierdzenie kosztorysu', 'w trakcie naprawy', 'zakończone'].includes(item.status)) {
       const token = localStorage.getItem('token');

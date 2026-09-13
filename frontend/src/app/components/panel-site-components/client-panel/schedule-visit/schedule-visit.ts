@@ -64,6 +64,8 @@ export class ScheduleVisit implements OnInit {
   visitDescription: string = '';
   showInfoBox: boolean = false;
   infoBoxText: string = '';
+  infoBoxIsError: boolean = false;
+  scheduleValidationErrors: string[] = [];
 
   constructor(private http: HttpClient) {}
 
@@ -112,12 +114,17 @@ export class ScheduleVisit implements OnInit {
     }).subscribe({
       next: (res) => {
         this.fetchAppointments();
-        this.infoBoxText = 'wizyta została umówiona';
+        this.infoBoxText = 'Wizyta została umówiona pomyślnie.';
+        this.infoBoxIsError = false;
         this.showInfoBox = true;
+        this.confirmPopupShown = false;
       },
       error: (err) => {
-        this.infoBoxText = 'nie udało się umówić wizyty';
+        const msg = err?.error?.message ?? 'Nie udało się umówić wizyty.';
+        this.infoBoxText = msg;
+        this.infoBoxIsError = true;
         this.showInfoBox = true;
+        // Popup potwierdzenia pozostaje otwarty – użytkownik może poprawić dane
       }
     });
   }
@@ -250,17 +257,35 @@ export class ScheduleVisit implements OnInit {
   }
   closeInfoBox(){
     this.showInfoBox = false;
-    this.confirmPopupShown = false;
+    // Przy sukcesie confirmPopupShown już ustawiono na false w subskrypcji
   }
   scheduleVisit(){
-    if (this.selectedClientCar == null || this.selectedTimeSlot == null || this.visitDescription.trim().length === 0){
+    this.scheduleValidationErrors = [];
+
+    if (this.selectedClientCar == null) {
+      this.scheduleValidationErrors.push('Wybierz pojazd z listy.');
+    }
+    if (this.selectedTimeSlot == null) {
+      this.scheduleValidationErrors.push('Wybierz termin z kalendarza.');
+    }
+    const desc = this.visitDescription.trim();
+    if (desc.length === 0) {
+      this.scheduleValidationErrors.push('Cel wizyty jest wymagany.');
+    } else if (desc.length < 5) {
+      this.scheduleValidationErrors.push('Cel wizyty musi zawierać co najmniej 5 znaków.');
+    } else if (desc.length > 2000) {
+      this.scheduleValidationErrors.push('Cel wizyty może mieć maksymalnie 2000 znaków.');
+    }
+
+    if (this.scheduleValidationErrors.length > 0) {
       return;
     }
+
     this.addVisit({
-      vehicle: this.selectedClientCar._id,
-      date: this.selectedTimeSlot.dateStr,
-      time: this.selectedTimeSlot.startHour,
-      description: this.visitDescription.trim()
+      vehicle: this.selectedClientCar!._id,
+      date: this.selectedTimeSlot!.dateStr,
+      time: this.selectedTimeSlot!.startHour,
+      description: desc
     });
   }
 

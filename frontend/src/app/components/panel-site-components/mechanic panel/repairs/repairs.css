@@ -699,3 +699,21 @@
   justify-content: center;
   padding-bottom: 0.5em;
 }
+
+/* ── Komunikat błędu diagnozy ── */
+.diag-error-msg {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 0.2em;
+  padding: 0.25em 0.5em;
+  font-size: 0.65em;
+  font-weight: 500;
+  margin-top: 0.3em;
+  animation: fadeInError 0.2s ease;
+}
+
+@keyframes fadeInError {
+  from { opacity: 0; transform: translateY(-3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

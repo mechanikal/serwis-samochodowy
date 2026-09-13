@@ -64,42 +64,64 @@
         <form class = "popup-form">
             <div class = "inputs-section">
                 <div class="inputs-row">
-                    
                     <div class="small-input">
                         <label for="brand">Marka:</label>
-                        <input type="text" id="brand" name="brand" [(ngModel)] = "vechicleForm.brand" required>
+                        <input type="text" id="brand" name="brand" [(ngModel)]="vechicleForm.brand" [class.input-error]="brandError">
+                        @if (brandError) {
+                            <span class="field-error">{{ brandError }}</span>
+                        }
                     </div>
 
                     <div class="small-input">
                         <label for="model">Model:</label>
-                        <input type="text" id="model" name="model" [(ngModel)] = "vechicleForm.model" required>
+                        <input type="text" id="model" name="model" [(ngModel)]="vechicleForm.model" [class.input-error]="modelError">
+                        @if (modelError) {
+                            <span class="field-error">{{ modelError }}</span>
+                        }
                     </div>
                 </div>
 
                 <div class="inputs-row">
                     <div class="small-input">
                         <label for="year">Rok produkcji:</label>
-                        <input type="number" id="year" name="year" [(ngModel)] = "vechicleForm.year" min="1900" max="2100">
+                        <input type="number" id="year" name="year" [(ngModel)]="vechicleForm.year" min="1900" max="2100" [class.input-error]="yearError">
+                        @if (yearError) {
+                            <span class="field-error">{{ yearError }}</span>
+                        }
                     </div>
 
                     <div class="small-input">
                         <label for="registration">Numer rejestracyjny:</label>
-                        <input type="text" id="registration" name="registration" [(ngModel)] = "vechicleForm.registration">
+                        <input type="text" id="registration" name="registration" [(ngModel)]="vechicleForm.registration" [class.input-error]="registrationError">
+                        @if (registrationError) {
+                            <span class="field-error">{{ registrationError }}</span>
+                        }
                     </div>
                 </div>
-                <div class = "small-input">
+                <div class="small-input">
                     <label for="vin">VIN:</label>
-                    <input type="text" id="vin" name="vin" [(ngModel)] = "vechicleForm.VIN">
+                    <input type="text" id="vin" name="vin" [(ngModel)]="vechicleForm.VIN" [class.input-error]="VINError">
+                    @if (VINError) {
+                        <span class="field-error">{{ VINError }}</span>
+                    }
                 </div>
             </div>
-            <div class = "submit-row">
+
+            @if (showInfoBox) {
+                <div class="popup-infobox" [class.popup-infobox--error]="infoBoxIsError">
+                    <span>{{ infoBoxText }}</span>
+                    <button class="popup-infobox-close" type="button" (click)="closeInfoBox()">✕</button>
+                </div>
+            }
+
+            <div class="submit-row">
                 @if (addVehiclePopupOpen) {
-                <button type="button" class="popup-submit" [disabled]="isVehicleFormInvalid()" (click)="addVehicleConfirm()">
-                    Dodaj pojazd
-                </button>
-                }@else if (editVehiclePopupOpen) {
-                    <button type="button" class="popup-submit" [disabled]="isVehicleFormInvalid()" (click)="editVehicleConfirm()">
-                    Zapisz zmiany
+                    <button type="button" class="popup-submit" (click)="addVehicleConfirm()">
+                        Dodaj pojazd
+                    </button>
+                } @else if (editVehiclePopupOpen) {
+                    <button type="button" class="popup-submit" (click)="editVehicleConfirm()">
+                        Zapisz zmiany
                     </button>
                 }
             </div>
@@ -130,7 +152,7 @@
     </div>
 }
 
-@if(showInfoBox){
+@if(showInfoBox && !addVehiclePopupOpen && !editVehiclePopupOpen){
     <div class = "info-box-wrapper">
         <div class = "info-box">
             <div class="info-topbar"></div>

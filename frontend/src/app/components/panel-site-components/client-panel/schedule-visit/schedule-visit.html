@@ -91,8 +91,24 @@
                   <i>Cel wizyty:</i>
                   <textarea disabled="true" [(ngModel)]="visitDescription" class = "schedule-visit-input-box"></textarea>
                 </div>
+
+                @if (scheduleValidationErrors.length > 0) {
+                  <div class="schedule-validation-errors">
+                    @for (err of scheduleValidationErrors; track $index) {
+                      <div class="schedule-validation-error">&#9888; {{ err }}</div>
+                    }
+                  </div>
+                }
+
+                @if (showInfoBox) {
+                  <div class="popup-infobox" [class.popup-infobox--error]="infoBoxIsError">
+                    <span>{{ infoBoxText }}</span>
+                    <button class="popup-infobox-close" type="button" (click)="closeInfoBox()">&#x2715;</button>
+                  </div>
+                }
+
                 <div class="popup-btn">
-                    <button class="popup-submit" [disabled]="selectedTimeSlot == null || selectedClientCar == null || visitDescription.length == 0" (click)="scheduleVisit()">Potwierdź</button>
+                    <button class="popup-submit" (click)="scheduleVisit()">Potwierdź</button>
                 </div>
             </div>
           <div class="popup-botbar"></div>
@@ -100,7 +116,7 @@
     </div>
 }
 
-@if(showInfoBox){
+@if(showInfoBox && !confirmPopupShown){
     <div class = "info-box-wrapper">
         <div class = "info-box">
             <div class="info-topbar"></div>
