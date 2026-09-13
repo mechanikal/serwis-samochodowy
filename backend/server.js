@@ -472,6 +472,37 @@ app.get("/api/parts", authenticateToken, requireRole("mechanic"), async (req, re
 app.put("/api/visits/:id/diagnosis", authenticateToken, requireRole("mechanic"), async (req, res) => {
   try {
     const { diagnosisDescription, faults, requiredServices, requiredParts } = req.body;
+
+    if (!/^[0-9a-fA-F]{24}$/.test(String(req.params.id))) {
+      return res.status(400).json({ message: "Nieprawidłowy identyfikator wizyty" });
+    }
+
+    // Array check
+    if (!Array.isArray(faults) || !Array.isArray(requiredServices) || !Array.isArray(requiredParts)) {
+      return res.status(400).json({ message: "Nieprawidłowy format kosztorysu (oczekiwano tablic)" });
+    }
+
+    // diagnosisDescription max 2000 chars (Optional)
+    if (diagnosisDescription !== undefined && diagnosisDescription !== null) {
+      if (typeof diagnosisDescription !== "string" || diagnosisDescription.trim().length > 2000) {
+        return res.status(400).json({ message: "Nieprawidłowy opis diagnozy (max 2000 znaków)" });
+      }
+    }
+
+    // MongoDB Id check
+    const isObjectId = (v) => /^[0-9a-fA-F]{24}$/.test(String(v?._id ?? v));
+    if (!faults.every(isObjectId)) {
+      return res.status(400).json({ message: "Nieprawidłowy identyfikator usterki" });
+    }
+
+    const isPriceOk = (p) => Number.isFinite(Number(p)) && Number(p) >= 0 && Number(p) <= 1000000;
+    if (!requiredServices.every(item => item && isObjectId(item.serviceId) && isPriceOk(item.price))) {
+      return res.status(400).json({ message: "Nieprawidłowe usługi (id + cena 0-1000000)" });
+    }
+    if (!requiredParts.every(item => item && isObjectId(item.partId) && isPriceOk(item.price))) {
+      return res.status(400).json({ message: "Nieprawidłowe części (id + cena 0-1000000)" });
+    }
+
     const visit = await Visit.findById(req.params.id);
     if (!visit) {
       return res.status(404).json({ message: "Wizyta nie znaleziona" });
