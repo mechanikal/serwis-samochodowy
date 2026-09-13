@@ -1,19 +1,57 @@
 <div class="notifications-list">
-  @for (notification of notifications; track notification.id) {
-  <div class="notification-card" [class.read]="notification.status === 'read'">
-    <div class="notification-header">
-      <span class="notification-title">{{ notification.title }}</span>
-      <span class="notification-time">{{ notification.time }}</span>
+  <!-- Powiadomienia nieprzeczytane -->
+  @if (unreadNotifications.length > 0) {
+    @for (notification of unreadNotifications; track notification.id) {
+      <div class="notification-card">
+        <div class="notification-header">
+          <span class="notification-title">{{ notification.title }}</span>
+          <span class="notification-time">{{ notification.time }}</span>
+        </div>
+        <div class="notification-body">
+          <p>{{ notification.body }}</p>
+        </div>
+        <div class="notification-actions">
+          <button type="button" class="btn-primary" (click)="markNotificationAsRead(notification.id)">Oznacz jako przeczytane</button>
+          <button type="button" class="btn-secondary" (click)="deleteNotification(notification.id)">Usuń powiadomienie</button>
+        </div>
+      </div>
+    }
+  } @else {
+    <div class="empty-state">
+      <p class="empty-title">Brak nowych powiadomień</p>
+      <p class="empty-subtitle">Gdy otrzymasz nowe powiadomienia, pojawią się one tutaj.</p>
     </div>
-    <div class="notification-body">
-      <p>{{ notification.body }}</p>
+  }
+
+  <!-- Przycisk pokaż/ukryj przeczytane -->
+  @if (readNotifications.length > 0) {
+    <div class="toggle-read-container">
+      <button type="button" class="btn-toggle-read" (click)="toggleShowRead()">
+        {{ showRead ? 'Ukryj przeczytane' : 'Pokaż przeczytane' }} ({{ readNotifications.length }})
+      </button>
     </div>
-    <div class="notification-actions">
-      @if (notification.id != '0'){
-        <button class="btn-primary" (click)="markNotificationAsRead(notification.id)">Oznacz jako przeczytane</button>
-        <button class="btn-secondary" (click)="deleteNotification(notification.id)">Usuń powiadominie</button>
+  }
+
+  <!-- Sekcja powiadomień przeczytanych (wyszarzone) -->
+  @if (showRead) {
+    <div class="read-notifications-section">
+      <div class="read-section-header">
+        <span class="read-section-title">Przeczytane powiadomienia</span>
+      </div>
+      @for (notification of readNotifications; track notification.id) {
+        <div class="notification-card read">
+          <div class="notification-header">
+            <span class="notification-title">{{ notification.title }}</span>
+            <span class="notification-time">{{ notification.time }}</span>
+          </div>
+          <div class="notification-body">
+            <p>{{ notification.body }}</p>
+          </div>
+          <div class="notification-actions">
+            <button type="button" class="btn-secondary" (click)="deleteNotification(notification.id)">Usuń powiadomienie</button>
+          </div>
+        </div>
       }
     </div>
-  </div>
   }
 </div>

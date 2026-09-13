@@ -2,10 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 
-interface NotificationItem {
+export interface NotificationItem {
   id: string;
   title: string;
   time: string;
+  rawDate: Date;
   body: string;
   status: string;
 }
@@ -17,7 +18,9 @@ interface NotificationItem {
   styleUrl: './notifications.css',
 })
 export class Notifications implements OnInit {
-  notifications: NotificationItem[] = [];
+  unreadNotifications: NotificationItem[] = [];
+  readNotifications: NotificationItem[] = [];
+  showRead = false;
 
   constructor(private http: HttpClient) {}
 
@@ -30,22 +33,33 @@ export class Notifications implements OnInit {
       headers: this.getAuthHeaders()
     }).subscribe({
       next: (data) => {
-        this.notifications = data.map(n => ({
-          id: n._id ?? n.id,
-          title: n.title ?? 'Zmiana statusu wizyty',
-          time: this.formatNotificationDate(n.date),
-          body: n.body ?? `Status wizyty zostal zmieniony na: ${n.newVisitStatus ?? ''}`,
-          status: n.status ?? 'unread'
-        }));
-        if (this.notifications.length === 0) {
-          this.setEmptyNotificationsPlaceholder();
-        }
+        const parsed: NotificationItem[] = (data || []).map(n => {
+          const rawDate = n.time ? new Date(n.time) : (n.date ? new Date(n.date) : new Date(0));
+          return {
+            id: n._id ?? n.id,
+            title: n.title ?? 'Zmiana statusu wizyty',
+            time: this.formatNotificationDate(rawDate),
+            rawDate,
+            body: n.body ?? `Status wizyty został zmieniony na: ${n.newVisitStatus ?? ''}`,
+            status: n.status ?? 'unread'
+          };
+        });
+
+        parsed.sort((a, b) => b.rawDate.getTime() - a.rawDate.getTime());
+
+        this.unreadNotifications = parsed.filter(n => n.status !== 'read');
+        this.readNotifications = parsed.filter(n => n.status === 'read');
       },
       error: (err) => {
-        console.error('Blad pobierania powiadomien', err);
-        this.setEmptyNotificationsPlaceholder();
+        console.error('Błąd pobierania powiadomień', err);
+        this.unreadNotifications = [];
+        this.readNotifications = [];
       }
     });
+  }
+
+  toggleShowRead(): void {
+    this.showRead = !this.showRead;
   }
 
   markNotificationAsRead(id: string): void {
@@ -53,11 +67,16 @@ export class Notifications implements OnInit {
       headers: this.getAuthHeaders()
     }).subscribe({
       next: () => {
-        this.notifications = this.notifications.map((n) =>
-          n.id === id ? { ...n, status: 'read' } : n
-        );
+        const targetIndex = this.unreadNotifications.findIndex(n => n.id === id);
+        if (targetIndex !== -1) {
+          const item = this.unreadNotifications[targetIndex];
+          this.unreadNotifications = this.unreadNotifications.filter(n => n.id !== id);
+          const updatedItem: NotificationItem = { ...item, status: 'read' };
+          this.readNotifications = [updatedItem, ...this.readNotifications]
+            .sort((a, b) => b.rawDate.getTime() - a.rawDate.getTime());
+        }
       },
-      error: (err) => console.error('Blad oznaczania powiadomienia jako przeczytane', err)
+      error: (err) => console.error('Błąd oznaczania powiadomienia jako przeczytane', err)
     });
   }
 
@@ -66,29 +85,11 @@ export class Notifications implements OnInit {
       headers: this.getAuthHeaders()
     }).subscribe({
       next: () => {
-        this.removeNotificationFromList(id);
+        this.unreadNotifications = this.unreadNotifications.filter(n => n.id !== id);
+        this.readNotifications = this.readNotifications.filter(n => n.id !== id);
       },
-      error: (err) => console.error('Blad usuwania powiadomienia', err)
+      error: (err) => console.error('Błąd usuwania powiadomienia', err)
     });
-  }
-
-  private removeNotificationFromList(id: string): void {
-    this.notifications = this.notifications.filter((n) => n.id !== id);
-    if (this.notifications.length === 0) {
-      this.setEmptyNotificationsPlaceholder();
-    }
-  }
-
-  private setEmptyNotificationsPlaceholder(): void {
-    this.notifications = [
-      {
-        id: '0',
-        title: 'Brak nowych powiadomien',
-        time: '',
-        body: 'Gdy otrzymasz nowe powiadomienia, pojawia sie one tutaj.',
-        status: 'read'
-      }
-    ];
   }
 
   private getAuthHeaders() {
@@ -98,11 +99,11 @@ export class Notifications implements OnInit {
     };
   }
 
-  private formatNotificationDate(date: string | Date | null): string {
-    if (date == null) {
+  private formatNotificationDate(date: Date | null): string {
+    if (date == null || isNaN(date.getTime())) {
       return '';
     }
-    return new Date(date).toLocaleString('pl-PL', {
+    return date.toLocaleString('pl-PL', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
