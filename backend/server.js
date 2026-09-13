@@ -399,6 +399,11 @@ app.patch(
         return res.status(400).json({ message: "Brak statusu" });
       }
 
+      const allowedStatuses = ['nadchodzące', 'oczekiwanie na kosztorys', 'oczekiwanie na zatwierdzenie kosztorysu', 'w trakcie naprawy', 'zakończone', 'anulowane'];
+      if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({ message: "Nieprawidłowy status wizyty" });
+      }
+
       const visit = await Visit.findById(req.params.id);
       if (!visit) {
         return res.status(404).json({ message: "Wizyta nie znaleziona" });
