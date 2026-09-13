@@ -91,8 +91,8 @@ async function seed() {
             mechanicId: mongoMech._id,
             diagnosisDescription: 'Uszkodzony sworzeń wahacza dolnego.',
             faults: [fault._id],
-            requiredServices: [service._id],
-            requiredParts: [part._id],
+            requiredServices: [{ serviceId: service._id, price: service.price }],
+            requiredParts: [{ partId: part._id, price: part.price }],
             totalPrice: 450,
             accepted: false,
         });

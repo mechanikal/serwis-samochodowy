@@ -33,7 +33,7 @@ export class LoginForm {
   mode: string = 'login';
 
   scrollToTop(): void {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
   }
 
   loginSubmit() {
@@ -131,10 +131,16 @@ export class LoginForm {
     this.mode = mode;
   }
   goToMechanic() {
-    this.router.navigate(['/panel-site']);
+    window.scrollTo(0, 0);
+    this.router.navigate(['/panel-site']).then(() => {
+      window.scrollTo(0, 0);
+    });
   }
   goToUser() {
-    this.router.navigate(['/panel-site']);
+    window.scrollTo(0, 0);
+    this.router.navigate(['/panel-site']).then(() => {
+      window.scrollTo(0, 0);
+    });
   }
   goToAdmin() {
     this.goToMechanic();

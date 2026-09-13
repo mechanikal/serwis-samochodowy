@@ -564,7 +564,7 @@ app.get(
       ]);
       const faults = await Fault.find();
       const faultStats = faults.map((f) => {
-        const agg = faultAgg.find(a => a._id.toString() === f._id.toString());
+        const agg = faultAgg.find(a => a._id && a._id.toString() === f._id.toString());
         return {
           name: f.name || "Fault",
           count: (agg ? agg.count : 0).toString(),
@@ -574,11 +574,16 @@ app.get(
       // Aggregate real service counts from Diagnosis documents
       const serviceAgg = await diagnosis.aggregate([
         { $unwind: "$requiredServices" },
-        { $group: { _id: "$requiredServices", count: { $sum: 1 } } }
+        {
+          $group: {
+            _id: { $ifNull: ["$requiredServices.serviceId", "$requiredServices"] },
+            count: { $sum: 1 }
+          }
+        }
       ]);
       const services = await Service.find();
       const serviceStats = services.map((s) => {
-        const agg = serviceAgg.find(a => a._id.toString() === s._id.toString());
+        const agg = serviceAgg.find(a => a._id && a._id.toString() === s._id.toString());
         return {
           name: s.name || "Usługa",
           count: (agg ? agg.count : 0).toString(),

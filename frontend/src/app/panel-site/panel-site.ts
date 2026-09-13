@@ -13,6 +13,7 @@ export class MechanicSite implements OnInit {
   selectedUserMode: 'mechanic' | 'client' = 'mechanic';
 
   ngOnInit() {
+    window.scrollTo(0, 0);
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
     this.selectedUserMode = user.role === 'mechanic'
