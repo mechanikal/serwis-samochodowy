@@ -661,7 +661,7 @@ app.post(
       if (!/^[A-Z0-9 \-]{3,12}$/.test(registration)) {
         return res.status(400).json({ message: "Nieprawidłowy format rejestracji" });
       }
-      if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(VIN)) {
+      if (!/^[A-HJ-NPR-Z1-9]{17}$/.test(VIN)) {
         return res.status(400).json({ message: "Nieprawidłowy format VIN (17 znaków bez I/O/Q)" });
       }
 
@@ -740,7 +740,7 @@ app.put(
       }
       if (VIN !== undefined) {
         const s = String(VIN).trim().toUpperCase();
-        if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(s)) {
+        if (!/^[A-HJ-NPR-Z1-9]{17}$/.test(s)) {
           return res.status(400).json({ message: "Nieprawidłowy format VIN (17 znaków bez I/O/Q)" });
         }
         vehicle.VIN = s;
