@@ -293,8 +293,7 @@ app.post("/api/visits", authenticateToken, requireRole("user"), async (req, res)
       return res.status(400).json({ message: "Wszystkie pola są wymagane" });
     }
 
-    // Validate vehicle id format (Credit dla https://regexpattern.com/vehicle-identification-number/)
-    if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(String(vehicle))) {
+    if (!/^[0-9a-fA-F]{24}$/.test(String(vehicle))) {
       return res.status(400).json({ message: "Nieprawidłowy identyfikator pojazdu" });
     }
 
