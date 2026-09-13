@@ -293,8 +293,8 @@ app.post("/api/visits", authenticateToken, requireRole("user"), async (req, res)
       return res.status(400).json({ message: "Wszystkie pola są wymagane" });
     }
 
-    // Validate vehicle id format (Cedit dla https://regexpattern.com/vehicle-identification-number/)
-    if (!/[A-HJ-NPR-Z0-9]{17}/i.test(String(vehicle))) {
+    // Validate vehicle id format (Credit dla https://regexpattern.com/vehicle-identification-number/)
+    if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(String(vehicle))) {
       return res.status(400).json({ message: "Nieprawidłowy identyfikator pojazdu" });
     }
 
@@ -647,16 +647,40 @@ app.post(
         return res.status(404).json({ message: "Nie znaleziono klienta" });
       }
 
-      const { brand, model, year, registration, VIN } = req.body;
+      let { brand, model, year, registration, VIN } = req.body;
+      brand = String(brand ?? "").trim();
+      model = String(model ?? "").trim();
+      registration = String(registration ?? "").trim().toUpperCase();
+      VIN = String(VIN ?? "").trim().toUpperCase();
+
       if (!brand || !model || !registration || !VIN) {
         return res.status(400).json({ message: "Wszystkie pola są wymagane" });
+      }
+      if (brand.length > 50 || model.length > 50) {
+        return res.status(400).json({ message: "Marka i model muszą mieć do 50 znaków" });
+      }
+      if (!/^[A-Z0-9 \-]{3,12}$/.test(registration)) {
+        return res.status(400).json({ message: "Nieprawidłowy format rejestracji" });
+      }
+      if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(VIN)) {
+        return res.status(400).json({ message: "Nieprawidłowy format VIN (17 znaków bez I/O/Q)" });
+      }
+
+      let cleanYear = null;
+      if (year !== undefined && year !== null && year !== "") {
+        const y = Number(year);
+        const maxYear = new Date().getFullYear() + 1;
+        if (!Number.isInteger(y) || y < 1900 || y > maxYear) {
+          return res.status(400).json({ message: `Rok musi być liczbą całkowitą 1900-${maxYear}` });
+        }
+        cleanYear = y;
       }
 
       const vehicle = await Vehicle.create({
         clientId: client._id,
         brand,
         model,
-        year: year || null,
+        year: cleanYear,
         registration,
         VIN
       });
@@ -678,6 +702,10 @@ app.put(
   requireRole("user"),
   async (req, res) => {
     try {
+      if (!/^[0-9a-fA-F]{24}$/.test(String(req.params.id))) {
+        return res.status(400).json({ message: "Nieprawidłowy identyfikator pojazdu" });
+      }
+
       const client = await Client.findOne({ userId: req.user.id });
       if (!client) {
         return res.status(404).json({ message: "Nie znaleziono klienta" });
@@ -689,11 +717,43 @@ app.put(
       }
 
       const { brand, model, year, registration, VIN } = req.body;
-      if (brand) vehicle.brand = brand;
-      if (model) vehicle.model = model;
-      if (year !== undefined) vehicle.year = year;
-      if (registration) vehicle.registration = registration;
-      if (VIN) vehicle.VIN = VIN;
+
+      if (brand !== undefined) {
+        const s = String(brand).trim();
+        if (!s || s.length > 50) {
+          return res.status(400).json({ message: "Nieprawidłowa marka (1-50 znaków)" });
+        }
+        vehicle.brand = s;
+      }
+      if (model !== undefined) {
+        const s = String(model).trim();
+        if (!s || s.length > 50) {
+          return res.status(400).json({ message: "Nieprawidłowy model (1-50 znaków)" });
+        }
+        vehicle.model = s;
+      }
+      if (registration !== undefined) {
+        const s = String(registration).trim().toUpperCase();
+        if (!/^[A-Z0-9 \-]{3,12}$/.test(s)) {
+          return res.status(400).json({ message: "Nieprawidłowy format rejestracji" });
+        }
+        vehicle.registration = s;
+      }
+      if (VIN !== undefined) {
+        const s = String(VIN).trim().toUpperCase();
+        if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(s)) {
+          return res.status(400).json({ message: "Nieprawidłowy format VIN (17 znaków bez I/O/Q)" });
+        }
+        vehicle.VIN = s;
+      }
+      if (year !== undefined && year !== null && year !== "") {
+        const y = Number(year);
+        const maxYear = new Date().getFullYear() + 1;
+        if (!Number.isInteger(y) || y < 1900 || y > maxYear) {
+          return res.status(400).json({ message: `Rok musi być liczbą całkowitą 1900-${maxYear}` });
+        }
+        vehicle.year = y;
+      }
 
       await vehicle.save();
       res.json({ message: "Pojazd zaktualizowany", vehicle });
