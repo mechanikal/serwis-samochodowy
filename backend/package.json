@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "seed": "node seed.js",
+    "seed": "node seed-mysql.js & node seed-mongo.js",
     "seed:mysql": "node seed-mysql.js",
     "seed:mongo": "node seed-mongo.js",
     "test": "echo \"Error: no test specified\" && exit 1"
