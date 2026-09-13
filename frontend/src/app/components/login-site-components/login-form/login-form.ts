@@ -85,8 +85,8 @@ export class LoginForm {
     }
 
     // Validate password strength
-    if (this.passwordValue.length < 6) {
-      this.registerError = 'Hasło musi mieć co najmniej 6 znaków';
+    if (this.passwordValue.length < 6 || this.passwordValue.length > 128) {
+      this.registerError = 'Hasło musi mieć co najmniej 6 znaków i nie więcej niż 128 znaków';
       return;
     }
 

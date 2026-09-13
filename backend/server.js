@@ -120,7 +120,7 @@ app.post("/api/login", async (req, res) => {
 });
 
 app.post("/api/register", async (req, res) => {
-  const { username, email, password, first_name, last_name, phone } = req.body;
+  let { username, email, password, first_name, last_name, phone } = req.body;
 
   try {
     // Validate required fields
@@ -128,15 +128,42 @@ app.post("/api/register", async (req, res) => {
       return res.status(400).json({ message: "Wszystkie pola są wymagane" });
     }
 
+    username = String(username).trim();
+    email = String(email).trim().toLowerCase();
+    first_name = String(first_name).trim();
+    last_name = String(last_name).trim();
+    phone = String(phone).trim();
+
+    if (!username || !email || !password || !first_name || !last_name || !phone) {
+      return res.status(400).json({ message: "Wszystkie pola są wymagane" });
+    }
+
+    // Validate username
+    const usernameRegex = /^[A-Za-z0-9._-]{3,30}$/;
+    if (!usernameRegex.test(username)) {
+      return res.status(400).json({ message: "Nieprawidłowa nazwa użytkownika (3-30 znaków: litery, cyfry, ., _, -)" });
+    }
+
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (email.length > 250 || !emailRegex.test(email)) {
       return res.status(400).json({ message: "Nieprawidłowy format adresu e-mail" });
     }
 
     // Validate password strength
-    if (password.length < 6) {
-      return res.status(400).json({ message: "Hasło musi mieć co najmniej 6 znaków" });
+    if (typeof password !== "string" || password.length < 6 || password.length > 128) {
+      return res.status(400).json({ message: "Hasło musi mieć od 6 do 128 znaków" });
+    }
+
+    // Validate names: 2-50 chars
+    if (first_name.length < 2 || first_name.length > 50 || last_name.length < 2 || last_name.length > 50) {
+      return res.status(400).json({ message: "Imię i nazwisko muszą mieć od 2 do 50 znaków" });
+    }
+
+    // Validate phone: optional +, digits/spaces/dashes, 7-20 chars
+    const phoneRegex = /^\+?[0-9\s\-()]{7,20}$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({ message: "Nieprawidłowy format numeru telefonu" });
     }
 
     // Check for duplicate username or email
