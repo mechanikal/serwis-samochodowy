@@ -293,6 +293,43 @@ app.post("/api/visits", authenticateToken, requireRole("user"), async (req, res)
       return res.status(400).json({ message: "Wszystkie pola są wymagane" });
     }
 
+    // Validate vehicle id format (Cedit dla https://regexpattern.com/vehicle-identification-number/)
+    if (!/[A-HJ-NPR-Z0-9]{17}/i.test(String(vehicle))) {
+      return res.status(400).json({ message: "Nieprawidłowy identyfikator pojazdu" });
+    }
+
+    // Validate date format yyyy-MM-dd
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date))) {
+      return res.status(400).json({ message: "Nieprawidłowy format daty (oczekiwano RRRR-MM-DD)" });
+    }
+    const [year, month, day] = String(date).split('-').map(Number);
+    const visitDate = new Date(year, month - 1, day);
+    if (
+      Number.isNaN(visitDate.getTime()) ||
+      visitDate.getFullYear() !== year ||
+      visitDate.getMonth() !== month - 1 ||
+      visitDate.getDate() !== day
+    ) {
+      return res.status(400).json({ message: "Nieprawidłowa data" });
+    }
+    // No past dates (compare local midnights)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (visitDate < today) {
+      return res.status(400).json({ message: "Data wizyty nie może być z przeszłości" });
+    }
+
+    // Validate time format HH:MM (https://regexpattern.com/time-mm-ss-60-minutes/)
+    if (!/^((0?[0-5][0-9]|[0-9]):([0-5][0-9]))$/.test(String(time))) {
+      return res.status(400).json({ message: "Nieprawidłowy format godziny (oczekiwano HH:MM)" });
+    }
+
+    // Validate description length (after trim)
+    const cleanDescription = String(description).trim();
+    if (cleanDescription.length < 5 || cleanDescription.length > 2000) {
+      return res.status(400).json({ message: "Opis musi mieć od 5 do 2000 znaków" });
+    }
+
     const client = await Client.findOne({ userId: req.user.id });
     if (!client) {
       return res.status(404).json({ message: "Nie znaleziono klienta" });
@@ -303,10 +340,6 @@ app.post("/api/visits", authenticateToken, requireRole("user"), async (req, res)
     if (!vehicleDoc) {
       return res.status(403).json({ message: "Pojazd nie należy do klienta" });
     }
-
-    // Parse date as local midnight to avoid timezone shift
-    const [year, month, day] = date.split('-').map(Number);
-    const visitDate = new Date(year, month - 1, day);
 
     // Check if time slot is already taken
     const existingVisit = await Visit.findOne({
@@ -323,11 +356,11 @@ app.post("/api/visits", authenticateToken, requireRole("user"), async (req, res)
     const visit = await Visit.create({
       vehicleId: vehicleDoc._id,
       clientId: client._id,
-      title: description.substring(0, 80),
+      title: cleanDescription.substring(0, 80),
       status: 'nadchodzące',
       date: visitDate,
       time: time,
-      description: description
+      description: cleanDescription
     });
 
     res.status(201).json({ message: "Wizyta umówiona", visitId: visit._id });
