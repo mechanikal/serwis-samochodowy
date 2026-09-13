@@ -4,86 +4,15 @@ Poniższy przewodnik przeprowadza przez pełną konfigurację projektu na środo
 
 ---
 
-## Wymagania wstępne
+## 1. Wymagania wstępne
 
-Zanim rozpoczniesz, upewnij się, że masz zainstalowane:
+Potrzebne narzędzia:
+Node.js, MySQL, MongoDB, Angular
 
-| Narzędzie | Wersja | Pobierz |
-|---|---|---|
-| **Node.js** | LTS (18+) | https://nodejs.org |
-| **npm** | 11+ (dołączony z Node.js) | — |
-| **MySQL** | 8.0+ | https://dev.mysql.com/downloads/ |
-| **MongoDB** | 6.0+ | https://www.mongodb.com/try/download/community |
-| **Angular CLI** | 21+ | `npm install -g @angular/cli` |
+### 2. Konfiguracja zmiennych środowiskowych
 
----
+Utwórz plik .env w katalogu /backend, w razie potrzeby skonfiguruj go
 
-## 1. Klonowanie repozytorium
-
-```bash
-git clone <URL_REPOZYTORIUM>
-cd serwis-samochodowy
-```
-
----
-
-## 2. Konfiguracja bazy MySQL
-
-### 2.1. Utwórz bazę danych
-
-Zaloguj się do MySQL i utwórz bazę:
-
-```sql
-CREATE DATABASE users_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-### 2.2. Utwórz tabelę `users`
-
-> Wykonaj gotowy skrypt: `backend/databases/users.sql`
->
-> ```bash
-> mysql -u root -p users_db < backend/databases/users.sql
-> ```
-
----
-
-## 3. Konfiguracja bazy MongoDB
-
-Upewnij się, że usługa MongoDB jest uruchomiona:
-
-```bash
-# Windows (usługa systemowa)
-net start MongoDB
-
-# macOS / Linux
-sudo systemctl start mongod
-# lub
-mongod --dbpath /data/db
-```
-
-Baza danych `serwis_db` zostanie automatycznie utworzona przez MongoDB przy pierwszym połączeniu.
-
----
-
-## 4. Konfiguracja backendu
-
-### 4.1. Przejdź do katalogu backend
-
-```bash
-cd backend
-```
-
-### 4.2. Zainstaluj zależności
-
-```bash
-npm install
-```
-
-### 4.3. Skonfiguruj zmienne środowiskowe
-
-Skopiuj przykładowy plik `.env` lub utwórz plik `backend/.env` o poniższej zawartości:
-
-```env
 # MySQL
 DB_HOST=localhost
 DB_USER=root
@@ -99,112 +28,53 @@ PORT=3000
 
 # JWT – zmień na losowy, bezpieczny ciąg znaków!
 JWT_SECRET=zmien_na_bezpieczny_sekret
----
 
-## 5. Wypełnianie baz danych (seed)
+## 3. Instalacja zależności
 
-Projekt zawiera skrypty seed do wypełnienia baz przykładowymi danymi.
+wykonaj npm install w folderze /backend oraz w folderze /frontend
 
-### 5.1. Seed MySQL – konta użytkowników
+## 4. Konfiguracja bazy
 
-```bash
-npm run seed:mysql
-```
+Zaloguj się do MySQL i utwórz bazę 'users_db',
+wykonaj w niej polecenie:
 
-Tworzy przykładowych użytkowników (klientów, mechanika, admina) w bazie MySQL.
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  first_name VARCHAR(50),
+  last_name VARCHAR(50),
+  phone VARCHAR(20),
+  role ENUM('user', 'mechanic') DEFAULT 'user'
+);
 
-### 5.2. Seed MongoDB – dane domenowe
+uruchom usługę MongoDB
 
-```bash
-npm run seed:mongo
-```
-
-Tworzy w MongoDB:
-- Klientów i mechaników
-- Pojazdy
-- Słowniki: usterki, usługi, części
-- Wizyty, diagnozy, powiadomienia
-
-> **Uwaga:** Uruchom seedy tylko raz lub na czystej bazie, aby uniknąć duplikacji danych.
-
-### 5.3. Alternatywnie – seed łączony
-
-```bash
+z folderu /backend Wykonaj polecenie 
 npm run seed
-```
 
----
+## 5. Uruchomienie projektu
 
-## 6. Uruchomienie backendu
+wykonaj polecenie npm run dev z folderu /backend a następnie z folderu /frontend
 
-### Tryb deweloperski (z hot-reload)
+strona dostępna jest pod adresem: **http://localhost:4200**
 
-```bash
-npm run dev
-```
 
-### Tryb produkcyjny
+## 6. Logowanie na stronie
 
-```bash
-npm start
-```
+przy seedowaniu zostały konta o następujących loginach:
 
-Serwer będzie dostępny pod adresem: **http://localhost:3000**
+konta klientów:
+**klient1**
+**klient2**
+**klient3**
+**klient4**
+**klient5**
 
-Możesz sprawdzić, czy API działa poprawnie:
+konta mechaników:
+**mechanik1**
 
-```
-GET http://localhost:3000/
-→ "API works"
-```
+hasło do każdego z kont to 
+**password123**
 
----
-
-## 7. Konfiguracja frontendu
-
-Otwórz nowy terminal i przejdź do katalogu frontend:
-
-```bash
-cd frontend
-```
-
-### 7.1. Zainstaluj zależności
-
-```bash
-npm install
-```
-
-### 7.2. Uruchom serwer deweloperski
-
-```bash
-npm run dev
-# lub
-ng serve
-```
-
-Frontend będzie dostępny pod adresem: **http://localhost:4200**
-
----
-
-## 8. Pierwsze logowanie
-
-Po uruchomieniu seedów możesz zalogować się za pomocą przykładowych kont:
-
-| Rola | Login | Hasło |
-|---|---|---|
-| Klient | `klient1` | *(ustawione w seed-mysql.js)* |
-| Mechanik | `mechanik1` | *(ustawione w seed-mysql.js)* |
-| Admin | `admin` | *(ustawione w seed-mysql.js)* |
-
-> Sprawdź plik `backend/seed-mysql.js`, aby poznać dokładne dane logowania lub je zmienić.
-
----
-
-## 9. Build produkcyjny frontendu
-
-```bash
-cd frontend
-npm run build
-```
-
-Skompilowane pliki znajdą się w katalogu `frontend/dist/`.
