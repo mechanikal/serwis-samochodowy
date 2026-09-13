@@ -242,11 +242,17 @@ export class ScheduleVisit implements OnInit {
   private getMonday(date: Date): Date {
     const d = new Date(date);
     const day = d.getDay();
-    var shift = - day;
-    if (day == 0 || day == 6){
-      shift += 7
+    let diff: number;
+    if (day === 0) {
+      // Niedziela: następny dzień to poniedziałek (+1)
+      diff = d.getDate() + 1;
+    } else if (day === 6) {
+      // Sobota: kolejny poniedziałek za 2 dni (+2)
+      diff = d.getDate() + 2;
+    } else {
+      // Poniedziałek - piątek: poniedziałek bieżącego tygodnia
+      diff = d.getDate() - day + 1;
     }
-    const diff = d.getDate() + shift + 1;
     d.setDate(diff);
     d.setHours(0, 0, 0, 0);
     return d;
