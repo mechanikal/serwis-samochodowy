@@ -12,7 +12,7 @@ Node.js, MySQL, MongoDB, Angular
 ### 2. Konfiguracja zmiennych środowiskowych
 
 Utwórz plik .env w katalogu /backend, w razie potrzeby skonfiguruj go
-
+```
 # MySQL
 DB_HOST=localhost
 DB_USER=root
@@ -28,7 +28,7 @@ PORT=3000
 
 # JWT – zmień na losowy, bezpieczny ciąg znaków!
 JWT_SECRET=zmien_na_bezpieczny_sekret
-
+```
 ## 3. Instalacja zależności
 
 wykonaj npm install w folderze /backend oraz w folderze /frontend
